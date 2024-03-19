@@ -1,0 +1,54 @@
+﻿@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<section class="vh-100" style="background-color: #508bfc;background-size: cover">
+    <div class="container py-5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+                        <form method="post">
+
+                            <h2 class="mb-4 text-center">Login</h2>
+
+                            <hr />
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input type="hidden" asp-for="ReturnUrl" />
+                            <div class="form-outline mb-4">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-outline mb-4">
+                                <label asp-for="Password" class="form-label"></label>
+                                <input asp-for="Password" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="checkbox">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-label"></label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+
+                            <br />
+                            <br />
+
+                        </form>
+                        <a href="/ForgotPassword" class="text-decoration-none">Forgotten password?</a>
+                        <br />
+                        <hr />
+                        <a href="/Register" class="btn btn-success btn-lg">Create new account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

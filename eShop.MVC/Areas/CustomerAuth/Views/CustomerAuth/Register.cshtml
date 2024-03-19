@@ -1,0 +1,64 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+
+<section class="vh-100" style="background-color: #508bfc;background-size: cover">
+    <div class="container py-5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+
+                        <form method="post">
+                            <h2 class="mb-4 text-center">Registration</h2>
+
+                            <hr />
+
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div class="form-outline mb-4">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-outline mb-4">
+                                <label asp-for="UserName" class="form-label"></label>
+                                <input asp-for="UserName" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                            <div class="form-outline mb-4">
+                                <label asp-for="Password" class="form-label"></label>
+                                <input asp-for="Password" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="form-outline mb-4">
+                                <label asp-for="ConfirmPassword" class="form-label"></label>
+                                <input asp-for="ConfirmPassword" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
+
+                            <br />
+                            <br />
+
+                        </form>
+                        <a href="/Login" class="text-decoration-none">Having account!!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+
+
+

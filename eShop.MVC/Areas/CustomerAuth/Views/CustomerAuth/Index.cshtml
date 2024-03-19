@@ -1,0 +1,48 @@
+﻿@model AccountDataViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<form id="profile-form" method="post" enctype="multipart/form-data">
+    <div class="row d-flex align-items-center justify-content-center">
+        <div class="col-md-3">
+            <h4>@ViewData["Title"]</h4>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserName"></label>
+                <input asp-for="UserName" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" disabled />
+            </div>
+            <button type="submit" style="margin-top:10px" class="btn btn-primary">Save</button>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label asp-for="ProfilePicture" class="w-100 form-label"></label>
+                @if (Model?.ProfilePicture != null)
+                {
+                    <img id="profilePicture" alt="profile" class="profile-picture" src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfilePicture))" />
+                }
+                else
+                {
+                    <img id="profilePicture" alt="profile" class="profile-picture" src="~/assets/DefualtPicture.jpg" />
+                }
+                <div class="custom-file mt-2">
+                    <input type="file"
+                           accept="ViewBag.accept"
+                           asp-for="ProfilePicture"
+                           class="form-control"
+                           onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

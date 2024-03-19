@@ -1,0 +1,47 @@
+﻿using eShop.Core.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
+using System.Reflection;
+using eShop.Core.Entities;
+
+
+
+namespace eShop.DAL.Data
+{
+    public class eShopDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    {
+        public eShopDbContext(DbContextOptions<eShopDbContext> Options)
+            : base(Options)
+        {
+        }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            base.OnModelCreating(builder);
+        }
+        public virtual DbSet<ItemInOrder> ItemInOrders { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<Image> Images { get; set; }
+
+        public override int SaveChanges()
+        {
+            var entries = ChangeTracker.Entries().Where(e => e.Entity is BaseEntity && (
+                    e.State == EntityState.Added ||
+                    e.State == EntityState.Modified));
+
+            foreach (var entry in entries)
+            {
+                ((BaseEntity)entry.Entity).ModifiedDate = DateTime.Now;
+
+                if (entry.State == EntityState.Added)
+                {
+                    ((BaseEntity)entry.Entity).CreatedDate = DateTime.Now;
+                }
+            }
+            return base.SaveChanges();
+        }
+    }
+}

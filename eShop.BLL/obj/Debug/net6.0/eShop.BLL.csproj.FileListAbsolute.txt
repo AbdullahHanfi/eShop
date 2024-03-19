@@ -1,0 +1,17 @@
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.BLL.deps.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.BLL.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.BLL.pdb
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.csproj.AssemblyReference.cache
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.GeneratedMSBuildEditorConfig.editorconfig
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.AssemblyInfoInputs.cache
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.AssemblyInfo.cs
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.csproj.CoreCompileInputs.cache
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\refint\eShop.BLL.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.pdb
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\ref\eShop.BLL.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.Core.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.DAL.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.DAL.pdb
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.Core.pdb
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.csproj.CopyComplete
