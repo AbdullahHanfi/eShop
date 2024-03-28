@@ -1,9 +1,9 @@
 ﻿using eShop.Core.Entities;
-using eShop.Core.Interface;
+using eShop.DAL.Interface;
 using eShop.DAL.Data;
 using Microsoft.AspNetCore.Identity;
 
-namespace eShop.DAL.Repositories
+namespace eShop.DAL.Repositories.implementation
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -11,7 +11,7 @@ namespace eShop.DAL.Repositories
         private readonly eShopDbContext _context;
         public UnitOfWork(eShopDbContext context,
             IUserRepository users,
-            IBaseRepository<Product> product,
+            IProductRepository product,
             IBaseRepository<Image> Image,
             IBaseRepository<Order> Order,
             IBaseRepository<ItemInOrder> ItemInOrder)
@@ -25,7 +25,7 @@ namespace eShop.DAL.Repositories
         }
         public IUserRepository Users { get; }
 
-        public IBaseRepository<Product> Products { get; }
+        public IProductRepository Products { get; }
 
         public IBaseRepository<Image> Images { get; }
 

@@ -1,8 +1,9 @@
-﻿using eShop.Core.Entities;
+﻿
+using eShop.Core.Entities;
 
-namespace eShop.Core.Interface
+namespace eShop.DAL.Interface
 {
-    public interface IImageRepository : IBaseRepository<Image>
+    public interface IProductRepository : IBaseRepository<Product>
     {
         public Image GetProductImage(Guid productId);
         public Task<Image> GetProductImageAsync(Guid productId);

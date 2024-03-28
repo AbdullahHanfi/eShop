@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShop.BLL.Utilities
+namespace eShop.DAL.Utilities
 {
     public class EmailSettings
     {

@@ -3,31 +3,34 @@
 @inject IImageServices ImageServices
 
 <ul class="navbar-nav">
+
     @if (SignInManager.IsSignedIn(User))
     {
-        @if (string.IsNullOrEmpty(UnitOfWork.Users.GetUserAsync(User).Result?.imgPath) != false)
-        {
-            <li class="nav-item">
-                <img class="avatar rounded-circle" alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(await ImageServices.Get(UnitOfWork.Users.GetUserAsync(User).Result.imgPath)))" />
-            </li>
-        }
-        else
-        {
-            <img alt="profile" class="avatar rounded-circle" src="~/assets/DefualtPicture.jpg" />
-        }
         <li class="nav-item">
-            <a class="nav-link text-dark" href="/Account">Hello @User.Identity?.Name!</a>
+            <span style="width:fit-content" class="badge d-flex align-items-center p-1 pe-2 text-dark-emphasis bg-light-subtle border border-dark-subtle rounded-pill">
+                <a class="nav-link text-dark" href="/Account">
+                    @if (string.IsNullOrEmpty(UnitOfWork.Users.GetUserAsync(User).Result?.imgPath) is false)
+                    {
+                        <img class="avatar rounded-circle" alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(await ImageServices.GetAsync(UnitOfWork.Users.GetUserAsync(User).Result.imgPath)))" />
+                    }
+                    else
+                    {
+                        <img alt="profile" class="avatar rounded-circle" src="~/assets/DefualtPicture.jpg" />
+                    }
+                    Hello @User.Identity?.Name!
+                </a>
+            </span>
         </li>
-        <li class="nav-item">
+        <li class="nav-item fw-bold">
             <a class="nav-link text-dark" href="/logout">Logout</a>
         </li>
     }
     else
     {
-        <li class="nav-item">
+        <li class="nav-item h5">
             <a class="nav-link text-dark" href="/Register">Register</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item h5">
             <a class="nav-link text-dark" href="/Login">Login</a>
         </li>
     }

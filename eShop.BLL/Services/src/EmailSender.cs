@@ -1,12 +1,12 @@
-﻿using eShop.BLL.Utilities;
-using eShop.Core.Interface;
+﻿using eShop.DAL.Utilities;
+using eShop.BLL.Services.Abstraction;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MailKit.Security;
 using MailKit.Net.Smtp;
 
-namespace eShop.BLL.Helper
+namespace eShop.BLL.Services.src
 {
     public class EmailSender : IEmailSender
     {

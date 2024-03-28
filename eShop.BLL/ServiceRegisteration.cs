@@ -1,7 +1,7 @@
-﻿using eShop.BLL.Helper;
+﻿using eShop.BLL.Mapping;
 using eShop.BLL.Services.Abstraction;
 using eShop.BLL.Services.src;
-using eShop.Core.Interface;
+using eShop.DAL.Utilities;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,11 +12,10 @@ namespace eShop.BLL
         public static void Add(this IServiceCollection services)
         {
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddSingleton<PhotoSettings>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IAccountServies, AccountServies>();
             services.AddScoped<IImageServices, ImageServices>();
-
+            services.AddAutoMapper(typeof(AccountProfile));
         }
     }
 }

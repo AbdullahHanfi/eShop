@@ -25,10 +25,6 @@
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
-      "Id": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.MVC\\wwwroot\\css\\styles.css",
-      "PackagePath": "staticwebassets\\css\\styles.css"
-    },
-    {
       "Id": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.MVC\\wwwroot\\favicon.ico",
       "PackagePath": "staticwebassets\\favicon.ico"
     },

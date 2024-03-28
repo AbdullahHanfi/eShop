@@ -1,6 +1,6 @@
 ﻿using eShop.BLL.Services.Abstraction;
 using eShop.Core.Entities;
-using eShop.Core.Interface;
+using eShop.DAL.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;

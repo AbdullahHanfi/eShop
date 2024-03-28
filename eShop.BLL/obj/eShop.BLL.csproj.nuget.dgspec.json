@@ -71,6 +71,10 @@
             "MimeKit": {
               "target": "Package",
               "version": "[4.4.0, )"
+            },
+            "Scrutor": {
+              "target": "Package",
+              "version": "[4.2.2, )"
             }
           },
           "imports": [

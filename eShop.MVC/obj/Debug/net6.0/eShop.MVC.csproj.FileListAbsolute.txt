@@ -557,3 +557,4 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\Microsof
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\NToastNotify.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\Scrutor.dll

@@ -1,40 +1,46 @@
 ﻿using eShop.Core.Entities;
 using eShop.DAL.Data;
-using eShop.Core.Interface;
+using eShop.DAL.Interface;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
 using static Dapper.SqlMapper;
 
-namespace eShop.DAL.Repositories
+namespace eShop.DAL.Repositories.implementation
 {
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly eShopDbContext _context;
         private readonly DbSet<TEntity> _entity;
+        private readonly string _CN;
+
         public BaseRepository(eShopDbContext context)
         {
             _context = context;
             _entity = context.Set<TEntity>();
+            _CN = GetConnectionString();
         }
-        protected string GetTableName()
+        protected string GetTableName(Type entityType)
         {
             string tableName = "";
-            var type = typeof(TEntity);
-            var tableAttr = type.GetCustomAttribute<TableAttribute>();
+            var tableAttr = entityType.GetCustomAttribute<TableAttribute>();
             if (tableAttr != null)
             {
                 tableName = tableAttr.Name;
-                return tableName;
             }
-            return type.Name + "s";
+            else
+            {
+                tableName = entityType.Name + "s";
+            }
+            return tableName;
         }
-        protected string GetKeyColumnName()
+        protected string GetKeyColumnName(Type entity)
         {
-            PropertyInfo[] properties = typeof(TEntity).GetProperties();
+            PropertyInfo[] properties = entity.GetProperties();
 
             foreach (PropertyInfo property in properties)
             {
@@ -55,7 +61,7 @@ namespace eShop.DAL.Repositories
                     }
                 }
             }
-            return null;
+            return string.Empty;
         }
 
         protected string GetConnectionString()
@@ -66,9 +72,9 @@ namespace eShop.DAL.Repositories
         {
             try
             {
-                using (var _connection = new SqlConnection(GetConnectionString()))
+                using (var _connection = new SqlConnection(_CN))
                 {
-                    string tableName = GetTableName();
+                    string tableName = GetTableName(typeof(TEntity));
                     string query = $"SELECT * FROM {tableName}";
                     return _connection.Query<TEntity>(query);
                 }
@@ -81,9 +87,9 @@ namespace eShop.DAL.Repositories
         {
             try
             {
-                using (var _connection = new SqlConnection(GetConnectionString()))
+                using (var _connection = new SqlConnection(_CN))
                 {
-                    string tableName = GetTableName();
+                    string tableName = GetTableName(typeof(TEntity));
                     string query = $"SELECT * FROM {tableName}";
                     return await _connection.QueryAsync<TEntity>(query);
                 }
@@ -96,10 +102,10 @@ namespace eShop.DAL.Repositories
         {
             try
             {
-                using (var _connection = new SqlConnection(GetConnectionString()))
+                using (var _connection = new SqlConnection(_CN))
                 {
-                    string tableName = GetTableName();
-                    string idName = GetKeyColumnName();
+                    string tableName = GetTableName(typeof(TEntity));
+                    string idName = GetKeyColumnName(typeof(TEntity));
                     string query = $"SELECT * FROM {tableName} where {idName} = {id}";
                     return _connection.QueryFirstOrDefault<TEntity>(query);
                 }
@@ -112,10 +118,10 @@ namespace eShop.DAL.Repositories
         {
             try
             {
-                using (var _connection = new SqlConnection(GetConnectionString()))
+                using (var _connection = new SqlConnection(_CN))
                 {
-                    string tableName = GetTableName();
-                    string idName = GetKeyColumnName();
+                    string tableName = GetTableName(typeof(TEntity));
+                    string idName = GetKeyColumnName(typeof(TEntity));
                     string query = $"SELECT * FROM {tableName} where {idName} = {id}";
                     return await _connection.QueryFirstOrDefaultAsync<TEntity>(query);
                 }

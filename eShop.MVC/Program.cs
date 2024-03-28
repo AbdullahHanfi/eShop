@@ -4,10 +4,9 @@ using eShop.DAL.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using eShop.Core.Entities;
-using eShop.BLL.Utilities;
 using NToastNotify;
-using eShop.BLL.Helper;
 using eShop.DAL.Seeds;
+using eShop.DAL.Utilities;
 
 namespace eShop.MVC
 {
@@ -41,11 +40,12 @@ namespace eShop.MVC
                 .AddEntityFrameworkStores<eShopDbContext>()
                 .AddDefaultTokenProviders();
 
+            
             ServiceRegisterationDAL.Add(builder.Services);
-            ServiceRegisterationBLL.Add(builder.Services);
-            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.Configure<PhotoSettings>(builder.Configuration.GetSection("PhotoSettings"));
-
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            
+            ServiceRegisterationBLL.Add(builder.Services);
             //services.ConfigureApplicationCookie(options =>
             //{
             //    options.LoginPath = "/Account/Login";
@@ -61,17 +61,22 @@ namespace eShop.MVC
 
             var app = builder.Build();
 
-            //Seed data
-            using (var scope = app.Services.CreateScope())
+            //Seed
+            Task.Run(async () =>
             {
-                var services = scope.ServiceProvider;
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    var Db = scope.ServiceProvider.GetRequiredService<eShopDbContext>();
+                    Db.Database.EnsureCreated();
 
-                var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
-                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-                DefaultRoles.SeedAsync(roleManager).RunSynchronously();
-                DefaultSuperAdmin.SeedAsync(userManager).RunSynchronously();
-            }
+                    await DefaultRoles.SeedAsync(roleManager);
+                    await DefaultUsers.SeedAsync(userManager);
+                }
+            }).GetAwaiter().GetResult();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

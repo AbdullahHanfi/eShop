@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace eShop.DAL.Seeds
 {
-    public static class DefaultSuperAdmin
+    public static class DefaultUsers
     {
         public static async Task SeedAsync(UserManager<ApplicationUser> userManager)
         {
@@ -39,7 +39,7 @@ namespace eShop.DAL.Seeds
                 var user = await userManager.FindByEmailAsync(admintUser.Email);
                 if (user == null)
                 {
-                    await userManager.CreateAsync(admintUser, "superadmin@gmail.com");
+                    var x = await userManager.CreateAsync(admintUser, "superadmin@gmail.com");
                     await userManager.AddToRoleAsync(admintUser, Roles.SuperAdmin);
                     await userManager.AddToRoleAsync(admintUser, Roles.Admin);
                     await userManager.AddToRoleAsync(admintUser, Roles.Customer);

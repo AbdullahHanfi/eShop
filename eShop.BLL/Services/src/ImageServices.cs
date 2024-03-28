@@ -1,36 +1,47 @@
-﻿using eShop.BLL.Helper;
+﻿using eShop.BLL.Exceptions;
 using eShop.BLL.Services.Abstraction;
+using eShop.DAL.Utilities;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace eShop.BLL.Services.src
 {
     public class ImageServices : IImageServices
     {
-        private readonly PhotoSettings _settings;
-        public ImageServices(PhotoSettings settings)
+        private readonly PhotoSettings _photoSettings;
+        public ImageServices(IOptions<PhotoSettings> settings)
         {
-            _settings = settings;
+            _photoSettings = settings.Value;
         }
-        public async Task<byte[]> Get(string path)
+        public async Task<byte[]> GetAsync(string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException("File not found", path);
 
             return await File.ReadAllBytesAsync(path);
         }
-
-        public async Task<string> Upload(IFormFile file)
+        public async Task<string> UploadAsync(IFormFile file)
         {
+            if (file == null || file.Length == 0)
+            {
+                throw new ArgumentException("File is empty or null.");
+            }
 
-            Directory.CreateDirectory(_settings.DestinationFolder);
+            if (file.Length > _photoSettings.MaxFileSizeBytes)
+            {
+                throw new FileSizeExceededException(_photoSettings.MaxFileSizeBytes);
+            }
 
-            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            string filePath = Path.Combine(_settings.DestinationFolder, fileName);
+            var extension = Path.GetExtension(file.FileName).ToLower();
+            if (!_photoSettings.AllowedExtensions.Contains(extension))
+            {
+                throw new InvalidFileExtensionException(_photoSettings.AllowedExtensions.Aggregate((x, z) => x + ", " + z));
+            }
+
+            Directory.CreateDirectory(_photoSettings.DestinationFolder);
+
+            string fileName = Guid.NewGuid().ToString() + extension;
+            string filePath = Path.Combine(_photoSettings.DestinationFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -39,5 +50,6 @@ namespace eShop.BLL.Services.src
 
             return filePath;
         }
+
     }
 }

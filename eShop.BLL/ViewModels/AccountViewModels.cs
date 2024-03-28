@@ -38,12 +38,12 @@ namespace eShop.BLL.ViewModels
     public class ForgotPasswordViewModel
     {
         [Required]
-        [Display(Name = "Email/User Name")]
+        [Display(Name = "Email/UserName")]
         public string item { get; set; }
     }
     public class LoginViewModel
     {
-        [Required, Display(Name = "Handle/Email")]
+        [Required, Display(Name = "Email")]
         public string Email { get; set; }
 
         [Required]
@@ -60,7 +60,7 @@ namespace eShop.BLL.ViewModels
         [Remote(action: "IsAlreadySigned", controller: "Account", areaName: "Auth", HttpMethod = "POST", ErrorMessage = "Email is already exists.")]
         public string? Email { get; set; }
 
-        [Required, Display(Name = "User Name")]
+        [Required, Display(Name = "UserName")]
         [Remote(action: "IsUsedName", controller: "Account", areaName: "Auth", HttpMethod = "POST", ErrorMessage = "User Name is already exists.")]
         public string? UserName { get; set; }
 
@@ -71,7 +71,7 @@ namespace eShop.BLL.ViewModels
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
     public class ResetPasswordViewModel

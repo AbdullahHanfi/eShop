@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
 using eShop.BLL.Services.Abstraction;
 using eShop.Core.Entities;
-using eShop.Core.Interface;
+using eShop.DAL.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
-using eShop.Core.Utilities;
-using eShop.BLL.Helper;
-using System.Linq;
 using eShop.BLL.ViewModels;
+using eShop.DAL.Utilities;
+using Microsoft.Extensions.Options;
 
 namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
 {
@@ -18,30 +17,32 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
     [AllowAnonymous]
     public class CustomerAuthController : Controller
     {
-        private readonly IUnitOfWork _UnitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAccountServies _accountServies;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IToastNotification _toastNotification;
         private readonly PhotoSettings _photoSettings;
-        private readonly IImageServices _imageServices;
+        private readonly IImageServices _imageService;
 
-        public CustomerAuthController(IImageServices ImageServices, PhotoSettings PhotoSettings, IUnitOfWork UnitOfWork, IMapper mapper, SignInManager<ApplicationUser> signInManager, IAccountServies accountServies, IToastNotification toastNotification)
+
+        public CustomerAuthController(IImageServices ImageServices, IOptions<PhotoSettings> PhotoSettings, IUnitOfWork UnitOfWork, IMapper mapper, SignInManager<ApplicationUser> signInManager, IAccountServies accountServies, IToastNotification toastNotification)
         {
-            _UnitOfWork = UnitOfWork;
+            _unitOfWork = UnitOfWork;
             _mapper = mapper;
             _signInManager = signInManager;
             _accountServies = accountServies;
             _toastNotification = toastNotification;
-            _photoSettings = PhotoSettings;
-            _imageServices = ImageServices;
+            _photoSettings = PhotoSettings.Value;
+            _imageService = ImageServices;
+
         }
 
         [Authorize]
         [Route("Account")]
         public async Task<IActionResult> Index()
         {
-            var user = await _UnitOfWork.Users.GetUserAsync(User);
+            var user = await _unitOfWork.Users.GetUserAsync(User);
 
             if (user is null)
                 return RedirectToAction("Index", "Home");
@@ -50,8 +51,8 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
 
             var model = _mapper.Map<AccountDataViewModel>(user);
 
-            if (string.IsNullOrEmpty(user.imgPath) != false)
-                model.ProfilePicture = await _imageServices.Get(user.imgPath);
+            if (string.IsNullOrEmpty(user.imgPath) is false)
+                model.ProfilePicture = await _imageService.GetAsync(user.imgPath);
 
             return View(model);
         }
@@ -59,25 +60,31 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
         [HttpPost("Account")]
         public async Task<IActionResult> Index(EditAccountDataViewModel model)
         {
-            var user = await _UnitOfWork.Users.GetUserAsync(User);
+            var user = await _unitOfWork.Users.GetUserAsync(User);
 
             var file = Request.Form.Files.FirstOrDefault();
 
-            if (file is not null &&
-                file.Length > 0 &&
-                _photoSettings.AllowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()) &&
-                file.Length <= _photoSettings.MaxFileSizeBytes &&
-                _photoSettings.AllowedContentTypes.Contains(file.ContentType))
+            if (file != null)
             {
-                user.imgPath = await _imageServices.Upload(file);
-
-                _UnitOfWork.Complete();
-                _toastNotification.AddSuccessToastMessage("Profile picture updated");
+                try
+                {
+                    var imagePath = await _imageService.UploadAsync(file);
+                    if (!string.IsNullOrEmpty(imagePath))
+                    {
+                        user.imgPath = imagePath;
+                        _unitOfWork.Complete();
+                        _toastNotification.AddSuccessToastMessage("Profile picture updated");
+                    }
+                    else
+                    {
+                        _toastNotification.AddWarningToastMessage("Error uploading profile picture");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _toastNotification.AddWarningToastMessage($"Error: {ex.Message}");
+                }
             }
-            else if (file is not null && file.Length > _photoSettings.MaxFileSizeBytes)
-                _toastNotification.AddWarningToastMessage($"Error let photo smaller than {_photoSettings.MaxFileSizeBytes / (1024 * 1024)}Mb");
-            else if (file is not null && !_photoSettings.AllowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
-                _toastNotification.AddWarningToastMessage($"Error allowed exteintion is {_photoSettings.AllowedExtensions.Aggregate((x, z) => x + ", " + z)}");
 
             return RedirectToAction(nameof(Index));
         }
@@ -88,94 +95,95 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
         public ActionResult Register()
             => View(new RegisterViewModel());
 
-        //[HttpPost("Register")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Register(RegisterViewModel model)
-        //{
+        [HttpPost("Register")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
 
-        //    if (!ModelState.IsValid)
-        //        return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-        //    var user = _mapper.Map<User>(model);
+            var user = _mapper.Map<ApplicationUser>(model);
 
-        //    var result = await _UnitOfWork.user.CreateAsync(user, model.Password);
-        //    if (result.Succeeded)
-        //    {
-        //        var state = await _accountServies.ConfirmationMail(model.Email);
-        //        if (state)
-        //        {
-        //            _toastNotification.AddSuccessToastMessage("Plz check your Email");
-        //            return RedirectToAction(nameof(Login));
-        //        }
-        //    }
-        //    foreach (var error in result.Errors)
-        //    {
-        //        ModelState.AddModelError("", error.Description);
-        //    }
+            var result = await _unitOfWork.Users.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                var state = await _accountServies.ConfirmationMail(model.Email);
+                if (state)
+                {
+                    _toastNotification.AddSuccessToastMessage("Plz check your Email :3");
+                    return RedirectToAction(nameof(Login));
+                }
+            }
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error);
+            }
 
-        //    return View(model);
-        //}
+            return View(model);
+        }
 
 
-        //[Route("Login")]
-        //public ActionResult Login(string returnUrl = null)
-        //    => View(new LoginViewModel() { ReturnUrl = returnUrl });
+        [Route("Login")]
+        public ActionResult Login(string returnurl = null)
+            => View(new LoginViewModel() { ReturnUrl = returnurl });
 
-        //[HttpPost("Login")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Login(LoginViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View(model);
-        //    User? user = await _accountServies.UserByEmailOrName(model.Email);
+        [HttpPost("Login")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+            var user = await _accountServies.UserByEmailOrName(model.Email);
 
-        //    if (user == null)
-        //    {
-        //        ModelState.AddModelError("", "Email or Password is worng");
-        //        return View(model);
-        //    }
-        //    if (!await _UnitOfWork.user.IsEmailConfirmedAsync(user))
-        //    {
-        //        ModelState.AddModelError("", "Please confirm your membership with the link sent to your e-mail account.");
-        //        return View(model);
-        //    }
-        //    var result = await _signInManager.PasswordSignInAsync(user, model.Password, true, false);
-        //    if (result.Succeeded)
-        //    {
-        //        _toastNotification.AddSuccessToastMessage("Welcame Back");
-        //        return LocalRedirect(model?.ReturnUrl ?? "~/");
-        //    }
+            if (user is null)
+            {
+                ModelState.AddModelError("", "Email or Password is worng");
+                return View(model);
+            }
+            if (!await _unitOfWork.Users.IsEmailConfirmedAsync(user))
+            {
+                ModelState.AddModelError("", "Please confirm your membership with the link sent to your e-mail account.");
+                return View(model);
+            }
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
+            if (result.Succeeded)
+            {
+                _toastNotification.AddSuccessToastMessage("Welcame Back :)");
+                return LocalRedirect(model?.ReturnUrl ?? "~/");
+            }
 
-        //    ModelState.AddModelError("", "The username or password entered is incorrect");
-        //    return View(model);
-        //}
+            ModelState.AddModelError("", "The username or password entered is incorrect");
+            return View(model);
+        }
 
-        //[Route("Logout")]
-        //public async Task<IActionResult> Logout(string returnUrl = null)
-        //{
-        //    await _signInManager.SignOutAsync();
-        //    _toastNotification.AddSuccessToastMessage("Back Agian (●'◡'●)");
-        //    if (returnUrl is not null && Url.IsLocalUrl(returnUrl))
-        //        return LocalRedirect(returnUrl);
-        //    else
-        //        return RedirectToAction("Index", "Home", new { area = "" });
-        //}
-        //[Route("ConfirmEmail")]
-        //public async Task<IActionResult> ConfirmEmail(ComfirmViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var user = await _UnitOfWork.user.FindByIdAsync(model.userId);
-        //    if (user != null)
-        //    {
-        //        var result = await _UnitOfWork.user.ConfirmEmailAsync(user, model.token);
-        //        if (result.Succeeded)
-        //            return View();
-        //    }
-        //    return View("Error");
-        //}
+        [Route("Logout")]
+        public async Task<IActionResult> Logout(string returnurl = null)
+        {
+            await _signInManager.SignOutAsync();
+            _toastNotification.AddSuccessToastMessage("Back Agian (●'◡'●)");
+            if (returnurl is not null && Url.IsLocalUrl(returnurl))
+                return LocalRedirect(returnurl);
+            else
+                return RedirectToAction("Index", "Home", new { area = "" });
+        }
+
+        [Route("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(ComfirmViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Error");
+            }
+            var user = await _unitOfWork.Users.FindByIdAsync(model.userId);
+            if (user != null)
+            {
+                var result = await _unitOfWork.Users.ConfirmEmailAsync(user, model.token);
+                if (result.Succeeded)
+                    return View();
+            }
+            return View("Error");
+        }
 
         //[Route("ForgotPassword")]
         //public IActionResult ForgotPassword()

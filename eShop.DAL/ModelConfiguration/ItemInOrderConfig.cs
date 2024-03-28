@@ -9,6 +9,7 @@ namespace eShop.DAL.ModelConfiguration
     {
         public void Configure(EntityTypeBuilder<ItemInOrder> builder)
         {
+            //Adding index on both product and order
             builder.HasKey(x => x.Id);
 
             builder.Property(e => e.Id)

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "YrQ6vqWm//3pm0bMOU4bFPVa1U0EhCvR8uifr1jxzFc=",
+  "Hash": "+QlI64Vkl2jLuYeMaR7xtCLgVaPtl8J+R2wAuadL8EQ=",
   "Source": "eShop.MVC",
   "BasePath": "_content/eShop.MVC",
   "Mode": "Default",
@@ -168,23 +168,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
-    },
-    {
-      "Identity": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.MVC\\wwwroot\\css\\styles.css",
-      "SourceId": "eShop.MVC",
-      "SourceType": "Discovered",
-      "ContentRoot": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.MVC\\wwwroot\\",
-      "BasePath": "_content/eShop.MVC",
-      "RelativePath": "css/styles.css",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\styles.css"
     },
     {
       "Identity": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.MVC\\wwwroot\\favicon.ico",

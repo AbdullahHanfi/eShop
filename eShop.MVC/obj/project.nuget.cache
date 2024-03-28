@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "62lgyLD1jbxeOsxXx9a9XU1NSRWUTnr0StbVYdyrpzkdSRyrsewVOSl9TOCaRVQ90ElCSlXQ+sVzkMaGpFeZ1A==",
+  "dgSpecHash": "7nMcQCFiBaVHiChANppBbASY27PDLzPgnyo+IXOC6fnLESMA7gwkNqRhfMwus30arv6n1OS7sFu43S5+LiiTeA==",
   "success": true,
   "projectFilePath": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.MVC\\eShop.MVC.csproj",
   "expectedPackageFiles": [
@@ -188,6 +188,7 @@
     "C:\\Users\\Dghemy\\.nuget\\packages\\runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\Dghemy\\.nuget\\packages\\runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\Dghemy\\.nuget\\packages\\runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
+    "C:\\Users\\Dghemy\\.nuget\\packages\\scrutor\\4.2.2\\scrutor.4.2.2.nupkg.sha512",
     "C:\\Users\\Dghemy\\.nuget\\packages\\system.appcontext\\4.3.0\\system.appcontext.4.3.0.nupkg.sha512",
     "C:\\Users\\Dghemy\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
     "C:\\Users\\Dghemy\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",

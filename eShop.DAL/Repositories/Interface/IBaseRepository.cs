@@ -1,7 +1,7 @@
 ﻿using eShop.Core.Entities;
 using System.Linq.Expressions;
 
-namespace eShop.Core.Interface
+namespace eShop.DAL.Interface
 {
     public interface IBaseRepository<TEntity> 
         where TEntity : BaseEntity

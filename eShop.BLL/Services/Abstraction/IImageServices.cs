@@ -9,7 +9,7 @@ namespace eShop.BLL.Services.Abstraction
 {
     public interface IImageServices
     {
-        Task<string> Upload(IFormFile image);
-        Task<byte[]> Get(string Path);
+        Task<string> UploadAsync(IFormFile image);
+        Task<byte[]> GetAsync(string Path);
     }
 }

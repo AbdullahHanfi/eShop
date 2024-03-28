@@ -1,10 +1,10 @@
 ﻿using eShop.Core.Entities;
-using eShop.Core.Interface;
+using eShop.DAL.Interface;
 using eShop.Core.Utilities;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace eShop.DAL.Repositories
+namespace eShop.DAL.Repositories.implementation
 {
     public class UserRepository : IUserRepository
     {
@@ -66,15 +66,12 @@ namespace eShop.DAL.Repositories
 
         private async Task<IdentityOperationResult<ApplicationUser>> ConvertIdentityToCustome(IdentityResult identityResult)
         {
-            var result = new IdentityOperationResult<ApplicationUser>();
-
-            result.Succeeded = identityResult.Succeeded;
-            result.Errors = identityResult.Errors.Select(error => error.Description);
-
-            if (identityResult.Succeeded)
+            var result = new IdentityOperationResult<ApplicationUser>
             {
-                result.Result = result.Result;
-            }
+                Succeeded = identityResult.Succeeded,
+                Errors = identityResult.Errors.Select(error => error.Description)
+            };
+
             return result;
         }
 

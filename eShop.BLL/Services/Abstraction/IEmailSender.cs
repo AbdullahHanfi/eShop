@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace eShop.Core.Interface
+namespace eShop.BLL.Services.Abstraction
 {
     public interface IEmailSender
     {

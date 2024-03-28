@@ -2,7 +2,7 @@
 using eShop.Core.Utilities;
 using System.Security.Claims;
 
-namespace eShop.Core.Interface
+namespace eShop.DAL.Interface
 {
     public interface IUserRepository
     {

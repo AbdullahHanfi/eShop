@@ -12,8 +12,8 @@ using eShop.DAL.Data;
 namespace eShop.DAL.Migrations
 {
     [DbContext(typeof(eShopDbContext))]
-    [Migration("20240319004535_AutoAddIdForRole")]
-    partial class AutoAddIdForRole
+    [Migration("20240324235247_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
