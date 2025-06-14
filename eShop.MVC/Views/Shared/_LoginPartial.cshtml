@@ -2,11 +2,11 @@
 @inject IUnitOfWork UnitOfWork
 @inject IImageServices ImageServices
 
-<ul class="navbar-nav">
+<ul class="navbar-nav justify-content-end flex-row">
 
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
+        <li class="nav-item  ">
             <span style="width:fit-content" class="badge d-flex align-items-center p-1 pe-2 text-dark-emphasis bg-light-subtle border border-dark-subtle rounded-pill">
                 <a class="nav-link text-dark" href="/Account">
                     @if (string.IsNullOrEmpty(UnitOfWork.Users.GetUserAsync(User).Result?.imgPath) is false)
@@ -21,7 +21,7 @@
                 </a>
             </span>
         </li>
-        <li class="nav-item fw-bold">
+        <li class="nav-item fw-bold" style="padding: 0rem 1rem;">
             <a class="nav-link text-dark" href="/logout">Logout</a>
         </li>
     }
@@ -30,7 +30,7 @@
         <li class="nav-item h5">
             <a class="nav-link text-dark" href="/Register">Register</a>
         </li>
-        <li class="nav-item h5">
+        <li class="nav-item h5" style="padding: 0rem 1rem;">
             <a class="nav-link text-dark" href="/Login">Login</a>
         </li>
     }

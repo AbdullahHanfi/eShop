@@ -10,3 +10,4 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.Core\obj\Debug\net6.0\eShop.C
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.Core\obj\Debug\net6.0\refint\eShop.Core.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.Core\obj\Debug\net6.0\eShop.Core.pdb
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.Core\obj\Debug\net6.0\ref\eShop.Core.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.Core\obj\Debug\net6.0\eShop.Core.sourcelink.json

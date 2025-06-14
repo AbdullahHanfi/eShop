@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "JwFD/D03uWWwrZpanVjzgCuQTT2+zaNxDkt/rS1srvpeqbp7WKTqoMYTvfRoAdpvgg9R2ixDuJtxxO6ybYLAyw==",
+  "dgSpecHash": "Ks8mgmM1PAg=",
   "success": true,
   "projectFilePath": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.BLL\\eShop.BLL.csproj",
   "expectedPackageFiles": [
@@ -169,5 +169,18 @@
     "C:\\Users\\Dghemy\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\Dghemy\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'MimeKit' 4.4.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-gmc6-fwg3-75m5",
+      "projectPath": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.BLL\\eShop.BLL.csproj",
+      "warningLevel": 1,
+      "filePath": "D:\\courses for programing\\dotNet\\9.MVC\\eShop\\eShop.BLL\\eShop.BLL.csproj",
+      "libraryId": "MimeKit",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
 }

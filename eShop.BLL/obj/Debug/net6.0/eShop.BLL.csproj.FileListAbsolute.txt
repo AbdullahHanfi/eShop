@@ -14,4 +14,5 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.Co
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.DAL.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.DAL.pdb
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\bin\Debug\net6.0\eShop.Core.pdb
-D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.csproj.CopyComplete
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.sourcelink.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.BLL\obj\Debug\net6.0\eShop.BLL.csproj.Up2Date

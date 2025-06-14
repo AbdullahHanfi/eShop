@@ -6,7 +6,6 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\obj\Debug\net6.0\eShop.DA
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\bin\Debug\net6.0\eShop.DAL.deps.json
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\bin\Debug\net6.0\eShop.DAL.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\bin\Debug\net6.0\eShop.DAL.pdb
-D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\obj\Debug\net6.0\eShop.DAL.csproj.CopyComplete
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\obj\Debug\net6.0\eShop.DAL.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\obj\Debug\net6.0\refint\eShop.DAL.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\obj\Debug\net6.0\eShop.DAL.pdb
@@ -15,3 +14,5 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\bin\Debug\net6.0\eShop.DA
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\obj\Debug\net6.0\eShop.DAL.genruntimeconfig.cache
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\bin\Debug\net6.0\eShop.Core.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\bin\Debug\net6.0\eShop.Core.pdb
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\obj\Debug\net6.0\eShop.DAL.sourcelink.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.DAL\obj\Debug\net6.0\eShop.DAL.csproj.Up2Date

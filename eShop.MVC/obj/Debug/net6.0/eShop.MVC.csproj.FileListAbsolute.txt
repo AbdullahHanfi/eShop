@@ -58,7 +58,6 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwe
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\scopedcss\bundle\eShop.MVC.styles.css
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\scopedcss\projectbundle\eShop.MVC.bundle.scp.css
-D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.csproj.CopyComplete
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\refint\eShop.MVC.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.pdb
@@ -558,3 +557,9 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\Microsof
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\NToastNotify.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\Scrutor.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\refs\Microsoft.AspNetCore.Cryptography.Internal.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\refs\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\refs\Microsoft.Extensions.Identity.Core.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\refs\Microsoft.Extensions.Identity.Stores.dll
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.sourcelink.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.csproj.Up2Date

@@ -5,8 +5,8 @@
 }
 
 <form id="profile-form" method="post" enctype="multipart/form-data">
-    <div class="row d-flex align-items-center justify-content-center">
-        <div class="col-md-3">
+    <div class="d-flex flex-wrap align-items-center  justify-content-evenly">
+        <div class="col-md-4 col-8">
             <h4>@ViewData["Title"]</h4>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -19,9 +19,9 @@
             </div>
             <button type="submit" style="margin-top:10px" class="btn btn-primary">Save</button>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label asp-for="ProfilePicture" class="w-100 form-label"></label>
+        <div class="col-md-4  col-8">
+            <div class="form-group d-flex flex-column">
+                <label asp-for="ProfilePicture" style="font:500" class="w-100  form-label"></label>
                 @if (Model?.ProfilePicture != null)
                 {
                     <img id="profilePicture" alt="profile" class="profile-picture" src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfilePicture))" />

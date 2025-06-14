@@ -125,8 +125,8 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
 
 
         [Route("Login")]
-        public ActionResult Login(string returnurl = null)
-            => View(new LoginViewModel() { ReturnUrl = returnurl });
+        public ActionResult Login()
+            => View(new LoginViewModel() { ReturnUrl = HttpContext.Request.Query["returnUrl"] });
 
         [HttpPost("Login")]
         [ValidateAntiForgeryToken]
@@ -158,12 +158,13 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
         }
 
         [Route("Logout")]
-        public async Task<IActionResult> Logout(string returnurl = null)
+        public async Task<IActionResult> Logout()
         {
+            string returnurl = HttpContext.Request.Query["returnUrl"];
             await _signInManager.SignOutAsync();
             _toastNotification.AddSuccessToastMessage("Back Agian (●'◡'●)");
             if (returnurl is not null && Url.IsLocalUrl(returnurl))
-                return LocalRedirect(returnurl);
+                return Redirect(returnurl);
             else
                 return RedirectToAction("Index", "Home", new { area = "" });
         }
