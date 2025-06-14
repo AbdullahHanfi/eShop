@@ -1,5 +1,60 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+﻿# .NET Core / C# build outputs
+bin/
+obj/
+*.csproj.user
+*.pdb
+*.exe
+*.dll
+*.config
 
-/eShop.MVC/~/assets
+# Visual Studio specific
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.ncb
+*.aps
+*.bak
+*.cache
+*.ilk
+*.log
+*.tlog
+*.idb
+*.opensdf
+*.sdf
+*.sln.ide
+*.suo
+*.vs/
+*.vshost.*
+
+# NuGet Packages
+*.nupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Test results
+TestResults/
+*.trx
+*.xml
+
+# Logs
+*.log
+logs/
+
+# Environment-specific settings
+appsettings.*.json
+*.local.settings.json
+
+# MSBuild
+MSBuild/
+*.msbuild
+
+# OS generated files
+.DS_Store
+Thumbs.db
