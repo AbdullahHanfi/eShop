@@ -1,46 +1,101 @@
 ﻿@model LoginViewModel
-
 @{
     ViewData["Title"] = "Login";
 }
+<link rel="stylesheet" href="~/css/Login.css" asp-append-version="true" />
 
-<section class="vh-100" style="background-color: #508bfc;background-size: cover">
-    <div class="container py-5">
-        <div class="row d-flex justify-content-center align-items-center h-100">
+<section class="vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                <div class="card shadow-2-strong" style="border-radius: 1rem;">
-                    <div class="card-body p-5 text-center">
-                        <form method="post">
+                <div class="card modern-login-card fade-in">
+                    <div class="card-body p-5">
+                        <!-- Header Section -->
+                        <div class="text-center mb-4">
+                            <div class="login-icon mb-3">
+                                <i class="fas fa-user-circle fa-3x text-primary"></i>
+                            </div>
+                            <h2 class="login-title">Welcome Back</h2>
+                            <p class="login-subtitle">Sign in to your account</p>
+                        </div>
 
-                            <h2 class="mb-4 text-center">Login</h2>
-
-                            <hr />
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <form method="post" class="modern-form">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger modern-alert" role="alert"></div>
                             <input type="hidden" asp-for="ReturnUrl" />
-                            <div class="form-outline mb-4">
-                                <label asp-for="Email" class="form-label"></label>
-                                <input asp-for="Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
-                            <div class="form-outline mb-4">
-                                <label asp-for="Password" class="form-label"></label>
-                                <input asp-for="Password" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" />
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                            </div>
-                            <div class="checkbox">
-                                <input asp-for="RememberMe" class="form-check-input" />
-                                <label asp-for="RememberMe" class="form-label"></label>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
 
-                            <br />
-                            <br />
+                            <!-- Email Field -->
+                            <div class="form-group mb-4">
+                                <label asp-for="Email" class="form-label modern-label">
+                                    <i class="fas fa-envelope me-2"></i>Email Address
+                                </label>
+                                <div class="input-wrapper">
+                                    <input asp-for="Email"
+                                           class="form-control modern-input"
+                                           autocomplete="username"
+                                           aria-required="true"
+                                           placeholder="Enter your email address" />
+                                    <div class="input-focus-effect"></div>
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger validation-message"></span>
+                            </div>
 
+                            <!-- Password Field -->
+                            <div class="form-group mb-4">
+                                <label asp-for="Password" class="form-label modern-label">
+                                    <i class="fas fa-lock me-2"></i>Password
+                                </label>
+                                <div class="input-wrapper password-wrapper">
+                                    <input asp-for="Password"
+                                           class="form-control modern-input"
+                                           autocomplete="current-password"
+                                           aria-required="true"
+                                           placeholder="Enter your password"
+                                           id="passwordInput" />
+                                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                                        <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                                    </button>
+                                    <div class="input-focus-effect"></div>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger validation-message"></span>
+                            </div>
+
+                            <!-- Remember Me -->
+                            <div class="form-check modern-checkbox mb-4">
+                                <input asp-for="RememberMe" class="form-check-input" id="rememberMe" />
+                                <label asp-for="RememberMe" class="form-check-label" for="rememberMe">
+                                    Keep me signed in
+                                </label>
+                            </div>
+
+                            <!-- Login Button -->
+                            <button type="submit" class="btn modern-btn-primary w-100 mb-4">
+                                <span class="btn-text">Sign In</span>
+                                <div class="btn-loader d-none">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                    Signing in...
+                                </div>
+                            </button>
+
+                            <!-- Forgot Password -->
+                            <div class="text-center mb-3">
+                                <a href="/ForgotPassword" class="forgot-password-link">
+                                    <i class="fas fa-key me-1"></i>Forgot your password?
+                                </a>
+                            </div>
+
+                            <!-- Divider -->
+                            <div class="divider">
+                                <span class="divider-text">or</span>
+                            </div>
+
+                            <!-- Create Account -->
+                            <div class="text-center">
+                                <p class="mb-2">Don't have an account?</p>
+                                <a href="/Register" class="btn modern-btn-outline w-100">
+                                    <i class="fas fa-user-plus me-2"></i>Create New Account
+                                </a>
+                            </div>
                         </form>
-                        <a href="/ForgotPassword" class="text-decoration-none">Forgotten password?</a>
-                        <br />
-                        <hr />
-                        <a href="/Register" class="btn btn-success btn-lg">Create new account</a>
                     </div>
                 </div>
             </div>
@@ -48,7 +103,54 @@
     </div>
 </section>
 
+<script>
+    // Password toggle functionality
+    function togglePassword() {
+        const passwordInput = document.getElementById('passwordInput');
+        const toggleIcon = document.getElementById('passwordToggleIcon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+
+    // Form submission with loading state
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.modern-form');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoader = submitBtn.querySelector('.btn-loader');
+
+        form.addEventListener('submit', function() {
+            btnText.classList.add('d-none');
+            btnLoader.classList.remove('d-none');
+            submitBtn.disabled = true;
+        });
+
+        // Add floating label effect
+        const inputs = document.querySelectorAll('.modern-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+        });
+    });
+</script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 }

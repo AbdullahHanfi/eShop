@@ -2,49 +2,125 @@
 @{
     ViewData["Title"] = "Register";
 }
+<link rel="stylesheet" href="~/css/Register.css" asp-append-version="true" />
 
-
-<section style="background-color: #508bfc;background-size:cover">
+<section class="registration-section">
     <div class="container py-5">
-        <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="row d-flex justify-content-center align-items-center min-vh-100">
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                <div class="card shadow-2-strong" style="border-radius: 1rem;">
-                    <div class="card-body p-5 text-center">
+                <div class="registration-card">
+                    <div class="card-header">
+                        <h2 class="registration-title">Create Account</h2>
+                        <p class="registration-subtitle">Join us today and get started</p>
+                    </div>
 
-                        <form method="post">
-                            <h2 class="mb-4 text-center">Registration</h2>
+                    <div class="card-body">
+                        <form method="post" id="registerForm" novalidate>
+                            <div asp-validation-summary="All" class="alert alert-danger validation-summary" role="alert"></div>
 
-                            <hr />
-
-                            <div asp-validation-summary="All" class="text-danger"></div>
-                            <div class="form-outline mb-4">
-                                <label asp-for="Email" class="form-label"></label>
-                                <input asp-for="Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
-                            <div class="form-outline mb-4">
-                                <label asp-for="UserName" class="form-label"></label>
-                                <input asp-for="UserName" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" />
-                                <span asp-validation-for="UserName" class="text-danger"></span>
-                            </div>
-                            <div class="form-outline mb-4">
-                                <label asp-for="Password" class="form-label"></label>
-                                <input asp-for="Password" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" />
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                            </div>
-                            <div class="form-outline mb-4">
-                                <label asp-for="ConfirmPassword" class="form-label"></label>
-                                <input asp-for="ConfirmPassword" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" />
-                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            <!-- Email Field -->
+                            <div class="form-group">
+                                <label asp-for="Email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email Address
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Email"
+                                           class="form-control"
+                                           placeholder="Enter your email address"
+                                           autocomplete="email"
+                                           aria-required="true"
+                                           data-validation-required="true" />
+                                    <div class="input-feedback">
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
+                            <!-- Username Field -->
+                            <div class="form-group">
+                                <label asp-for="UserName" class="form-label">
+                                    <i class="fas fa-user"></i> Username
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="UserName"
+                                           class="form-control"
+                                           placeholder="Choose a username"
+                                           autocomplete="username"
+                                           aria-required="true"
+                                           data-validation-required="true" />
+                                    <div class="input-feedback">
+                                        <span asp-validation-for="UserName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
 
-                            <br />
-                            <br />
+                            <!-- Password Field -->
+                            <div class="form-group" style="margin-bottom:2.5rem">
+                                <label asp-for="Password" class="form-label">
+                                    <i class="fas fa-lock"></i> Password
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Password"
+                                           class="form-control"
+                                           placeholder="Create a strong password"
+                                           autocomplete="new-password"
+                                           aria-required="true"
+                                           data-validation-required="true" />
+                                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="Password">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <div class="input-feedback">
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Confirm Password Field -->
+                            <div class="form-group" style="margin-bottom:2.5rem">
+                                <label asp-for="ConfirmPassword" class="form-label">
+                                    <i class="fas fa-lock"></i> Confirm Password
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="ConfirmPassword"
+                                           class="form-control"
+                                           placeholder="Confirm your password"
+                                           autocomplete="new-password"
+                                           aria-required="true"
+                                           data-validation-required="true" />
+                                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="ConfirmPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <div class="input-feedback">
+                                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
 
+
+                            <!-- Submit Button -->
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-register">
+                                <span class="btn-text">Create Account</span>
+                                <span class="btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
                         </form>
-                        <a href="/Login" class="text-decoration-none">Having account!!</a>
+
+                     <!-- Social Login Options -->
+
+                     @*<div class="divider">
+                            <span>or</span>
+                        </div> 
+                      <div class="social-login">
+                            <button type="button" class="btn btn-social btn-google">
+                                <i class="fab fa-google"></i> Continue with Google
+                            </button>
+                            <button type="button" class="btn btn-social btn-facebook">
+                                <i class="fab fa-facebook-f"></i> Continue with Facebook
+                            </button>
+
+                        </div> *@
+                        <div class="login-link">
+                            <p>Already have an account? <a href="/Login" class="text-primary fw-bold">Sign in here</a></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -52,13 +128,33 @@
     </div>
 </section>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.querySelector('input[name="Password"]');
+        const confirmPasswordInput = document.querySelector('input[name="ConfirmPassword"]');
+
+        // Password visibility toggle
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetName = this.getAttribute('data-target');
+                const input = document.querySelector(`input[name="${targetName}"]`);
+                const icon = this.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    });
+</script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 }
-
-
-
-
-
-

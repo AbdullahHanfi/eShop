@@ -3482,7 +3482,10 @@
           "eShop.DAL": "1.0.0"
         },
         "runtime": {
-          "eShop.BLL.dll": {}
+          "eShop.BLL.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         },
         "compile": {
           "eShop.BLL.dll": {}
@@ -3494,7 +3497,10 @@
           "Microsoft.Extensions.Identity.Stores": "6.0.27"
         },
         "runtime": {
-          "eShop.Core.dll": {}
+          "eShop.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         },
         "compile": {
           "eShop.Core.dll": {}
@@ -3508,7 +3514,10 @@
           "eShop.Core": "1.0.0"
         },
         "runtime": {
-          "eShop.DAL.dll": {}
+          "eShop.DAL.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         },
         "compile": {
           "eShop.DAL.dll": {}

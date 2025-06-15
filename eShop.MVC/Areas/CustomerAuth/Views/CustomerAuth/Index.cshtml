@@ -1,47 +1,238 @@
 ﻿@model AccountDataViewModel
-
 @{
     ViewData["Title"] = "Profile";
 }
+<link rel="stylesheet" href="~/css/Profile.css" asp-append-version="true" />
 
-<form id="profile-form" method="post" enctype="multipart/form-data">
-    <div class="d-flex flex-wrap align-items-center  justify-content-evenly">
-        <div class="col-md-4 col-8">
-            <h4>@ViewData["Title"]</h4>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName"></label>
-                <input asp-for="UserName" class="form-control" disabled />
-            </div>
-            <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" disabled />
-            </div>
-            <button type="submit" style="margin-top:10px" class="btn btn-primary">Save</button>
+<div class="profile-container fade-in">
+    <div class="profile-header">
+        <div class="profile-header-content">
+            <h2 class="profile-title">
+                <i class="fas fa-user-circle me-2"></i>
+                My Profile
+            </h2>
+            <p class="profile-subtitle">Manage your account information and preferences</p>
         </div>
-        <div class="col-md-4  col-8">
-            <div class="form-group d-flex flex-column">
-                <label asp-for="ProfilePicture" style="font:500" class="w-100  form-label"></label>
-                @if (Model?.ProfilePicture != null)
-                {
-                    <img id="profilePicture" alt="profile" class="profile-picture" src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfilePicture))" />
-                }
-                else
-                {
-                    <img id="profilePicture" alt="profile" class="profile-picture" src="~/assets/DefualtPicture.jpg" />
-                }
-                <div class="custom-file mt-2">
-                    <input type="file"
-                           accept="ViewBag.accept"
-                           asp-for="ProfilePicture"
-                           class="form-control"
-                           onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
+    </div>
+
+    <form id="profile-form" method="post" enctype="multipart/form-data" class="profile-form">
+        <div class="profile-content">
+            <!-- Profile Picture Section -->
+            <div class="profile-picture-section">
+                <div class="picture-container">
+                    <div class="picture-wrapper">
+                        @if (Model?.ProfilePicture != null)
+                        {
+                            <img id="profilePicture"
+                                 alt="Profile Picture"
+                                 class="profile-picture"
+                                 src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfilePicture))" />
+                        }
+                        else
+                        {
+                            <img id="profilePicture"
+                                 alt="Default Profile Picture"
+                                 class="profile-picture"
+                                 src="~/assets/DefualtPicture.jpg" />
+                        }
+                        <div class="picture-overlay">
+                            <i class="fas fa-camera"></i>
+                            <span>Change Photo</span>
+                        </div>
+                    </div>
+
+                    <div class="picture-upload">
+                        <label for="fileInput" class="upload-label">
+                            <i class="fas fa-upload me-2"></i>
+                            Choose New Picture
+                        </label>
+                        <input type="file"
+                               accept="ViewBag.accept"
+                               asp-for="ProfilePicture"
+                               class="file-input"
+                               id="fileInput"
+                               onchange="handleFileSelect(this)" />
+                        <small class="upload-hint">JPG, PNG or GIF (Max 5MB)</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Information Section -->
+            <div class="profile-info-section">
+                <div class="info-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Account Information
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                        <div class="form-group">
+                            <label asp-for="UserName" class="form-label">
+                                <i class="fas fa-user me-2"></i>
+                                Username
+                            </label>
+                            <div class="input-wrapper">
+                                <input asp-for="UserName" class="form-control modern-input" readonly />
+                                <div class="input-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                            </div>
+                            <small class="form-hint">Username cannot be changed</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>
+                                Email Address
+                            </label>
+                            <div class="input-wrapper">
+                                <input asp-for="Email" class="form-control modern-input" readonly />
+                                <div class="input-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                            </div>
+                            <small class="form-hint">Contact support to change your email</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="profile-actions">
+                    <button type="submit" class="btn-primary-modern" id="saveBtn">
+                        <i class="fas fa-save me-2"></i>
+                        <span>Save Changes</span>
+                        <div class="btn-loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+
+                    <button type="button" class="btn-secondary-modern" onclick="resetForm()">
+                        <i class="fas fa-undo me-2"></i>
+                        Reset
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
 
+<!-- Success/Error Messages -->
+<div id="messageContainer" class="message-container" style="display: none;">
+    <div class="alert-modern" id="alertMessage">
+        <i class="fas fa-check-circle me-2"></i>
+        <span id="messageText"></span>
+        <button type="button" class="close-btn" onclick="hideMessage()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    function handleFileSelect(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                showMessage('File size must be less than 5MB', 'error');
+                input.value = '';
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                showMessage('Please select a valid image file', 'error');
+                input.value = '';
+                return;
+            }
+
+            // Update preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePicture').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            showMessage('Image selected successfully', 'success');
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('profile-form').reset();
+        // Reset to original image if needed
+        location.reload();
+    }
+
+    function showMessage(text, type = 'success') {
+        const container = document.getElementById('messageContainer');
+        const alert = document.getElementById('alertMessage');
+        const messageText = document.getElementById('messageText');
+
+        messageText.textContent = text;
+
+        // Update alert styling based on type
+        if (type === 'error') {
+            alert.style.background = '#fef2f2';
+            alert.style.borderColor = '#fecaca';
+            alert.style.color = '#dc2626';
+            alert.querySelector('i').className = 'fas fa-exclamation-circle me-2';
+        } else {
+            alert.style.background = '#f0fdf4';
+            alert.style.borderColor = '#bbf7d0';
+            alert.style.color = '#166534';
+            alert.querySelector('i').className = 'fas fa-check-circle me-2';
+        }
+
+        container.style.display = 'block';
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            hideMessage();
+        }, 5000);
+    }
+
+    function hideMessage() {
+        const container = document.getElementById('messageContainer');
+        container.style.display = 'none';
+    }
+
+    // Form submission handling
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+        const saveBtn = document.getElementById('saveBtn');
+        const btnText = saveBtn.querySelector('span');
+        const btnLoading = saveBtn.querySelector('.btn-loading');
+
+        // Show loading state
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'inline-block';
+        saveBtn.disabled = true;
+
+        // Note: In real implementation, you'd handle the actual form submission here
+        // For now, we'll simulate the loading state
+        setTimeout(() => {
+            btnText.style.display = 'inline-block';
+            btnLoading.style.display = 'none';
+            saveBtn.disabled = false;
+            showMessage('Profile updated successfully!', 'success');
+        }, 2000);
+    });
+
+    // Navbar scroll effect (if navbar exists)
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.modern-navbar');
+        if (navbar) {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        }
+    });
+</script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

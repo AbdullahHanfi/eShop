@@ -48,11 +48,6 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MV
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.MvcApplicationPartsAssemblyInfo.cache
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.RazorAssemblyInfo.cache
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.RazorAssemblyInfo.cs
-D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets\msbuild.eShop.MVC.Microsoft.AspNetCore.StaticWebAssets.props
-D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets\msbuild.build.eShop.MVC.props
-D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.eShop.MVC.props
-D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.eShop.MVC.props
-D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets.pack.json
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets.build.json
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets.development.json
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
@@ -563,3 +558,11 @@ D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\refs\Mic
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\refs\Microsoft.Extensions.Identity.Stores.dll
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.sourcelink.json
 D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\eShop.MVC.csproj.Up2Date
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\bin\Debug\net6.0\eShop.MVC.staticwebassets.endpoints.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\rpswa.dswa.cache.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\rjimswa.dswa.cache.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\rjsmrazor.dswa.cache.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\rjsmcshtml.dswa.cache.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets.build.json.cache
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets.build.endpoints.json
+D:\courses for programing\dotNet\9.MVC\eShop\eShop.MVC\obj\Debug\net6.0\staticwebassets.upToDateCheck.txt
