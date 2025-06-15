@@ -125,4 +125,7 @@ Desktop.ini
 *.vspscc
 *.vssscc
 _UpgradeReport_Files/
-ProfileImage
+ProfileImage/
+bin/
+obj/
+TestResults/
