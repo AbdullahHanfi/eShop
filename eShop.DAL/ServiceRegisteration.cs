@@ -1,6 +1,7 @@
 ﻿using eShop.Core.Entities;
 using eShop.DAL.Interface;
 using eShop.DAL.Repositories.implementation;
+using eShop.DAL.Repositories.Interface;
 using eShop.DAL.Seeds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

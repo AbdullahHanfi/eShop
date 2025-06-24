@@ -1,0 +1,260 @@
+﻿/* Matching your theme styles */
+.modern-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+    .modern-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+.modern-card-header {
+    padding: 1rem 1.5rem;
+    background: rgba(248, 250, 252, 0.8);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.gradient-header {
+    background: var(--bg-gradient);
+}
+
+.modern-card-body {
+    padding: 1.5rem;
+}
+
+.modern-input {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: rgba(248, 250, 252, 0.8);
+    transition: all 0.3s ease;
+}
+
+    .modern-input:focus {
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+.sticky-card {
+    position: sticky;
+    top: 80px;
+}
+
+/* Image Gallery Styles */
+.image-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+    .image-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+.image-wrapper {
+    position: relative;
+    padding-top: 100%;
+    overflow: hidden;
+}
+
+.product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-card:hover .image-overlay {
+    opacity: 1;
+}
+
+.delete-label {
+    background: white;
+    color: #dc3545;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delete-checkbox:checked + .delete-label {
+    background: #dc3545;
+    color: white;
+}
+
+.image-info {
+    padding: 0.75rem;
+    text-align: center;
+    background: rgba(248, 250, 252, 0.8);
+}
+
+/* Marked for deletion */
+.image-item.marked-for-deletion {
+    opacity: 0.5;
+}
+
+    .image-item.marked-for-deletion .image-card {
+        position: relative;
+    }
+
+        .image-item.marked-for-deletion .image-card::after {
+            content: 'DELETED';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.5rem;
+            z-index: 10;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+/* Preview Styles */
+.preview-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+    box-shadow: var(--shadow-sm);
+}
+
+    .preview-item img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+    }
+
+.remove-preview {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
+}
+
+    .remove-preview:hover {
+        background: #dc3545;
+        color: white;
+        transform: scale(1.1);
+    }
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .sticky-card {
+        position: relative;
+        top: 0;
+    }
+}
+
+
+/* Additional styles for SweetAlert to match theme */
+.modern-swal {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+    .modern-swal .swal2-title {
+        font-weight: 600;
+        color: var(--secondary-color);
+    }
+
+    .modern-swal .swal2-content {
+        color: var(--secondary-color);
+    }
+
+    .modern-swal .swal2-confirm {
+        background: var(--bg-gradient) !important;
+        border-radius: 25px !important;
+        padding: 0.5rem 2rem !important;
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+    }
+
+        .modern-swal .swal2-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+/* Ripple animation */
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Animation for fade in */
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading state for images */
+.image-loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}

@@ -1,21 +1,22 @@
 ﻿using AutoMapper;
 using eShop.BLL.Services.Abstraction;
+using eShop.BLL.ViewModels;
 using eShop.Core.Entities;
 using eShop.DAL.Interface;
+using eShop.DAL.Utilities;
+using eShop.MVC.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NToastNotify;
-using eShop.BLL.ViewModels;
-using eShop.DAL.Utilities;
 using Microsoft.Extensions.Options;
+using NToastNotify;
 
-namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
+namespace eShop.MVC.Areas.Auth.Controllers
 {
 
-    [Area("CustomerAuth")]
+    [Area("Auth")]
     [AllowAnonymous]
-    public class CustomerAuthController : Controller
+    public class AuthController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -25,8 +26,7 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
         private readonly PhotoSettings _photoSettings;
         private readonly IImageServices _imageService;
 
-
-        public CustomerAuthController(IImageServices ImageServices, IOptions<PhotoSettings> PhotoSettings, IUnitOfWork UnitOfWork, IMapper mapper, SignInManager<ApplicationUser> signInManager, IAccountServies accountServies, IToastNotification toastNotification)
+        public AuthController(IImageServices ImageServices, IOptions<PhotoSettings> PhotoSettings, IUnitOfWork UnitOfWork, IMapper mapper, SignInManager<ApplicationUser> signInManager, IAccountServies accountServies, IToastNotification toastNotification)
         {
             _unitOfWork = UnitOfWork;
             _mapper = mapper;
@@ -35,11 +35,11 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
             _toastNotification = toastNotification;
             _photoSettings = PhotoSettings.Value;
             _imageService = ImageServices;
-
         }
 
         [Authorize]
         [Route("Account")]
+        [RedirectIfNotAuthenticated]
         public async Task<IActionResult> Index()
         {
             var user = await _unitOfWork.Users.GetUserAsync(User);
@@ -58,6 +58,7 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
         }
 
         [HttpPost("Account")]
+        [RedirectIfNotAuthenticated]
         public async Task<IActionResult> Index(EditAccountDataViewModel model)
         {
             var user = await _unitOfWork.Users.GetUserAsync(User);
@@ -92,6 +93,7 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
 
 
         [Route("Register")]
+        [RedirectIfAuthenticated]
         public ActionResult Register()
             => View(new RegisterViewModel());
 
@@ -125,6 +127,7 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
 
 
         [Route("Login")]
+        [RedirectIfAuthenticated]
         public ActionResult Login()
             => View(new LoginViewModel() { ReturnUrl = HttpContext.Request.Query["returnUrl"] });
 
@@ -135,29 +138,36 @@ namespace eShop.MVC.Areas.AuthCustomerAuth.Controllers
             if (!ModelState.IsValid)
                 return View(model);
             var user = await _accountServies.UserByEmailOrName(model.Email);
+            bool IsUser = true;
 
             if (user is null)
             {
-                ModelState.AddModelError("", "Email or Password is worng");
-                return View(model);
+                ModelState.AddModelError("", "Invalid login attempt");
+                IsUser = false;
             }
-            if (!await _unitOfWork.Users.IsEmailConfirmedAsync(user))
+            if (IsUser && user is not null && !await _unitOfWork.Users.IsEmailConfirmedAsync(user))
             {
-                ModelState.AddModelError("", "Please confirm your membership with the link sent to your e-mail account.");
-                return View(model);
-            }
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
-            if (result.Succeeded)
-            {
-                _toastNotification.AddSuccessToastMessage("Welcame Back :)");
-                return LocalRedirect(model?.ReturnUrl ?? "~/");
+                ModelState.AddModelError("", "Invalid login attempt");
+                IsUser = false;
             }
 
-            ModelState.AddModelError("", "The username or password entered is incorrect");
+            if (IsUser)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
+
+                if (result is not null && result.Succeeded)
+                {
+                    _toastNotification.AddSuccessToastMessage("Welcome Back :)");
+                    return LocalRedirect(model?.ReturnUrl ?? "~/");
+                }
+            }
+
+            ModelState.AddModelError("", "Invalid login attempt");
             return View(model);
         }
 
         [Route("Logout")]
+        [RedirectIfNotAuthenticated]
         public async Task<IActionResult> Logout()
         {
             string returnurl = HttpContext.Request.Query["returnUrl"];

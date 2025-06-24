@@ -16,6 +16,7 @@ namespace eShop.BLL
             services.AddScoped<IAccountServies, AccountServies>();
             services.AddScoped<IImageServices, ImageServices>();
             services.AddAutoMapper(typeof(AccountProfile));
+            services.AddAutoMapper(typeof(ProductProfile));
         }
     }
 }

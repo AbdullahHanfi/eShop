@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace eShop.Core.Utilities
 {
     public static class StringConstants
     {
-        public static int MaxSize { get; } = 500;
+        public const int MaxSize  = 500;
     }
+    public static class Page
+    {
+        public const int MaxElementsInPage = 5;
+    }
+
 }

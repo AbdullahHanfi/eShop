@@ -8,8 +8,8 @@ namespace eShop.Core.Utilities
 {
     public static class Roles
     {
-        public static string SuperAdmin { get; } = "SuperAdmin";
-        public static string Admin { get; } = "Admin";
-        public static string Customer { get; } = "Customer";
+        public const string SuperAdmin = "SuperAdmin";
+        public const string Admin = "Admin";
+        public const string Customer = "Customer";
     }
 }

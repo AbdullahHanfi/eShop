@@ -1,7 +1,7 @@
 ﻿using eShop.Core.Entities;
 using System.Linq.Expressions;
 
-namespace eShop.DAL.Interface
+namespace eShop.DAL.Repositories.Interface
 {
     public interface IBaseRepository<TEntity> 
         where TEntity : BaseEntity
@@ -47,5 +47,8 @@ namespace eShop.DAL.Interface
         Task<int> CountAsync();
         Task<int> CountAsync(Expression<Func<TEntity, bool>> criteria);
 
+        IEnumerable<TEntity> Skip(int count);
+        IEnumerable<TEntity> Take(int count);
+        IEnumerable<TEntity> Include(string navigationPropert);
     }
 }

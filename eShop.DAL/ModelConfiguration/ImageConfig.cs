@@ -14,12 +14,8 @@ namespace eShop.DAL.ModelConfiguration
                 .HasDefaultValueSql("NEWID()");
 
             builder.Property(e => e.imgPath)
-                .HasMaxLength(StringConstants.MaxSize)
                 .IsRequired();
 
-            builder.Property(e => e.imgName)
-                .HasMaxLength(StringConstants.MaxSize)
-                .IsRequired();
 
             builder.HasOne<Product>()
             .WithMany(e => e.Images)

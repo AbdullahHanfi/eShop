@@ -1,4 +1,5 @@
 ﻿using eShop.Core.Entities;
+using eShop.DAL.Repositories.Interface;
 
 namespace eShop.DAL.Interface
 {

@@ -2,6 +2,7 @@
 using eShop.DAL.Interface;
 using eShop.DAL.Data;
 using Microsoft.AspNetCore.Identity;
+using eShop.DAL.Repositories.Interface;
 
 namespace eShop.DAL.Repositories.implementation
 {

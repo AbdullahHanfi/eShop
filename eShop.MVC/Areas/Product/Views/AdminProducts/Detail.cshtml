@@ -1,0 +1,292 @@
+﻿@model eShop.BLL.ViewModels.Product.ProductViewModel
+
+@{
+    ViewData["Title"] = "Product Details - " + Model.Name;
+}
+@section style {
+    <link rel="stylesheet" href="~/css/AdminProduct/EditProduct.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/AdminProduct/DetailProduct.css" asp-append-version="true" />
+
+}
+<div class="admin-container">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-modern">
+                <li class="breadcrumb-item">
+                    <a asp-action="Index" asp-controller="Home" asp-area="" class="text-decoration-none">
+                        <i class="bi bi-house"></i> Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-action="Index" class="text-decoration-none">
+                        <i class="bi bi-grid"></i> Products
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-eye"></i> Product Details
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Product Detail Card -->
+        <div class="detail-card fade-in">
+            <!-- Header -->
+            <div class="detail-header">
+                <div class="detail-title">@Model.Name</div>
+            </div>
+
+            <!-- Body -->
+            <div class="detail-body">
+                <div class="info-grid">
+                    <!-- Pricing Information -->
+                    <div class="info-section">
+                        <div class="section-title">
+                            <i class="bi bi-currency-dollar"></i>
+                            Pricing Information
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-tag"></i>
+                                Current Price
+                            </div>
+                            <div class="info-value price-display">
+                                $@Model.CurrentPrice.ToString("N2")
+                            </div>
+                        </div>
+                        @if (Model.PrevPrice.HasValue && Model.PrevPrice > Model.CurrentPrice)
+                        {
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="bi bi-tag-fill"></i>
+                                    Previous Price
+                                </div>
+                                <div class="info-value" style="text-decoration: line-through; color: #9ca3af;">
+                                    $@Model.PrevPrice.Value.ToString("N2")
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="bi bi-percent"></i>
+                                    Discount
+                                </div>
+                                <div class="info-value" style="color: var(--success-color);">
+                                    @(Math.Round(((Model.PrevPrice.Value - Model.CurrentPrice) / Model.PrevPrice.Value) * 100, 1))% OFF
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Inventory Information -->
+                    <div class="info-section">
+                        <div class="section-title">
+                            <i class="bi bi-boxes"></i>
+                            Inventory Status
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-stack"></i>
+                                Quantity in Stock
+                            </div>
+                            <div class="info-value">
+                                <span class="stock-badge @(Model.Quantity > 50 ? "stock-high" : Model.Quantity > 10 ? "stock-medium" : "stock-low")">
+                                    @Model.Quantity Units
+                                </span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-activity"></i>
+                                Stock Status
+                            </div>
+                            <div class="info-value">
+                                @if (Model.Quantity > 50)
+                                {
+                                    <span class="badge bg-success">In Stock</span>
+                                }
+                                else if (Model.Quantity > 10)
+                                {
+                                    <span class="badge bg-warning">Low Stock</span>
+                                }
+                                else if (Model.Quantity > 0)
+                                {
+                                    <span class="badge bg-danger">Very Low Stock</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-dark">Out of Stock</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating Information -->
+                    <div class="info-section">
+                        <div class="section-title">
+                            <i class="bi bi-star"></i>
+                            Customer Rating
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-star-fill"></i>
+                                Average Rating
+                            </div>
+                            <div class="info-value">
+                                <div class="rating-display">
+                                    <div class="stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <i class="bi bi-star-fill star @(i <= Model.Rate ? "" : "empty")"></i>
+                                        }
+                                    </div>
+                                    <span class="ms-2">@Model.Rate.ToString("N1")/5.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Description -->
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="info-section description-section">
+                            <div class="section-title">
+                                <i class="bi bi-file-text"></i>
+                                Product Description
+                            </div>
+                            <div class="description-content">
+                                @Model.Description
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="modern-card mb-4">
+                    <div class="modern-card-header gradient-header">
+                        <h5 class="mb-0 text-white"><i class="bi bi-images me-2"></i>Current Product Images</h5>
+                    </div>
+                    <div class="modern-card-body">
+                        <div id="existingImagesContainer" class="row g-3">
+                            @if (Model.Images != null && Model.Images.Any())
+                            {
+                                for (int i = 0; i < Model.Images.Count; i++)
+                                {
+                                    var imageBase64 = Convert.ToBase64String(Model.Images[i]);
+
+                                    <div class="col-md-4 col-sm-6 image-item" data-index="@i">
+                                        <div class="image-card">
+                                            <div class="image-wrapper">
+                                                <img src="data:image/jpeg;base64,@imageBase64"
+                                                     class="product-image"
+                                                     alt="Product Image @(i + 1)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12 text-center text-muted py-5">
+                                    <i class="bi bi-image fs-1"></i>
+                                    <p>No existing images</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a asp-action="Edit" asp-route-Id="@Model.Id" class="btn-modern btn-primary-modern">
+                        <i class="bi bi-pencil"></i>
+                        Edit Product
+                    </a>
+
+                    <a asp-action="Index" asp-route-Id="@Model.Id" class="btn-modern btn-secondary-modern">
+                        <i class="bi bi-arrow-left"></i>
+                        Back to List
+                    </a>
+
+                    <button type="button" class="btn-modern btn-danger-modern" onclick="confirmDelete('@Model.Id')">
+                        <i class="bi bi-trash"></i>
+                        Delete Product
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // Enhanced JavaScript functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading animation to navigation
+            if (window.eShopNav && window.eShopNav.showLoading) {
+                window.eShopNav.showLoading();
+            }
+
+            // Animate info sections on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeIn 0.6s ease-in-out';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.info-section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Add pulse animation to low stock items
+            @if (Model.Quantity <= 10)
+            {
+                                    <text>
+                                        const stockBadge = document.querySelector('.stock-badge');
+                                        if (stockBadge) {
+                                            stockBadge.classList.add('pulse-animation');
+                                        }
+                                    </text>
+            }
+        });
+
+        // Delete Confirmation
+        function confirmDelete(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteProduct(productId);
+                }
+            });
+        }
+
+        function deleteProduct(productId) {
+            fetch(`/admin/product/delete/${productId}`, {
+                method: 'DELETE'
+            })
+            .then(result => {
+                if (result.ok) {
+                    Swal.fire('Deleted!', 'Product has been deleted.', 'success');
+                } else {
+                    Swal.fire('Error!', 'Failed to delete product.', 'error');
+                }
+            })
+            .catch(error => {
+                Swal.fire('Error!', 'An error occurred while deleting.', 'error');
+            });
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

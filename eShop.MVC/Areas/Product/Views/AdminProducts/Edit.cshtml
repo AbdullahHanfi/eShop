@@ -1,0 +1,337 @@
+﻿@model eShop.BLL.ViewModels.Product.EditProductViewModel
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+@section style {
+    <link rel="stylesheet" href="~/css/AdminProduct/EditProduct.css" asp-append-version="true" />
+}
+
+<div class="container mt-4 fade-in">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold" style="background: var(--bg-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Product
+                </h2>
+                <a asp-action="Index" class="auth-btn auth-btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Edit" enctype="multipart/form-data" id="editProductForm">
+        <div class="row">
+            <!-- Left Column - Product Details -->
+            <div class="col-lg-8">
+                <div class="modern-card mb-4">
+                    <div class="modern-card-header">
+                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Product Information</h5>
+                    </div>
+                    <div class="modern-card-body">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <input asp-for="Id" type="hidden" />
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Name" class="form-control modern-input" placeholder="Enter product name" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold text-secondary"></label>
+                            <textarea asp-for="Description" class="form-control modern-input" rows="4" placeholder="Enter product description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Quantity" class="form-label fw-semibold text-secondary"></label>
+                                <input asp-for="Quantity" type="number" class="form-control modern-input" placeholder="0" />
+                                <span asp-validation-for="Quantity" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="CurrentPrice" class="form-label fw-semibold text-secondary">
+                                    <i class="bi bi-currency-dollar"></i> Current Price
+                                </label>
+                                <input asp-for="CurrentPrice" type="number" step="0.01" class="form-control modern-input" placeholder="0.00" />
+                                <span asp-validation-for="CurrentPrice" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="PrevPrice" class="form-label fw-semibold text-secondary">
+                                    <i class="bi bi-currency-dollar"></i> Previous Price
+                                </label>
+                                <input asp-for="PrevPrice" type="number" step="0.01" class="form-control modern-input" placeholder="0.00" />
+                                <span asp-validation-for="PrevPrice" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Images Section -->
+                <div class="modern-card mb-4">
+                    <div class="modern-card-header gradient-header">
+                        <h5 class="mb-0 text-white"><i class="bi bi-images me-2"></i>Current Product Images</h5>
+                    </div>
+                    <div class="modern-card-body">
+                        <div id="existingImagesContainer" class="row g-3">
+                            @if (Model.SendProductImages != null && Model.SendProductImages.Any())
+                            {
+                                for (int i = 0; i < Model.SendProductImages.Count; i++)
+                                {
+                                    var imageId = Model.IDProductImages[i];
+                                    var imageBase64 = Convert.ToBase64String(Model.SendProductImages[i]);
+
+                                    <div class="col-md-4 col-sm-6 image-item" data-index="@i">
+                                        <div class="image-card">
+                                            <div class="image-wrapper">
+                                                <img src="data:image/jpeg;base64,@imageBase64"
+                                                     class="product-image"
+                                                     alt="Product Image @(i + 1)">
+                                                <div class="image-overlay">
+                                                    <div class="form-check">
+                                                        <input type="checkbox"
+                                                               class="form-check-input delete-checkbox"
+                                                               id="delete_@i"
+                                                               data-index="@i">
+                                                        <label class="form-check-label delete-label"
+                                                               for="delete_@i">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="image-info">
+                                                <small class="text-muted">Image @(i + 1)</small>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="IDProductImages[@i]" value="@imageId" />
+                                        <input type="hidden" name="IsDeletedProductImages[@i]" value="false" class="deleted-flag" />
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12 text-center text-muted py-5">
+                                    <i class="bi bi-image fs-1"></i>
+                                    <p>No existing images</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Upload New Images -->
+            <div class="col-lg-4">
+                <div class="modern-card sticky-card">
+                    <div class="modern-card-header gradient-header">
+                        <h5 class="mb-0 text-white"><i class="bi bi-cloud-upload me-2"></i>Upload New Images</h5>
+                    </div>
+                    <div class="modern-card-body">
+                        <div class="mb-3">
+                            <label for="imageUpload" class="form-label fw-semibold text-secondary">Add New Images</label>
+                            <input type="file"
+                                   class="form-control modern-input"
+                                   id="imageUpload"
+                                   name="BackProductImages"
+                                   multiple
+                                   accept="image/*">
+                            <small class="text-muted">You can select multiple images</small>
+                        </div>
+
+                        <div id="newImagesPreview" class="row g-2 mt-3">
+                            <!-- Preview of new images will be shown here -->
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="cart-btn">
+                                <i class="bi bi-save me-2"></i>Save Changes
+                            </button>
+                            <a asp-action="Index" class="auth-btn auth-btn-secondary text-center">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function() {
+            // Handle delete checkboxes
+            $('.delete-checkbox').on('change', function() {
+                const index = $(this).data('index');
+                const imageItem = $(this).closest('.image-item');
+                const deletedFlag = imageItem.find('.deleted-flag');
+
+                if ($(this).is(':checked')) {
+                    imageItem.addClass('marked-for-deletion');
+                    deletedFlag.val('true');
+
+                    // Show confirmation using your theme's style
+                    window.eShopNav.showLoading();
+
+                    Swal.fire({
+                        title: 'Image marked for deletion',
+                        text: 'This image will be deleted when you save changes.',
+                        icon: 'info',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        customClass: {
+                            popup: 'modern-swal'
+                        }
+                    });
+                } else {
+                    imageItem.removeClass('marked-for-deletion');
+                    deletedFlag.val('false');
+                }
+            });
+
+            // Handle new image preview
+            $('#imageUpload').on('change', function(e) {
+                const files = e.target.files;
+                const previewContainer = $('#newImagesPreview');
+                previewContainer.empty();
+
+                if (files.length > 0) {
+                                    previewContainer.html('<h6 class="mb-2 text-secondary">New Images Preview:</h6>');
+                }
+
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        const previewHtml = `
+                            <div class="col-6 preview-item" data-file-index="${i}">
+                                <div class="position-relative">
+                                    <img src="${e.target.result}"
+                                         class="img-fluid rounded"
+                                         alt="Preview ${i + 1}">
+                                    <span class="remove-preview" onclick="removePreview(${i})">
+                                        <i class="bi bi-x"></i>
+                                    </span>
+                                </div>
+                                <small class="d-block text-center mt-1 text-muted">${file.name}</small>
+                            </div>
+                        `;
+                        previewContainer.append(previewHtml);
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Form submission validation
+            $('#editProductForm').on('submit', function(e) {
+                const existingImages = $('.image-item:not(.marked-for-deletion)').length;
+                const newImages = $('#imageUpload')[0].files.length;
+
+                if (existingImages === 0 && newImages === 0) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'No Images!',
+                        text: 'Product must have at least one image.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#2563eb',
+                        customClass: {
+                            popup: 'modern-swal'
+                        }
+                    });
+                    return false;
+                }
+
+                // Show loading
+                window.eShopNav.showLoading();
+
+                Swal.fire({
+                    title: 'Saving...',
+                    text: 'Please wait while we update your product.',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    },
+                    customClass: {
+                        popup: 'modern-swal'
+                    }
+                });
+            });
+
+            // Add smooth scroll behavior
+            $('.modern-card').on('mouseenter', function() {
+                $(this).css('transform', 'translateY(-2px)');
+            }).on('mouseleave', function() {
+                $(this).css('transform', 'translateY(0)');
+            });
+
+            // Initialize tooltips if needed
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+
+        // Remove preview function
+        function removePreview(index) {
+            const input = document.getElementById('imageUpload');
+            const dt = new DataTransfer();
+            const files = input.files;
+
+            for (let i = 0; i < files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(files[i]);
+                }
+            }
+
+            input.files = dt.files;
+            $('#imageUpload').trigger('change');
+        }
+
+        // Add ripple effect to buttons (matching your theme)
+        document.querySelectorAll('.cart-btn, .auth-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (e.target.type !== 'submit') return; // Skip for non-submit buttons
+
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.5);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                    z-index: 1000;
+                `;
+
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,403 @@
+﻿@model List<ProductViewModel>
+@{
+    ViewData["Title"] = "Products";
+}
+@section style{
+    <link rel="stylesheet" href="~/css/AdminProduct/IndexPage.css" asp-append-version="true" />
+}
+
+<div class="loading-bar"></div>
+
+<div class="container-fluid py-5 fade-in" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 100vh;">
+    <div class="container">
+     @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-4"></i>
+                <h3 class="text-muted mb-3">No Products Found</h3>
+                <p class="text-muted mb-4">Start building your catalog by adding your first product.</p>
+                <a asp-action="Add" class="btn cart-btn px-4 py-2 text-decoration-none">
+                    <i class="fas fa-plus me-2"></i>Create First Product
+                </a>
+            </div>
+        }
+    else {
+        <!-- Header Section -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold mb-3" style="background: var(--bg-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Our Premium Products
+            </h1>
+            <p class="lead text-muted mb-4">Discover our carefully curated collection</p>
+
+            <!-- Create New Button -->
+            <div class="d-flex justify-content-center mb-4">
+                <a asp-action="Add" class="btn cart-btn px-4 py-2 text-decoration-none">
+                    <i class="fas fa-plus me-2"></i>Create New Product
+                </a>
+            </div>
+
+            <!-- Search Container -->
+            <div class="search-container mx-auto mb-4">
+                <div class="position-relative">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="form-control search-input" placeholder="Search products..." id="productSearch">
+                </div>
+            </div>
+        </div>
+                
+        <!-- Pagination Section -->
+        <div class="d-flex justify-content-center mt-5">
+            <nav aria-label="Products pagination">
+                @{
+                    int currentPage = ViewBag.PageNumber ?? 1;
+                    int totalPages = ViewBag.Pages ?? 1;
+                    int startPage = Math.Max(1, currentPage - 2);
+                    int endPage = Math.Min(totalPages, currentPage + 2);
+                }
+        
+                <ul class="pagination pagination-lg shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                    <!-- First Page -->
+                    @if (currentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link border-0 px-3 py-2" asp-action="Index" asp-route-page="1" 
+                               style="background: #f8f9fa; color: #6c757d; transition: all 0.3s ease;">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Previous Page -->
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link border-0 px-3 py-2 @(currentPage == 1 ? "text-muted" : "")" 
+                           asp-action="Index" 
+                           asp-route-page="@(currentPage - 1)"
+                           style="background: #f8f9fa; color: #6c757d; transition: all 0.3s ease;">
+                            <i class="fas fa-chevron-left me-1"></i>
+                            <span class="d-none d-sm-inline">Previous</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link border-0 px-3 py-2 fw-semibold" 
+                               asp-action="Index" 
+                               asp-route-page="@i"
+                               style="@(i == currentPage ? 
+                                 "background: linear-gradient(135deg, #007bff, #0056b3); color: white; transform: scale(1.1); z-index: 2;" : 
+                                 "background: #f8f9fa; color: #495057;") transition: all 0.3s ease;">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Show ellipsis if there are more pages -->
+                    @if (endPage < totalPages - 1)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link border-0 px-3 py-2" style="background: #f8f9fa; color: #6c757d;">...</span>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link border-0 px-3 py-2" asp-action="Index" asp-route-page="@totalPages"
+                               style="background: #f8f9fa; color: #495057; transition: all 0.3s ease;">
+                                @totalPages
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Next Page -->
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link border-0 px-3 py-2 @(currentPage == totalPages ? "text-muted" : "")" 
+                           asp-action="Index" 
+                           asp-route-page="@(currentPage + 1)"
+                           style="background: #f8f9fa; color: #6c757d; transition: all 0.3s ease;">
+                            <span class="d-none d-sm-inline">Next</span>
+                            <i class="fas fa-chevron-right ms-1"></i>
+                        </a>
+                    </li>
+
+                    <!-- Last Page -->
+                    @if (currentPage < totalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link border-0 px-3 py-2" asp-action="Index" asp-route-page="@totalPages"
+                               style="background: #f8f9fa; color: #6c757d; transition: all 0.3s ease;">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Pagination Info -->
+        <div class="text-center mt-3">
+            <p class="text-muted small mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                Showing page <strong>@currentPage</strong> of <strong>@totalPages</strong>
+                @if (ViewBag.TotalItems != null)
+                {
+                    <span class="mx-2">•</span>
+                    <strong>@ViewBag.TotalItems</strong> 
+                    string x="total products";
+                    @x
+                }
+            </p>
+        </div>
+
+
+        <!-- Products Grid -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="productsContainer">
+            @foreach (var Item in Model)
+            {
+                <!-- Product Card -->
+                <div class="col product-card-wrapper" data-product-id="@Item.Id">
+                    <div class="card h-100 shadow-sm border-0 overflow-hidden position-relative" style="border-radius: 16px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+
+                        <!-- Product Image Section -->
+                        <div class="position-relative overflow-hidden" style="height: 250px;">
+                            @if (Item.Images != null && Item.Images.Any())
+                            {
+                                <div id="productCarousel@(Item.Id)" class="carousel slide h-100" data-bs-ride="carousel">
+                                    <div class="carousel-inner h-100">
+                                        @for (int i = 0; i < Item.Images.Count(); i++)
+                                        {
+                                            <div class="carousel-item @(i == 0 ? "active" : "") h-100">
+                                                <img src="data:image/*;base64,@(Convert.ToBase64String(Item.Images.ElementAt(i)))"
+                                                     class="d-block w-100 h-100 object-fit-scale rounded"
+                                                     alt="@Item.Name Image @(i + 1)"
+                                                     style="transition: transform 0.3s ease;">
+                                            </div>
+                                        }
+                                    </div>
+                                    @if (Item.Images.Count() > 1)
+                                    {
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel@(Item.Id)" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Previous</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel@(Item.Id)" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Next</span>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            }
+
+                            <!-- Stock Status Badge -->
+                            @if (Item.Quantity <= 0)
+                            {
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <span class="badge bg-danger px-3 py-2 rounded-pill">Out of Stock</span>
+                                </div>
+                            }
+                            else if (Item.Quantity <= 5)
+                            {
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <span class="badge bg-warning px-3 py-2 rounded-pill">Low Stock</span>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="card-body d-flex flex-column p-4">
+                            <!-- Product Title -->
+                            <h5 class="card-title fw-bold mb-3 text-dark" style="font-size: 1.25rem; line-height: 1.4;">
+                                @Item.Name
+                            </h5>
+
+                            <!-- Product Description -->
+                            <p class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                @Item.Description
+                                orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+
+                            </p>
+
+                            <!-- Product Stats -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-boxes text-primary me-2"></i>
+                                        <small class="text-muted">Qty: <strong class="text-dark">@Item.Quantity</strong></small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-2">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="@(i <= Item.Rate ? "text-warning" : "text-muted")" style="font-size: 0.75rem;">★</i>
+                                            }
+                                        </div>
+                                        <small class="text-muted">(@Item.Rate.ToString("F1"))</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pricing Section -->
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-end justify-content-between mb-3">
+                                    <div>
+                                        <h4 class="text-success fw-bold mb-0" style="font-size: 1.5rem;">
+                                            $@Item.CurrentPrice.ToString("F2")
+                                        </h4>
+                                        @if (Item.PrevPrice.HasValue && Item.PrevPrice > Item.CurrentPrice)
+                                        {
+                                            <small class="text-muted text-decoration-line-through">
+                                                $@Item.PrevPrice.Value.ToString("F2")
+                                            </small>
+                                            <span class="badge bg-success ms-2 rounded-pill">
+                                                @(Math.Round(((Item.PrevPrice.Value - Item.CurrentPrice) / Item.PrevPrice.Value) * 100))% OFF
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-grid gap-2 mt-3">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@Item.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit me-1"></i>Edit
+                                        </a>
+                                        <a asp-action="Detail" asp-route-id="@Item.Id" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-info-circle me-1"></i>Details
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('@Item.Id')">
+                                            <i class="fas fa-trash me-1"></i>Delete
+                                        </button>
+                                    </div>
+                                </div>
+                                @* <div class="d-grid gap-2">
+                                    @if (Item.Quantity > 0)
+                                    {
+                                        <button class="btn btn-primary fw-semibold py-2"
+                                                style="border-radius: 10px; transition: all 0.3s ease;"
+                                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'"
+                                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)'">
+                                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-outline-secondary py-2" disabled style="border-radius: 10px;">
+                                            <i class="fas fa-times me-2"></i>Out of Stock
+                                        </button>
+                                    }
+                                </div> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Enhanced interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Loading bar animation
+            const loadingBar = document.querySelector('.loading-bar');
+            loadingBar.style.width = '100%';
+            setTimeout(() => loadingBar.style.opacity = '0', 500);
+
+            // Product search functionality
+            // const productsContainer = document.getElementById('productsContainer');
+            // const searchInput = document.getElementById('productSearch');
+
+            // if (searchInput) {
+            //     searchInput.addEventListener('input', function() {
+            //         const searchTerm = this.value.toLowerCase();
+            //         const productCards = productsContainer.querySelectorAll('.product-card-wrapper');
+
+            //         productCards.forEach(card => {
+            //             const productName = card.querySelector('.card-title').textContent.toLowerCase();
+            //             const productDescription = card.querySelector('.text-muted')?.textContent.toLowerCase() || '';
+
+            //             if (productName.includes(searchTerm) || productDescription.includes(searchTerm)) {
+            //                 card.style.display = 'block';
+            //                 card.classList.add('fade-in');
+            //             } else {
+            //                 card.style.display = 'none';
+            //             }
+            //         });
+            //     });
+            // }
+
+            // Card hover effects
+            const productCards = document.querySelectorAll('.product-card-wrapper .card');
+            productCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                    this.style.boxShadow = 'var(--shadow-lg)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-sm)';
+                });
+            });
+
+            // Image hover zoom effect
+            const productImages = document.querySelectorAll('.carousel-item img');
+            productImages.forEach(img => {
+                img.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+
+                img.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+
+
+        // Delete Confirmation
+        function confirmDelete(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteProduct(productId);
+                }
+            });
+        }
+
+        function deleteProduct(productId) {
+            fetch(`/admin/product/delete/${productId}`, {
+                method: 'DELETE'
+            })
+            .then(result => {
+                if (result.ok) {
+                    Swal.fire('Deleted!', 'Product has been deleted.', 'success');
+                    document.querySelector(`[data-product-id="${productId}"]`).remove();
+                } else {
+                    Swal.fire('Error!', 'Failed to delete product.', 'error');
+                }
+            })
+            .catch(error => {
+                Swal.fire('Error!', 'An error occurred while deleting.', 'error');
+            });
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

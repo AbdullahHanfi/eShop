@@ -23,7 +23,7 @@ namespace eShop.DAL.ModelConfiguration
                 .HasMaxLength(StringConstants.MaxSize)
                 .IsRequired();
 
-            builder.Property(p => p.CurentPrice)
+            builder.Property(p => p.CurrentPrice)
             .HasColumnType("decimal(18,2)");
 
             builder.Property(p => p.PrevPrice)

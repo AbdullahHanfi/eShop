@@ -2,7 +2,7 @@
 using eShop.Core.Utilities;
 using System.Security.Claims;
 
-namespace eShop.DAL.Interface
+namespace eShop.DAL.Repositories.Interface
 {
     public interface IUserRepository
     {
@@ -16,6 +16,8 @@ namespace eShop.DAL.Interface
         Task<string> GeneratePasswordResetTokenAsync(ApplicationUser user);
         Task<IdentityOperationResult<ApplicationUser>> ResetPasswordAsync(ApplicationUser user, string token, string newPassword);
         Task<bool> IsEmailConfirmedAsync(ApplicationUser user);
+        Task<IList<string>> GetRolesAsync(ApplicationUser user);
+        Task<bool> IsInRoleAsync(ApplicationUser user, string Role);
         Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(ApplicationUser user, string Role);
         Task<IdentityOperationResult<ApplicationUser>> AddToRolesAsync(ApplicationUser user, IEnumerable<string> Roles);
         Task<IdentityOperationResult<ApplicationUser>> RemoveFromRolesAsync(ApplicationUser user, IEnumerable<string> Roles);

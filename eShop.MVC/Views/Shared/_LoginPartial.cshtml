@@ -2,36 +2,253 @@
 @inject IUnitOfWork UnitOfWork
 @inject IImageServices ImageServices
 
-<ul class="navbar-nav justify-content-end flex-row">
+@{
+    var currentUser = SignInManager.IsSignedIn(User) ? await UnitOfWork.Users.GetUserAsync(User) : null;
+    var userImage = currentUser?.imgPath != null ? await ImageServices.GetAsync(currentUser.imgPath) : null;
+}
 
+<style>
+    /* User Profile Styles */
+    .user-profile-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-profile-badge {
+        display: flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(37, 99, 235, 0.2);
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+        .user-profile-badge:hover {
+            background: rgba(37, 99, 235, 0.05);
+            border-color: rgba(37, 99, 235, 0.4);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
+        }
+
+    .avatar-container {
+        position: relative;
+        width: 32px;
+        height: 32px;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        border: 2px solid rgba(37, 99, 235, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .user-profile-badge:hover .avatar {
+        border-color: var(--primary-color);
+    }
+
+    .user-name {
+        color: var(--secondary-color);
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin: 0 0.5rem;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Auth Buttons */
+    .auth-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .auth-btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 25px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-btn-primary {
+        background: var(--bg-gradient);
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+        .auth-btn-primary:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+    .auth-btn-secondary {
+        background: transparent;
+        color: var(--secondary-color);
+        border: 2px solid rgba(37, 99, 235, 0.2);
+    }
+
+        .auth-btn-secondary:hover {
+            background: rgba(37, 99, 235, 0.05);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+    .logout-btn {
+        background: transparent;
+        color: var(--secondary-color);
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+    /* Mobile Styles */
+    @@media (max-width: 991.98px) {
+        .user-profile-section {
+            flex-direction: column;
+            width: 100%;
+            gap: 1rem;
+        }
+
+        .user-profile-badge {
+            width: 100%;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+        }
+
+        .auth-buttons {
+            flex-direction: column;
+            width: 100%;
+            gap: 0.5rem;
+        }
+
+        .auth-btn, .logout-btn {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
+    }
+
+    /* Loading Skeleton */
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+
+    @@keyframes loading {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+</style>
+
+<div class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item  ">
-            <span style="width:fit-content" class="badge d-flex align-items-center p-1 pe-2 text-dark-emphasis bg-light-subtle border border-dark-subtle rounded-pill">
-                <a class="nav-link text-dark" href="/Account">
-                    @if (string.IsNullOrEmpty(UnitOfWork.Users.GetUserAsync(User).Result?.imgPath) is false)
+        <div class="user-profile-section">
+            <a href="/Account" class="user-profile-badge">
+                <div class="avatar-container">
+                    @if (userImage != null)
                     {
-                        <img class="avatar rounded-circle" alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(await ImageServices.GetAsync(UnitOfWork.Users.GetUserAsync(User).Result.imgPath)))" />
+                        <img class="avatar rounded-circle"
+                             alt="@currentUser?.UserName"
+                             src="data:image/*;base64,@Convert.ToBase64String(userImage)"
+                             loading="lazy" />
                     }
                     else
                     {
-                        <img alt="profile" class="avatar rounded-circle" src="~/assets/DefualtPicture.jpg" />
+                        <img class="avatar rounded-circle"
+                             alt="Default profile"
+                             src="~/assets/DefualtPicture.jpg"
+                             loading="lazy" />
                     }
-                    Hello @User.Identity?.Name!
-                </a>
-            </span>
-        </li>
-        <li class="nav-item fw-bold" style="padding: 0rem 1rem;">
-            <a class="nav-link text-dark" href="/logout">Logout</a>
-        </li>
+                </div>
+                <span class="user-name">@User.Identity?.Name</span>
+            </a>
+
+            <a href="/logout" class="logout-btn">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            </a>
+        </div>
     }
     else
     {
-        <li class="nav-item h5">
-            <a class="nav-link text-dark" href="/Register">Register</a>
-        </li>
-        <li class="nav-item h5" style="padding: 0rem 1rem;">
-            <a class="nav-link text-dark" href="/Login">Login</a>
-        </li>
+        <div class="auth-buttons">
+            <a asp-action="Login" asp-controller="Auth" asp-area="Auth" class="auth-btn auth-btn-secondary">
+                <i class="bi bi-person me-1"></i>Login
+            </a>
+            <a asp-action="Register" asp-controller="Auth" asp-area="Auth" class="auth-btn auth-btn-primary">
+                <i class="bi bi-person-plus me-1"></i>Register
+            </a>
+        </div>
     }
-</ul>
+</div>
+
+@section Scripts {
+    <script>
+        // Preload user avatar for better performance
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatar = document.querySelector('.avatar');
+            if (avatar && avatar.src.includes('base64')) {
+                // Create a new image to preload
+                const img = new Image();
+                img.src = avatar.src;
+            }
+        });
+
+        // Add ripple effect to buttons
+        document.querySelectorAll('.auth-btn, .logout-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.5);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                `;
+
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    </script>
+}

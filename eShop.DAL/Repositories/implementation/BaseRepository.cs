@@ -1,8 +1,9 @@
 ﻿using eShop.Core.Entities;
 using eShop.DAL.Data;
-using eShop.DAL.Interface;
+using eShop.DAL.Repositories.Interface;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -38,30 +39,24 @@ namespace eShop.DAL.Repositories.implementation
             }
             return tableName;
         }
-        protected string GetKeyColumnName(Type entity)
+
+        // Update from reflection to EF metaData for reading fluent api
+        protected string GetKeyColumnName(Type entityType)
         {
-            PropertyInfo[] properties = entity.GetProperties();
+            var entity = _context.Model.FindEntityType(entityType);
+            if (entity == null)
+                return string.Empty;
 
-            foreach (PropertyInfo property in properties)
-            {
-                object[] keyAttributes = property.GetCustomAttributes(typeof(KeyAttribute), true);
+            var key = entity.FindPrimaryKey();
+            if (key == null || key.Properties.Count == 0)
+                return string.Empty;
 
-                if (keyAttributes != null && keyAttributes.Length > 0)
-                {
-                    object[] columnAttributes = property.GetCustomAttributes(typeof(ColumnAttribute), true);
+            var keyProperty = key.Properties[0];
 
-                    if (columnAttributes != null && columnAttributes.Length > 0)
-                    {
-                        ColumnAttribute columnAttribute = (ColumnAttribute)columnAttributes[0];
-                        return columnAttribute.Name;
-                    }
-                    else
-                    {
-                        return property.Name;
-                    }
-                }
-            }
-            return string.Empty;
+            var tableName = entity.GetTableName();
+            var schema = entity.GetSchema();
+
+            return keyProperty.GetColumnName(StoreObjectIdentifier.Table(tableName, schema));
         }
 
         protected string GetConnectionString()
@@ -75,7 +70,7 @@ namespace eShop.DAL.Repositories.implementation
                 using (var _connection = new SqlConnection(_CN))
                 {
                     string tableName = GetTableName(typeof(TEntity));
-                    string query = $"SELECT * FROM {tableName}";
+                    string query = $"SELECT * FROM {tableName} WHERE IsDeleted is false";
                     return _connection.Query<TEntity>(query);
                 }
             }
@@ -90,7 +85,7 @@ namespace eShop.DAL.Repositories.implementation
                 using (var _connection = new SqlConnection(_CN))
                 {
                     string tableName = GetTableName(typeof(TEntity));
-                    string query = $"SELECT * FROM {tableName}";
+                    string query = $"SELECT * FROM {tableName} WHERE IsDeleted = 'false'";
                     return await _connection.QueryAsync<TEntity>(query);
                 }
             }
@@ -98,7 +93,7 @@ namespace eShop.DAL.Repositories.implementation
             return null;
         }
 
-        public TEntity GetById(Guid id)
+        public TEntity GetById(Guid Id)
         {
             try
             {
@@ -106,15 +101,15 @@ namespace eShop.DAL.Repositories.implementation
                 {
                     string tableName = GetTableName(typeof(TEntity));
                     string idName = GetKeyColumnName(typeof(TEntity));
-                    string query = $"SELECT * FROM {tableName} where {idName} = {id}";
-                    return _connection.QueryFirstOrDefault<TEntity>(query);
+                    string query = $"SELECT * FROM {tableName} where {idName} = @Id AND IsDeleted = 'false'";
+                    return _connection.QueryFirstOrDefault<TEntity>(query, new { Id = Id });
                 }
             }
             catch (Exception ex) { }
             return null;
         }
 
-        public async Task<TEntity> GetByIdAsync(Guid id)
+        public async Task<TEntity> GetByIdAsync(Guid Id)
         {
             try
             {
@@ -122,8 +117,9 @@ namespace eShop.DAL.Repositories.implementation
                 {
                     string tableName = GetTableName(typeof(TEntity));
                     string idName = GetKeyColumnName(typeof(TEntity));
-                    string query = $"SELECT * FROM {tableName} where {idName} = {id}";
-                    return await _connection.QueryFirstOrDefaultAsync<TEntity>(query);
+                    string query = $"SELECT * FROM {tableName} where {idName} = @Id and IsDeleted = 'false'";
+
+                    return await _connection.QueryFirstOrDefaultAsync<TEntity>(query, new { Id = Id });
                 }
             }
             catch (Exception ex) { }
@@ -266,5 +262,13 @@ namespace eShop.DAL.Repositories.implementation
             return await _entity.CountAsync(criteria);
         }
 
+        public IEnumerable<TEntity> Skip(int count)
+            => _entity.Skip(count);
+        
+        public IEnumerable<TEntity> Take(int count)
+            => _entity.Take(count);
+
+        public IEnumerable<TEntity> Include(string navigationPropert)
+            => _entity.Include(navigationPropert);
     }
 }

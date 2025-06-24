@@ -1,8 +1,8 @@
 ﻿using eShop.Core.Entities;
-using eShop.DAL.Interface;
 using eShop.Core.Utilities;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using eShop.DAL.Repositories.Interface;
 
 namespace eShop.DAL.Repositories.implementation
 {
@@ -64,8 +64,15 @@ namespace eShop.DAL.Repositories.implementation
         public async Task<IdentityOperationResult<ApplicationUser>> DeleteAsync(ApplicationUser user)
             => await ConvertIdentityToCustome(await _userManager.DeleteAsync(user));
 
+        public async Task<IList<string>> GetRolesAsync(ApplicationUser user)
+            => await _userManager.GetRolesAsync(user);
+
+        public async Task<bool> IsInRoleAsync(ApplicationUser user, string Role)
+            => await _userManager.IsInRoleAsync(user, Role);
+
         private async Task<IdentityOperationResult<ApplicationUser>> ConvertIdentityToCustome(IdentityResult identityResult)
         {
+
             var result = new IdentityOperationResult<ApplicationUser>
             {
                 Succeeded = identityResult.Succeeded,
@@ -74,6 +81,5 @@ namespace eShop.DAL.Repositories.implementation
 
             return result;
         }
-
     }
 }

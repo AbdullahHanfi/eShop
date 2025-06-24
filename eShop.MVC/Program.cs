@@ -14,6 +14,9 @@ namespace eShop.MVC
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine($"Tunnel URL: " +
+              $"{Environment.GetEnvironmentVariable("VS_TUNNEL_URL")}");
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -46,18 +49,18 @@ namespace eShop.MVC
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             
             ServiceRegisterationBLL.Add(builder.Services);
-            //services.ConfigureApplicationCookie(options =>
-            //{
-            //    options.LoginPath = "/Account/Login";
-            //    options.LogoutPath = "/Account/Logout";
-            //    options.SlidingExpiration = true;
-            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-            //    options.Cookie = new CookieBuilder
-            //    {
-            //        HttpOnly = true,
-            //        Name = ".lisana.Security.Cookie"
-            //    };
-            //});
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Login";
+                options.LogoutPath = "/Logout";
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                options.Cookie = new CookieBuilder
+                {
+                    HttpOnly = true,
+                    Name = ".lisana.Security.Cookie"
+                };
+            });
 
             var app = builder.Build();
 
@@ -68,7 +71,6 @@ namespace eShop.MVC
                 {
                     var services = scope.ServiceProvider;
                     var Db = scope.ServiceProvider.GetRequiredService<eShopDbContext>();
-                    Db.Database.EnsureCreated();
 
                     var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();

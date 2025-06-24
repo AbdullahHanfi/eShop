@@ -21,7 +21,7 @@ namespace eShop.DAL.Repositories.implementation
                 using (var _connection = new SqlConnection(_CN))
                 {
                     string tableName = GetTableName(typeof(Image));
-                    string query = $"SELECT TOP 1 * FROM {tableName} where  TargetId = @ProductId ";
+                    string query = $"SELECT TOP 1 * FROM {tableName} where  TargetId = @ProductId and IsDeleted = 'false'";
                     return _connection.QueryFirstOrDefault<Image>(query, new { ProductId = productId });
                 }
             }
@@ -37,7 +37,7 @@ namespace eShop.DAL.Repositories.implementation
                 using (var _connection = new SqlConnection(_CN))
                 {
                     string tableName = GetTableName(typeof(Image));
-                    string query = $"SELECT TOP 1 * FROM {tableName} where TargetId = @ProductId ";
+                    string query = $"SELECT TOP 1 * FROM {tableName} where TargetId = @ProductId and IsDeleted = 'false'";
                     return await _connection.QueryFirstOrDefaultAsync<Image>(query, new { ProductId = productId });
                 }
             }
@@ -53,7 +53,7 @@ namespace eShop.DAL.Repositories.implementation
                 using (var _connection = new SqlConnection(_CN))
                 {
                     string tableName = GetTableName(typeof(Image));
-                    string query = $"SELECT * FROM {tableName} where TargetId = @ProductId ";
+                    string query = $"SELECT * FROM {tableName} where TargetId = @ProductId and IsDeleted = 'false'";
                     return _connection.Query<Image>(query, new { ProductId = productId });
                 }
             }
@@ -70,7 +70,7 @@ namespace eShop.DAL.Repositories.implementation
                 using (var _connection = new SqlConnection(_CN))
                 {
                     string tableName = GetTableName(typeof(Image));
-                    string query = $"SELECT * FROM {tableName} where TargetId = @ProductId ";
+                    string query = $"SELECT * FROM {tableName} where TargetId = @ProductId and IsDeleted = 'false'";
                     return await _connection.QueryAsync<Image>(query, new { ProductId = productId });
                 }
             }
@@ -78,6 +78,16 @@ namespace eShop.DAL.Repositories.implementation
             {
                 return Enumerable.Empty<Image>();
             }
+        }
+
+        public IEnumerable<Order> GetProductOrders(Guid productId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Order>> GetProductOrdersAsync(Guid productId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
