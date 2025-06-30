@@ -12,27 +12,34 @@ namespace eShop.BLL.Attributes
             _otherPropertyName = otherPropertyName;
             _errorMessage = errorMessage;
         }
-
+        
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var currentPrice = value as decimal?;
-            var otherProperty = validationContext.ObjectType.GetProperty(_otherPropertyName);
-
-            if (otherProperty == null)
-                return new ValidationResult($"Unknown property: {_otherPropertyName}");
-
-            var prevPrice = otherProperty.GetValue(validationContext.ObjectInstance) as decimal?;
-
-            if (!prevPrice.HasValue || prevPrice.Value == 0)
-                return ValidationResult.Success;
-
-            if (currentPrice.Value >= prevPrice.Value)
+            if (value is decimal currentPrice)
             {
-                return new ValidationResult(_errorMessage);
+                currentPrice = Convert.ToDecimal(value);
+
+                var otherProperty = validationContext.ObjectType.GetProperty(_otherPropertyName);
+
+                if (otherProperty == null)
+                    return new ValidationResult("Unknown property");
+
+                var prevPrice = otherProperty.GetValue(validationContext.ObjectInstance) as decimal?;
+
+                if (!prevPrice.HasValue || prevPrice.Value == 0)
+                    return ValidationResult.Success;
+
+                if (currentPrice >= prevPrice.Value)
+                {
+                    return new ValidationResult(_errorMessage);
+                }
+
+                return ValidationResult.Success;
             }
-
-
-            return ValidationResult.Success;
+            else
+            {
+                return new ValidationResult("The value must be a decimal.");
+            }
         }
     }
 }

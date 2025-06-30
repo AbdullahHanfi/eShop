@@ -15,6 +15,7 @@ namespace eShop.BLL.Services.src
         private readonly IUnitOfWork _UnitOfWork;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccessor;
+
         public AccountServies(IActionContextAccessor actionContextAccessor, IUrlHelperFactory urlHelperFactory, IUnitOfWork UnitOfWork, IHttpContextAccessor httpContextAccessor, IEmailSender mailServies)
         {
             _UnitOfWork = UnitOfWork;

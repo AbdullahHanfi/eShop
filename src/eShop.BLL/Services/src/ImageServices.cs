@@ -9,9 +9,14 @@ namespace eShop.BLL.Services.src
     public class ImageServices : IImageServices
     {
         private readonly PhotoSettings _photoSettings;
-        public ImageServices(IOptions<PhotoSettings> settings)
+        private readonly IGuidProvider _guidProvider;
+        private readonly IFileStorageService _fileStorageService;
+
+        public ImageServices(IOptions<PhotoSettings> settings, IGuidProvider guidProvider, IFileStorageService fileStorageService)
         {
             _photoSettings = settings.Value;
+            _guidProvider = guidProvider;
+            _fileStorageService = fileStorageService;
         }
         public async Task<byte[]> GetAsync(string path)
         {
@@ -38,18 +43,17 @@ namespace eShop.BLL.Services.src
                 throw new InvalidFileExtensionException(_photoSettings.AllowedExtensions.Aggregate((x, z) => x + ", " + z));
             }
 
-            Directory.CreateDirectory(_photoSettings.DestinationFolder);
+            _fileStorageService.CreateDirectory(_photoSettings.DestinationFolder);
 
-            string fileName = Guid.NewGuid().ToString() + extension;
+            string fileName = _guidProvider.NewGuid().ToString() + extension;
             string filePath = Path.Combine(_photoSettings.DestinationFolder, fileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            using (var stream = file.OpenReadStream())
             {
-                await file.CopyToAsync(stream);
+                await _fileStorageService.SaveFileAsync(stream, filePath);
             }
-
+            
             return filePath;
         }
-
     }
 }

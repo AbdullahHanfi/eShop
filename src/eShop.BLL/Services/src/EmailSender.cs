@@ -3,17 +3,18 @@ using eShop.BLL.Services.Abstraction;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using MailKit.Security;
-using MailKit.Net.Smtp;
 
 namespace eShop.BLL.Services.src
 {
     public class EmailSender : IEmailSender
     {
         private readonly EmailSettings _settings;
-        public EmailSender(IOptions<EmailSettings> mailSettings)
+        private readonly IMailTransport _mailTransport;
+
+        public EmailSender(IOptions<EmailSettings> mailSettings, IMailTransport mailTransport)
         {
             _settings = mailSettings.Value;
+            _mailTransport = mailTransport;
         }
         public async Task SendEmailAsync(string mailto, string subject, string body)
         {
@@ -29,12 +30,7 @@ namespace eShop.BLL.Services.src
             builder.HtmlBody = body;
             email.Body = builder.ToMessageBody();
 
-            using var smtp = new SmtpClient();
-            smtp.Connect(_settings.Host, _settings.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_settings.Email, _settings.Password);
-            await smtp.SendAsync(email);
-
-            await smtp.DisconnectAsync(true);
+            await _mailTransport.SendAsync(email);
         }
 
         public async Task SendEmailAsync(string mailto, string subject, string body, List<IFormFile> files)
@@ -65,12 +61,7 @@ namespace eShop.BLL.Services.src
             builder.HtmlBody = body;
             email.Body = builder.ToMessageBody();
 
-            using var smtp = new SmtpClient();
-            smtp.Connect(_settings.Host, _settings.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_settings.Email, _settings.Password);
-            await smtp.SendAsync(email);
-
-            await smtp.DisconnectAsync(true);
+            await _mailTransport.SendAsync(email);
         }
     }
 }
