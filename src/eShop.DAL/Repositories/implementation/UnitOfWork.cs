@@ -15,7 +15,9 @@ namespace eShop.DAL.Repositories.implementation
             IProductRepository product,
             IBaseRepository<Image> Image,
             IBaseRepository<Order> Order,
-            IBaseRepository<ItemInOrder> ItemInOrder)
+            IBaseRepository<ItemInOrder> ItemInOrder,
+            IBaseRepository<Category> categories
+            )
         {
             _context = context;
             Users = users;
@@ -23,6 +25,7 @@ namespace eShop.DAL.Repositories.implementation
             Images = Image;
             Orders = Order;
             ItemInOrders = ItemInOrder;
+            Categories = categories;
         }
         public IUserRepository Users { get; }
 
@@ -33,6 +36,8 @@ namespace eShop.DAL.Repositories.implementation
         public IBaseRepository<Order> Orders { get; }
 
         public IBaseRepository<ItemInOrder> ItemInOrders { get; }
+
+        public IBaseRepository<Category> Categories { get; }
 
         public int Complete()
         {

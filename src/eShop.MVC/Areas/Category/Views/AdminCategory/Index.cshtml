@@ -1,0 +1,755 @@
+﻿@model List<CategoryViewModel>
+
+@{
+    ViewData["Title"] = "Categories Management";
+}
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div style="flex-wrap: wrap;" class="d-flex justify-content-between align-items-center mb-4 fade-in">
+        <div>
+            <h1 class="h3 mb-0 fw-bold text-dark">Categories Management</h1>
+            <p class="text-muted mb-0">Manage product categories and their visibility</p>
+        </div>
+        <a asp-action="Add" class="cart-btn">
+            <i class="fas fa-plus me-2"></i>Create New Category
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4 fade-in">
+
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2 small">Total Categories</h6>
+                            <h3 class="mb-0 fw-bold">@Model.Count</h3>
+                        </div>
+                        <div class="text-primary opacity-75">
+                            <i class="fas fa-folder fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2 small">Visible in Main</h6>
+                            <h3 class="mb-0 fw-bold">@Model.Count(c => c.MainLayout)</h3>
+                        </div>
+                        <div class="text-success opacity-75">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="card border-0 shadow-sm mb-4 fade-in">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="search-container w-100">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" class="form-control search-input w-100"
+                               placeholder="Search categories...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="filterVisibility" class="form-select rounded-pill">
+                        <option value="">All Categories</option>
+                        <option value="true">Visible in Main Layout</option>
+                        <option value="false">Hidden from Main Layout</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="sortBy" class="form-select rounded-pill">
+                        <option value="name">Sort by Name</option>
+                        <option value="items">Sort by Item Count</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="card border-0 shadow-sm fade-in">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                        <tr>
+                            <th class="border-0 ps-4">
+                                <input type="checkbox" class="form-check-input" id="selectAll">
+                            </th>
+                            <th class="border-0">Category Name</th>
+                            <th class="border-0">Items</th>
+                            <th class="border-0">Visibility</th>
+                            <th class="border-0">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTableBody">
+                        @foreach (var item in Model)
+                        {
+                            <tr data-category-id="@item.Id" class="category-row">
+                                <td class="ps-4">
+                                    <input type="checkbox" class="form-check-input category-checkbox"
+                                           value="@item.Id">
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="category-icon me-3">
+                                            <i class="fas fa-folder"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">@item.Name</h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2">
+                                        @item.ItemCount items
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input toggle-visibility" type="checkbox"
+                                               @(item.MainLayout ? "checked" : "")
+                                               data-category-id="@item.Id">
+                                        <label class="form-check-label">
+                                            @if (item.MainLayout)
+                                            {
+                                                <span class="badge bg-success bg-opacity-10 text-success">Visible</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary">Hidden</span>
+                                            }
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-primary rounded-start"
+                                           data-bs-toggle="tooltip" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Detail" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-info"
+                                           data-bs-toggle="tooltip" title="Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-end delete-btn"
+                                                data-category-id="@item.Id" data-category-name="@item.Name"
+                                                data-bs-toggle="tooltip" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="mt-3 d-none fade-in" id="bulkActions">
+        <div class="d-flex align-items-center">
+            <span class="me-3 text-muted"><span id="selectedCount">0</span> items selected</span>
+            <button class="btn btn-sm btn-outline-danger rounded-pill" id="bulkDelete">
+                <i class="fas fa-trash me-2"></i>Delete Selected
+            </button>
+        </div>
+    </div>
+</div>
+
+@section style {
+    <style>
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-gradient);
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .category-row:hover .category-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .table > :not(caption) > * > * {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+            .table tbody tr:hover {
+                background-color: rgba(37, 99, 235, 0.02);
+                transform: translateX(2px);
+            }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-group {
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+            .btn-group:hover {
+                box-shadow: var(--shadow-md);
+            }
+
+        .badge {
+            font-weight: 500;
+            border-radius: 20px;
+        }
+
+        .search-container {
+            max-width: none !important;
+        }
+
+        .search-input {
+            padding-left: 2.5rem !important;
+        }
+
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @@keyframes skeleton-loading {
+            0% {
+                background-color: hsl(200, 20%, 80%);
+            }
+
+            100% {
+                background-color: hsl(200, 20%, 95%);
+            }
+        }
+
+        /* Card hover effects */
+        .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+            .card:hover {
+                transform: translateY(-4px);
+                box-shadow: var(--shadow-lg) !important;
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--secondary-color);
+        }
+
+            .empty-state i {
+                font-size: 4rem;
+                opacity: 0.3;
+                margin-bottom: 1rem;
+            }
+
+        @@media (min-width: 768px) {
+            .table-responsive {
+                overflow-x: hidden;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: scroll;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+                // Show loading animation
+                window.eShopNav.showLoading();
+
+                // Search functionality with debounce
+                let searchTimer;
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', function() {
+                        clearTimeout(searchTimer);
+                        const value = this.value.toLowerCase();
+
+                        searchTimer = setTimeout(function() {
+                            const rows = document.querySelectorAll('#categoriesTableBody tr');
+                            rows.forEach(row => {
+                                const text = row.textContent.toLowerCase();
+                                row.style.display = text.includes(value) ? '' : 'none';
+                            });
+                            checkEmptyState();
+                        }, 300);
+                    });
+                }
+
+                // Filter by visibility
+                const filterVisibility = document.getElementById('filterVisibility');
+                if (filterVisibility) {
+                    filterVisibility.addEventListener('change', function() {
+                        const value = this.value;
+                        const rows = document.querySelectorAll('#categoriesTableBody tr');
+
+                        rows.forEach(row => {
+                            if (value === '') {
+                                row.style.display = '';
+                            } else {
+                                const toggleInput = row.querySelector('.toggle-visibility');
+                                if (toggleInput) {
+                                    const isVisible = toggleInput.checked.toString();
+                                    row.style.display = isVisible === value ? '' : 'none';
+                                }
+                            }
+                        });
+                        checkEmptyState();
+                    });
+                }
+
+                // Sort functionality
+                const sortBy = document.getElementById('sortBy');
+                if (sortBy) {
+                    sortBy.addEventListener('change', function() {
+                        const sortType = this.value;
+                        const tbody = document.getElementById('categoriesTableBody');
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                        rows.sort(function(a, b) {
+                            let aVal, bVal;
+
+                            switch(sortType) {
+                                case 'name':
+                                    aVal = a.querySelector('h6')?.textContent || '';
+                                    bVal = b.querySelector('h6')?.textContent || '';
+                                    return aVal.localeCompare(bVal);
+                                case 'items':
+                                    aVal = parseInt(a.querySelector('.badge')?.textContent || '0');
+                                    bVal = parseInt(b.querySelector('.badge')?.textContent || '0');
+                                    return bVal - aVal;
+                            }
+                        });
+                        rows.forEach(row => tbody.appendChild(row));
+                    });
+                }
+
+                // Toggle visibility with animation
+                document.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('toggle-visibility')) {
+                        const toggleInput = e.target;
+                        const categoryId = toggleInput.dataset.categoryId;
+                        const isChecked = toggleInput.checked;
+                        const badge = toggleInput.parentElement.querySelector('.badge');
+
+                        // Update UI immediately
+                        if (isChecked) {
+                            badge.classList.remove('bg-secondary', 'text-secondary');
+                            badge.classList.add('bg-success', 'text-success');
+                            fadeOutIn(badge, 'Visible');
+                        } else {
+                            badge.classList.remove('bg-success', 'text-success');
+                            badge.classList.add('bg-secondary', 'text-secondary');
+                            fadeOutIn(badge, 'Hidden');
+                        }
+
+                        const formData = new URLSearchParams();
+                        formData.append('Id', categoryId);
+                        formData.append('MainLayout', isChecked);
+
+                        fetch('toggle-visibility', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: formData
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                showNotification('Success', 'Visibility updated successfully', 'success');
+                                updateStatistics();
+                            } else {
+                                throw new Error('Failed to update');
+                            }
+                        })
+                        .catch(error => {
+                            // Revert on error
+                            toggleInput.checked = !isChecked;
+                            if (!isChecked) {
+                                badge.classList.remove('bg-secondary', 'text-secondary');
+                                badge.classList.add('bg-success', 'text-success');
+                                badge.textContent = 'Visible';
+                            } else {
+                                badge.classList.remove('bg-success', 'text-success');
+                                badge.classList.add('bg-secondary', 'text-secondary');
+                                badge.textContent = 'Hidden';
+                            }
+                            showNotification('Error', 'Failed to update visibility', 'error');
+                        });
+                    }
+                });
+
+                // Helper function for fade out/in effect
+                function fadeOutIn(element, newText) {
+                    element.style.opacity = '0';
+                    setTimeout(() => {
+                        element.textContent = newText;
+                        element.style.opacity = '1';
+                    }, 150);
+                }
+
+                // Select all checkbox
+                const selectAll = document.getElementById('selectAll');
+                if (selectAll) {
+                    selectAll.addEventListener('change', function() {
+                        const checkboxes = document.querySelectorAll('.category-checkbox');
+                        checkboxes.forEach(cb => cb.checked = this.checked);
+                        updateBulkActions();
+                    });
+                }
+
+                // Individual checkbox change
+                document.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('category-checkbox')) {
+                        updateBulkActions();
+                    }
+                });
+
+                // Update bulk actions visibility
+                function updateBulkActions() {
+                    const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+                    const bulkActions = document.getElementById('bulkActions');
+                    const selectedCount = document.getElementById('selectedCount');
+
+                    if (checkedBoxes.length > 0) {
+                        bulkActions?.classList.remove('d-none');
+                        if (selectedCount) selectedCount.textContent = checkedBoxes.length;
+                    } else {
+                        bulkActions?.classList.add('d-none');
+                    }
+
+                    // Update select all checkbox
+                    const allBoxes = document.querySelectorAll('.category-checkbox');
+                    const selectAllBox = document.getElementById('selectAll');
+                    if (selectAllBox) {
+                        selectAllBox.checked = checkedBoxes.length === allBoxes.length && allBoxes.length > 0;
+                    }
+                }
+
+                // Delete button click
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.delete-btn')) {
+                        const btn = e.target.closest('.delete-btn');
+                        const categoryId = btn.dataset.categoryId;
+                        const categoryName = btn.dataset.categoryName;
+
+                        Swal.fire({
+                            title: 'Delete Category?',
+                            html: `Are you sure you want to delete <strong>${categoryName}</strong>?<br>
+                                   <span class="text-danger">This action cannot be undone.</span>`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'Cancel',
+                            showLoaderOnConfirm: true,
+                            preConfirm: () => {
+                                return fetch(`category/delete/${categoryId}`, {
+                                    method: 'DELETE',
+                                }).then(response => {
+                                    if (!response.ok) throw new Error('Network response was not ok');
+                                    return response;
+                                });
+                            },
+                            allowOutsideClick: () => !Swal.isLoading()
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Remove row with animation
+                                const row = document.querySelector(`tr[data-category-id="${categoryId}"]`);
+                                if (row) {
+                                    row.style.transition = 'opacity 0.3s';
+                                    row.style.opacity = '0';
+                                    setTimeout(() => {
+                                        row.remove();
+                                        updateStatistics();
+                                        checkEmptyState();
+                                    }, 300);
+                                }
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'Category has been deleted successfully.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        }).catch((error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Failed to delete the category. Please try again.'
+                            });
+                        });
+                    }
+                });
+
+                // Bulk delete
+                const bulkDelete = document.getElementById('bulkDelete');
+                if (bulkDelete) {
+                    bulkDelete.addEventListener('click', function() {
+                        const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+                        const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
+
+                        if (selectedIds.length === 0) return;
+
+                        Swal.fire({
+                            title: 'Delete Selected Categories?',
+                            html: `Are you sure you want to delete <strong>${selectedIds.length}</strong> selected categories?<br>
+                                   <span class="text-danger">This action cannot be undone.</span>`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Yes, delete them!',
+                            cancelButtonText: 'Cancel',
+                            showLoaderOnConfirm: true,
+                            preConfirm: () => {
+                                const formData = new URLSearchParams();
+                                selectedIds.forEach(id => formData.append('ids', id));
+
+                                return fetch('category/delete', {
+                                    method: 'POST',
+                                    body: formData
+                                }).then(response => {
+                                    if (!response.ok) throw new Error('Network response was not ok');
+                                    return response;
+                                });
+                            },
+                            allowOutsideClick: () => !Swal.isLoading()
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Remove rows with animation
+                                selectedIds.forEach(id => {
+                                    const row = document.querySelector(`tr[data-category-id="${id}"]`);
+                                    if (row) {
+                                        row.style.transition = 'opacity 0.3s';
+                                        row.style.opacity = '0';
+                                        setTimeout(() => row.remove(), 300);
+                                    }
+                                });
+
+                                setTimeout(() => {
+                                    updateStatistics();
+                                    checkEmptyState();
+                                    document.getElementById('selectAll').checked = false;
+                                    updateBulkActions();
+                                }, 350);
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: `${selectedIds.length} categories have been deleted successfully.`,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        }).catch((error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Failed to delete the categories. Please try again.'
+                            });
+                        });
+                    });
+                }
+
+                // Update statistics
+                function updateStatistics() {
+                    const totalCategories = document.querySelectorAll('#categoriesTableBody tr').length;
+                    const visibleCategories = document.querySelectorAll('.toggle-visibility:checked').length;
+
+                    const totalElement = document.querySelectorAll('.card h3')[0];
+                    const visibleElement = document.querySelectorAll('.card h3')[1];
+
+                    if (totalElement)
+                        animateValue(totalElement, parseInt(totalElement.textContent), totalCategories, 500);
+                    if (visibleElement) 
+                        animateValue(visibleElement, parseInt(visibleElement.textContent), visibleCategories, 500);
+                }
+
+                // Animate number changes 2     
+                function animateValue(element, start, end, duration) {
+                    const range = end - start;
+                    let current = start;
+                    let increment;
+                    
+                    if(end==start)
+                        increment=0;
+                    else if(end > start)
+                        increment=1;
+                    else
+                        increment=-1;
+
+                    const stepTime = Math.abs(Math.floor(duration / range));
+
+                    const timer = setInterval(function() {
+                        current += increment;
+                        element.textContent = current;
+                        if (current == end) {
+                            clearInterval(timer);
+                        }
+                    }, stepTime);
+                }
+
+                // Check empty state
+                function checkEmptyState() {
+                    const visibleRows = Array.from(document.querySelectorAll('#categoriesTableBody tr')).filter(row => row.style.display !== 'none');
+                    const emptyState = document.getElementById('emptyState');
+
+                    if (visibleRows.length === 0) {
+                        if (!emptyState) {
+                            const emptyHtml = `
+                                <tr id="emptyState">
+                                    <td colspan="6" class="text-center py-5">
+                                        <div class="empty-state">
+                                            <i class="fas fa-folder-open"></i>
+                                            <h5 class="mt-3">No categories found</h5>
+                                            <p class="text-muted">Try adjusting your search or filter criteria</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                            document.getElementById('categoriesTableBody').insertAdjacentHTML('beforeend', emptyHtml);
+                        }
+                    } else {
+                        emptyState?.remove();
+                    }
+                }
+
+                // Show notification using existing theme style
+                function showNotification(title, message, type) {
+                    const toastHtml = `
+                        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0"
+                             role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <strong>${title}:</strong> ${message}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                        data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Create toast container if it doesn't exist
+                    let toastContainer = document.getElementById('toastContainer');
+                    if (!toastContainer) {
+                        toastContainer = document.createElement('div');
+                        toastContainer.id = 'toastContainer';
+                        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                        toastContainer.style.zIndex = '9999';
+                        document.body.appendChild(toastContainer);
+                    }
+
+                    const toastElement = document.createElement('div');
+                    toastElement.innerHTML = toastHtml;
+                    const toastDiv = toastElement.firstElementChild;
+                    toastContainer.appendChild(toastDiv);
+
+                    const toast = new bootstrap.Toast(toastDiv);
+                    toast.show();
+
+                    // Remove toast element after it's hidden
+                    toastDiv.addEventListener('hidden.bs.toast', function() {
+                        this.remove();
+                    });
+                }
+
+                // Enhanced row click for mobile
+                if (window.innerWidth <= 768) {
+                    document.getElementById('categoriesTableBody')?.addEventListener('click', function(e) {
+                        if (!e.target.matches('input, button, a, i')) {
+                        const row = e.target.closest('tr');
+                        if (row) {
+                            const checkbox = row.querySelector('.category-checkbox');
+                            if (checkbox) {
+                                checkbox.checked = !checkbox.checked;
+                                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + A to select all
+                if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+                    const selectAllBox = document.getElementById('selectAll');
+                    if (selectAllBox) {
+                        e.preventDefault();
+                        selectAllBox.click();
+                    }
+                }
+
+                // Delete key to delete selected
+                if (e.key === 'Delete') {
+                    const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+                    if (checkedBoxes.length > 0) {
+                        e.preventDefault();
+                        document.getElementById('bulkDelete')?.click();
+                    }
+                }
+
+                // Ctrl/Cmd + F to focus search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) {
+                        e.preventDefault();
+                        searchInput.focus();
+                    }
+                }
+            });
+
+            // Initialize on load
+            updateBulkActions();
+            checkEmptyState();
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

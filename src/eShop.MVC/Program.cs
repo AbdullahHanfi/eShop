@@ -1,12 +1,14 @@
-using eShop.DAL;
 using eShop.BLL;
-using eShop.DAL.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using eShop.Core.Entities;
-using NToastNotify;
+using eShop.DAL;
+using eShop.DAL.Data;
 using eShop.DAL.Seeds;
 using eShop.DAL.Utilities;
+using eShop.MVC.Middelwares;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using NToastNotify;
 
 namespace eShop.MVC
 {
@@ -28,8 +30,9 @@ namespace eShop.MVC
                 CloseOnHover = true
             });
             builder.Services.AddControllersWithViews();
+            builder.Services.AddMemoryCache();
 
-
+            //builder.Services.AddSingleton<RequestResponseLoggingMiddleware>();
             //Relationanl DataBase
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -43,11 +46,11 @@ namespace eShop.MVC
                 .AddEntityFrameworkStores<eShopDbContext>()
                 .AddDefaultTokenProviders();
 
-            
+
             ServiceRegisterationDAL.Add(builder.Services);
             builder.Services.Configure<PhotoSettings>(builder.Configuration.GetSection("PhotoSettings"));
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-            
+
             ServiceRegisterationBLL.Add(builder.Services);
             builder.Services.ConfigureApplicationCookie(options =>
             {
@@ -90,6 +93,12 @@ namespace eShop.MVC
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            //app.UseForwardedHeaders(new ForwardedHeadersOptions
+            //{
+            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+            //               ForwardedHeaders.XForwardedProto
+            //});
+            //app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
             app.UseRouting();
 

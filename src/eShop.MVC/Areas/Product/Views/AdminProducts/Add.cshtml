@@ -2,8 +2,8 @@
 @{
     ViewData["Title"] = "Create Product";
 }
-@section style{
-    <link rel="stylesheet" href="~/css/AdminProduct/CreateProduct.css" asp-append-version="true" />
+@section style {
+    <link rel="stylesheet" href="~/css/Product/CreateProduct.css" asp-append-version="true" />
 }
 
 <div class="loading-bar" id="loadingBar"></div>
@@ -125,6 +125,58 @@
                                     </div>
                                 </div>
 
+                                <!-- Category & Visibility Section -->
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-section">
+                                            <h4 class="section-title">
+                                                <i class="fas fa-folder-open"></i>
+                                                Category Selection
+                                            </h4>
+
+                                            <div class="form-group">
+                                                <label asp-for="CategoryId" class="form-label">
+                                                    <i class="fas fa-th-large"></i>
+                                                    Product Category
+                                                </label>
+                                                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control modern-select">
+                                                    <option value="">-- Select a Category --</option>
+                                                </select>
+                                                <span asp-validation-for="CategoryId" class="validation-message"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="form-section">
+                                            <h4 class="section-title">
+                                                <i class="fas fa-eye"></i>
+                                                Visibility Settings
+                                            </h4>
+
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                    Product Visibility
+                                                </label>
+                                                <div class="visibility-container">
+                                                    <input asp-for="Active" type="checkbox" class="visibility-checkbox" id="activeToggle" />
+                                                    <div class="visibility-switch @(Model.Active ? "active" : "inactive")" id="visibilitySwitch">
+                                                        <div class="switch-track">
+                                                            <div class="switch-thumb"></div>
+                                                        </div>
+                                                        <span class="switch-label">@(Model.Active ? "Visible to Customers" : "Hidden from Customers")</span>
+                                                    </div>
+                                                    <small class="text-muted d-block mt-2">
+                                                        <i class="fas fa-info-circle"></i>
+                                                        When hidden, this product will only be visible to administrators
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Product Image Section -->
                                 <div class="form-section">
                                     <h4 class="section-title">
@@ -132,7 +184,7 @@
                                         Product Image
                                     </h4>
 
-                                    <div class="image-upload-container" >
+                                    <div class="image-upload-container">
                                         <div class="image-preview" id="imagePreview">
                                             <div class="preview-placeholder">
                                                 <i class="fas fa-cloud-upload-alt"></i>
@@ -168,59 +220,143 @@
 </div>
 
 @section Scripts {
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Image preview functionality
-        const imageInput = document.getElementById('productImageInput');
-        const imagePreview = document.getElementById('imagePreview');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image preview functionality
+            const imageInput = document.getElementById('productImageInput');
+            const imagePreview = document.getElementById('imagePreview');
 
-        if (imageInput && imagePreview) {
-            imageInput.addEventListener('change', function(e) {
-                const files = e.target.files;
-                if (files && files.length > 0) {
-                    let imagesHTML="";
-                    Array.from(files).forEach((file)=>{
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            imagesHTML+=`
-                                <img src="${e.target.result}" alt="Product Preview" style="margin:0px 3px;max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px;">`
-                                imagePreview.innerHTML = imagesHTML;
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                }
-            });
-            
-            // Click to upload
-            imagePreview.addEventListener('click', function() {
-                imageInput.click();
-            });
-        }
+            if (imageInput && imagePreview) {
+                imageInput.addEventListener('change', function(e) {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                        let imagesHTML="";
+                        Array.from(files).forEach((file)=>{
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                imagesHTML+=`
+                                    <img src="${e.target.result}" alt="Product Preview" style="margin:0px 3px;max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px;">`
+                                    imagePreview.innerHTML = imagesHTML;
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+                });
 
-        // Loading bar animation
-        const loadingBar = document.getElementById('loadingBar');
-        if (loadingBar) {
-            setTimeout(() => {
-                loadingBar.style.width = '100%';
+                // Click to upload
+                imagePreview.addEventListener('click', function() {
+                    imageInput.click();
+                });
+            }
+
+            // Loading bar animation
+            const loadingBar = document.getElementById('loadingBar');
+            if (loadingBar) {
                 setTimeout(() => {
-                    loadingBar.style.opacity = '0';
-                }, 300);
-            }, 100);
-        }
+                    loadingBar.style.width = '100%';
+                    setTimeout(() => {
+                        loadingBar.style.opacity = '0';
+                    }, 300);
+                }, 100);
+            }
 
-        // Form validation enhancement
-        const form = document.querySelector('.modern-form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const submitBtn = form.querySelector('.btn-create');
-                if (submitBtn) {
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
-                    submitBtn.disabled = true;
-                }
-            });
-        }
-    });
-</script>
+            // Form validation enhancement
+            const form = document.querySelector('.modern-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('.btn-create');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image preview functionality (keep existing code)
+            const imageInput = document.getElementById('productImageInput');
+            const imagePreview = document.getElementById('imagePreview');
+
+            if (imageInput && imagePreview) {
+                imageInput.addEventListener('change', function(e) {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                        let imagesHTML="";
+                        Array.from(files).forEach((file)=>{
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                imagesHTML+=`
+                                    <img src="${e.target.result}" alt="Product Preview" style="margin:0px 3px;max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px;">`
+                                    imagePreview.innerHTML = imagesHTML;
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+                });
+
+                // Click to upload
+                imagePreview.addEventListener('click', function() {
+                    imageInput.click();
+                });
+            }
+
+            // Visibility Toggle Switch
+            const visibilitySwitch = document.getElementById('visibilitySwitch');
+            const activeToggle = document.getElementById('activeToggle');
+
+            if (visibilitySwitch && activeToggle) {
+                visibilitySwitch.addEventListener('click', function() {
+                    activeToggle.checked = !activeToggle.checked;
+
+                    if (activeToggle.checked) {
+                        visibilitySwitch.classList.remove('inactive');
+                        visibilitySwitch.classList.add('active');
+                        visibilitySwitch.querySelector('.switch-label').textContent = 'Visible to Customers';
+                    } else {
+                        visibilitySwitch.classList.remove('active');
+                        visibilitySwitch.classList.add('inactive');
+                        visibilitySwitch.querySelector('.switch-label').textContent = 'Hidden from Customers';
+                    }
+                });
+            }
+
+            // Loading bar animation
+            const loadingBar = document.getElementById('loadingBar');
+            if (loadingBar) {
+                setTimeout(() => {
+                    loadingBar.style.width = '100%';
+                    setTimeout(() => {
+                        loadingBar.style.opacity = '0';
+                    }, 300);
+                }, 100);
+            }
+
+            // Form validation enhancement
+            const form = document.querySelector('.modern-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('.btn-create');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            }
+
+            // Category dropdown enhancement
+            const categorySelect = document.querySelector('.modern-select');
+            if (categorySelect) {
+                categorySelect.addEventListener('change', function() {
+                    if (this.value) {
+                        this.style.color = '#1f2937';
+                    } else {
+                        this.style.color = '#6b7280';
+                    }
+                });
+            }
+        });
+    </script>
 
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

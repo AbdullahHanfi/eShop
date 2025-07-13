@@ -9,7 +9,9 @@
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="~/assets/online-shop.ico" />
     <!-- Bootstrap icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
+    <!-- Font awesome icons-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Core theme CSS (includes Bootstrap)-->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -39,41 +41,75 @@
                 <!-- Left Navigation -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" asp-controller="Home" asp-action="Index">
+                        <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">
                             <i class="bi bi-house me-1"></i>Home
                         </a>
                     </li>
+
+                    <!-- Catgory section -->
+                    <li class="nav-item">
+                        @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin))
+                        {
+                            <a class="nav-link" asp-area="Category" asp-controller="AdminCategory" asp-action="Index">
+                                <i class="fas fa-th-large me-1"></i>Categories
+                            </a>
+                        }
+                        else
+                        {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-th-large me-1"></i>
+                                Categories
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-modern" aria-labelledby="categoriesDropdown" id="categoryDropdownMenu">
+                                <li class="dropdown-loading">
+                                    <div class="d-flex align-items-center justify-content-center p-3">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <span class="text-muted">Loading categories...</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    </li>
+
                     <!-- product section -->
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="product" asp-controller="AdminProducts" asp-action="Index">
-                            <i class="bi bi-grid me-1"></i>Products
-                        </a>
+                        @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin))
+                        {
+                            <a class="nav-link" asp-area="product" asp-controller="AdminProducts" asp-action="Index">
+                                <i class="bi bi-grid me-1"></i>Products
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="nav-link" asp-area="product" asp-controller="CustomerProducts" asp-action="Index">
+                                <i class="bi bi-grid me-1"></i>Products
+                            </a>
+                        }
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="About">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">
                             <i class="bi bi-info-circle me-1"></i>About
                         </a>
                     </li>
                 </ul>
 
-                <!-- Search Bar (Desktop) -->
-                @* <div class="search-container d-none d-lg-block me-3">
-                    <div class="position-relative">
-                        <i class="bi bi-search search-icon"></i>
-                        <input type="text" class="form-control search-input" placeholder="Search products...">
-                    </div>
-                </div> *@
-
                 <!-- Cart Button -->
-                <div class="d-flex align-items-center me-3">
-                    <a href="/Cart" class="cart-btn d-flex align-items-center text-decoration-none">
-                        <i class="bi bi-cart3 me-2"></i>
-                        <span class="d-none d-sm-inline">Cart</span>
-                        <span class="cart-badge ms-2" id="cartCount">0</span>
-                    </a>
-                </div>
-
+                @if (!(User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin)))
+                {
+                    <div class="d-flex align-items-center me-3">
+                        <a href="/Cart" class="cart-btn d-flex align-items-center text-decoration-none">
+                            <i class="bi bi-cart3 me-2"></i>
+                            <span class="d-none d-sm-inline">Cart</span>
+                            <span class="cart-badge ms-2" id="cartCount">0</span>
+                        </a>
+                    </div>
+                }
                 <!-- Login Section -->
                 <div class="login-section">
                     <partial name="_LoginPartial" />
@@ -205,6 +241,166 @@
                 }
             }
         };
+
+        // dropdown functionality
+        let categoriesCache = null;
+        let isFetching = false;
+        let dropdownSearch = '';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryDropdown = document.getElementById('categoriesDropdown');
+
+            if (categoryDropdown) {
+                categoryDropdown.addEventListener('show.bs.dropdown', function() {
+                    if (!categoriesCache && !isFetching) {
+                        fetchCategories();
+                    } else if (categoriesCache) {
+                        renderCategories(categoriesCache);
+                    }
+                });
+            }
+        });
+
+        function fetchCategories() {
+            isFetching = true;
+            const dropdownMenu = document.getElementById('categoryDropdownMenu');
+
+            // Show loading state
+            dropdownMenu.innerHTML = `
+                <li class="dropdown-loading">
+                    <div class="d-flex align-items-center justify-content-center p-3">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="text-muted">Loading categories...</span>
+                    </div>
+                </li>
+            `;
+
+            fetch('/api/categories')
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch categories');
+                    else if(response.ok && response.status === 204) {
+                        renderNoCategories();
+                        isFetching = false;
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(categories => {
+                    categoriesCache = categories;
+                    renderCategories(categories);
+                    isFetching = false;
+                })
+                .catch(error => {
+                    console.error('Error fetching categories:', error);
+                    dropdownMenu.innerHTML = `
+                        <li class="dropdown-error">
+                            <div class="text-center p-3">
+                                <i class="fas fa-exclamation-circle d-block mb-2"></i>
+                                <span>Failed to load categories</span>
+                                <a href="#" class="d-block mt-2 text-primary small" onclick="fetchCategories(); return false;">
+                                    <i class="fas fa-redo me-1"></i>Try again
+                                </a>
+                            </div>
+                        </li>
+                    `;
+                    isFetching = false;
+                });
+        }
+
+        const dropdownMenu = document.getElementById('categoryDropdownMenu');
+        
+        function renderNoCategories(){
+
+            dropdownMenu.innerHTML = `
+                    <li class="dropdown-empty">
+                        <div class="text-center">
+                            <i class="fas fa-folder-open d-block"></i>
+                            <p class="mb-0 mt-2">No categories available</p>
+                        </div>
+                    </li>
+                `;
+            }
+
+        function renderCategories(categories) {
+            if (!categories || categories.length === 0) {
+                renderNoCategories();
+                return;
+            }
+
+            let html = '';
+
+            if (categories.length > 5) {
+                html += `
+                    <li class="dropdown-search">
+                        <input type="text" class="form-control form-control-sm"
+                               placeholder="Search categories..."
+                               id="categorySearchInput">
+                    </li>
+                `;
+            }
+
+            // Add categories container
+            html += '<div class="dropdown-menu-scroll">';
+
+            // Add individual categories with icons
+            const icons = ['fas fa-laptop', 'fas fa-tshirt', 'fas fa-home', 'fas fa-book',
+                           'fas fa-gamepad', 'fas fa-camera', 'fas fa-music', 'fas fa-utensils'];
+
+            categories.forEach((category, index) => {
+                const icon = icons[index % icons.length];
+                html += `
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center"
+                           href="/products/category/${category.id}"
+                           data-category-name="${category.name.toLowerCase()}">
+                            <span class="category-icon">
+                                <i class="${icon}"></i>
+                            </span>
+                            <span class="flex-grow-1">${category.name}</span>
+                            ${category.productCount ?
+                                `<span class="category-badge">${category.productCount}</span>` :
+                                ''}
+                        </a>
+                    </li>
+                `;
+            });
+
+            html += '</div>';
+
+            dropdownMenu.innerHTML = html;
+
+
+            const searchInput = document.getElementById('categorySearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const items = dropdownMenu.querySelectorAll('.dropdown-item[data-category-name]');
+
+                    items.forEach(item => {
+                        const categoryName = item.getAttribute('data-category-name');
+                        if (categoryName.includes(searchTerm)) {
+                            item.parentElement.style.display = '';
+                        } else {
+                            item.parentElement.style.display = 'none';
+                        }
+                    });
+                });
+
+                // Prevent dropdown from closing when clicking search
+                searchInput.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+
+            const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.05}s`;
+                item.classList.add('fade-in');
+            });
+        }
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @await RenderSectionAsync("Scripts", required: false)

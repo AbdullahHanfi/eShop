@@ -1,7 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Http;
-
-namespace eShop.BLL.ViewModels.Product
+﻿namespace eShop.BLL.ViewModels.Product
 {
     public class ProductViewModel
     {
@@ -12,6 +9,7 @@ namespace eShop.BLL.ViewModels.Product
         public float Rate { get; set; }
         public decimal CurrentPrice { get; set; }
         public decimal? PrevPrice { get; set; }
+        public bool Active { get; set; }
         public List<byte[]> Images { get; set; } = new();
     }
 }

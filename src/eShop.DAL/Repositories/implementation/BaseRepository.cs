@@ -4,8 +4,6 @@ using eShop.DAL.Repositories.Interface;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -27,16 +25,20 @@ namespace eShop.DAL.Repositories.implementation
         }
         protected string GetTableName(Type entityType)
         {
-            string tableName = "";
-            var tableAttr = entityType.GetCustomAttribute<TableAttribute>();
-            if (tableAttr != null)
+            var efEntityType = _context.Model.FindEntityType(entityType);
+
+            if (efEntityType == null)
             {
-                tableName = tableAttr.Name;
+                throw new InvalidOperationException($"Entity type {entityType.Name} is not part of the model.");
             }
-            else
+
+            var tableName = efEntityType.GetTableName();
+
+            if (string.IsNullOrEmpty(tableName))
             {
-                tableName = entityType.Name + "s";
+                throw new InvalidOperationException($"No table name found for entity type {entityType.Name}.");
             }
+            
             return tableName;
         }
 
@@ -130,13 +132,15 @@ namespace eShop.DAL.Repositories.implementation
             return _entity.SingleOrDefault(criteria);
         }
 
-        public TEntity Find(Expression<Func<TEntity, bool>> criteria, string[] includes = null)
+        public TEntity Find(Expression<Func<TEntity, bool>> criteria, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> Data = _entity;
 
             if (includes != null)
-                foreach (var incluse in includes)
-                    Data = Data.Include(incluse);
+                foreach (var include in includes)
+                {
+                    Data = Data.Include(include);
+                }
 
             return Data.SingleOrDefault(criteria);
         }
@@ -147,13 +151,16 @@ namespace eShop.DAL.Repositories.implementation
 
             return await Data.SingleOrDefaultAsync(criteria);
         }
-        public async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> criteria, string[] includes = null)
+
+        public async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> criteria, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> Data = _context.Set<TEntity>();
 
             if (includes != null)
-                foreach (var incluse in includes)
-                    Data = Data.Include(incluse);
+                foreach (var include in includes)
+                {
+                    Data = Data.Include(include);
+                }
 
             return await Data.SingleOrDefaultAsync(criteria);
         }
@@ -164,13 +171,15 @@ namespace eShop.DAL.Repositories.implementation
             return Data.Where(criteria).ToList();
         }
 
-        public IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> criteria, string[] includes = null)
+        public IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> criteria, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> Data = _entity;
 
             if (includes != null)
                 foreach (var include in includes)
+                {
                     Data = Data.Include(include);
+                }
 
             return Data.Where(criteria).ToList();
         }
@@ -181,13 +190,15 @@ namespace eShop.DAL.Repositories.implementation
 
             return await Data.Where(criteria).ToListAsync();
         }
-        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> criteria, string[] includes = null)
+        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> criteria, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> Data = _entity;
 
             if (includes != null)
                 foreach (var include in includes)
+                {
                     Data = Data.Include(include);
+                }
 
             return await Data.Where(criteria).ToListAsync();
         }
@@ -264,11 +275,11 @@ namespace eShop.DAL.Repositories.implementation
 
         public IEnumerable<TEntity> Skip(int count)
             => _entity.Skip(count);
-        
+
         public IEnumerable<TEntity> Take(int count)
             => _entity.Take(count);
 
-        public IEnumerable<TEntity> Include(string navigationPropert)
+        public IQueryable<TEntity> Include(string navigationPropert)
             => _entity.Include(navigationPropert);
     }
 }

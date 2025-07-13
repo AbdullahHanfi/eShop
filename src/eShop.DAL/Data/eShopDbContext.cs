@@ -24,6 +24,7 @@ namespace eShop.DAL.Data
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Image> Images { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
 
         public override int SaveChanges()
         {

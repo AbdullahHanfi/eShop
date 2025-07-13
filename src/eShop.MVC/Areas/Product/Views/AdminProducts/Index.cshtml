@@ -3,7 +3,7 @@
     ViewData["Title"] = "Products";
 }
 @section style{
-    <link rel="stylesheet" href="~/css/AdminProduct/IndexPage.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Product/IndexPage.css" asp-append-version="true" />
 }
 
 <div class="loading-bar"></div>
@@ -276,23 +276,6 @@
                                         </button>
                                     </div>
                                 </div>
-                                @* <div class="d-grid gap-2">
-                                    @if (Item.Quantity > 0)
-                                    {
-                                        <button class="btn btn-primary fw-semibold py-2"
-                                                style="border-radius: 10px; transition: all 0.3s ease;"
-                                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'"
-                                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)'">
-                                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-outline-secondary py-2" disabled style="border-radius: 10px;">
-                                            <i class="fas fa-times me-2"></i>Out of Stock
-                                        </button>
-                                    }
-                                </div> *@
                             </div>
                         </div>
                     </div>
@@ -312,28 +295,27 @@
             loadingBar.style.width = '100%';
             setTimeout(() => loadingBar.style.opacity = '0', 500);
 
-            // Product search functionality
-            // const productsContainer = document.getElementById('productsContainer');
-            // const searchInput = document.getElementById('productSearch');
+            const productsContainer = document.getElementById('productsContainer');
+            const searchInput = document.getElementById('productSearch');
 
-            // if (searchInput) {
-            //     searchInput.addEventListener('input', function() {
-            //         const searchTerm = this.value.toLowerCase();
-            //         const productCards = productsContainer.querySelectorAll('.product-card-wrapper');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const productCards = productsContainer.querySelectorAll('.product-card-wrapper');
 
-            //         productCards.forEach(card => {
-            //             const productName = card.querySelector('.card-title').textContent.toLowerCase();
-            //             const productDescription = card.querySelector('.text-muted')?.textContent.toLowerCase() || '';
+                    productCards.forEach(card => {
+                        const productName = card.querySelector('.card-title').textContent.toLowerCase();
+                        const productDescription = card.querySelector('.text-muted')?.textContent.toLowerCase() || '';
 
-            //             if (productName.includes(searchTerm) || productDescription.includes(searchTerm)) {
-            //                 card.style.display = 'block';
-            //                 card.classList.add('fade-in');
-            //             } else {
-            //                 card.style.display = 'none';
-            //             }
-            //         });
-            //     });
-            // }
+                        if (productName.includes(searchTerm) || productDescription.includes(searchTerm)) {
+                            card.style.display = 'block';
+                            card.classList.add('fade-in');
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            }
 
             // Card hover effects
             const productCards = document.querySelectorAll('.product-card-wrapper .card');

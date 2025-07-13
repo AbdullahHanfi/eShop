@@ -10,6 +10,7 @@ namespace eShop.DAL.Interface
         public IBaseRepository<Image> Images { get; }
         public IBaseRepository<Order> Orders { get; }
         public IBaseRepository<ItemInOrder> ItemInOrders { get; }
+        public IBaseRepository<Category> Categories { get; }
         int Complete();
     }
 }

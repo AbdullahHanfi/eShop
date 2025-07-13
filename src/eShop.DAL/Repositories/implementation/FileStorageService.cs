@@ -1,11 +1,11 @@
-﻿using eShop.BLL.Services.Abstraction;
+﻿using eShop.DAL.Repositories.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShop.BLL.Services.src
+namespace eShop.DAL.Repositories.implementation
 {
     public class FileStorageService : IFileStorageService
     {

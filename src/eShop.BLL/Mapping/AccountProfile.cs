@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using eShop.BLL.ViewModels;
+using eShop.BLL.ViewModels.Account;
 using eShop.Core.Entities;
 
 namespace eShop.BLL.Mapping

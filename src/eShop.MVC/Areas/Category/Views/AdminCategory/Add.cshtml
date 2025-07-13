@@ -1,0 +1,358 @@
+﻿@model eShop.BLL.ViewModels.Category.CreateCategoryViewModel
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <!-- Modern Card Container -->
+            <div class="category-card fade-in">
+                <!-- Header Section -->
+                <div class="card-header-gradient">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-wrapper me-3">
+                            <i class="fas fa-folder-plus"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-1">Create New Category</h2>
+                            <p class="text-white-50 mb-0">Create a new product category</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Body -->
+                <div class="card-body p-4">
+                    <form asp-action="Add" id="categoryForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert" style="display: none;"></div>
+
+                        <!-- Category Name Input -->
+                        <div class="form-group mb-4">
+                            <label asp-for="Name" class="form-label fw-semibold">
+                                <i class="fas fa-tag me-2 text-primary"></i>@Html.DisplayNameFor(model => model.Name)
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-font text-secondary"></i>
+                                </span>
+                                <input asp-for="Name"
+                                       class="form-control modern-input"
+                                       placeholder="Enter category name"
+                                       autocomplete="off" />
+                            </div>
+                            <span asp-validation-for="Name" class="text-danger small mt-1"></span>
+                        </div>
+
+                        <!-- Main Layout Toggle -->
+                        <div class="form-group mb-4">
+                            <label class="form-label fw-semibold mb-3">
+                                <i class="fas fa-layer-group me-2 text-primary"></i>Display Options
+                            </label>
+                            <div class="modern-switch-container">
+                                <div class="form-check form-switch modern-switch">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           asp-for="MainLayout"
+                                           id="mainLayoutSwitch" />
+                                    <label class="form-check-label" for="mainLayoutSwitch">
+                                        @Html.DisplayNameFor(model => model.MainLayout)
+                                        <small class="d-block text-muted mt-1">
+                                            Enable to display this category in the main navigation
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary-gradient px-4" id="submitBtn">
+                                <i class="fas fa-plus-circle me-2"></i>Create Category
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Tips Card -->
+            <div class="tips-card mt-4 fade-in">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-lightbulb text-warning me-3 mt-1"></i>
+                    <div>
+                        <h6 class="mb-2">Quick Tips</h6>
+                        <ul class="small mb-0 ps-3">
+                            <li>Choose a clear, descriptive name for your category</li>
+                            <li>Main categories appear in the navigation menu</li>
+                            <li>You can edit these settings later if needed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section style {
+    <style>
+        /* Category Card Styles */
+        .category-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+            .category-card:hover {
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+                transform: translateY(-2px);
+            }
+
+        /* Header Gradient */
+        .card-header-gradient {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .card-header-gradient::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+                animation: shimmer 3s linear infinite;
+            }
+
+        @@keyframes shimmer {
+            0%
+
+        {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+
+        }
+
+        /* Icon Wrapper */
+        .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Modern Input Styles */
+        .modern-input {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+            .modern-input:focus {
+                border-color: var(--primary-color);
+                background: white;
+                box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            }
+
+        .input-group-text {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .input-group .modern-input {
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* Modern Switch */
+        .modern-switch-container {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+            .modern-switch-container:hover {
+                border-color: var(--primary-color);
+                background: #f1f5f9;
+            }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-switch .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Button Styles */
+        .btn-primary-gradient {
+            background: var(--bg-gradient);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-primary-gradient:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                color: white;
+            }
+
+            .btn-primary-gradient::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                transition: left 0.5s;
+            }
+
+            .btn-primary-gradient:hover::before {
+                left: 100%;
+            }
+
+        .btn-outline-secondary {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .btn-outline-secondary:hover {
+                background: #f8fafc;
+                border-color: #cbd5e1;
+                transform: translateY(-2px);
+            }
+
+        /* Tips Card */
+        .tips-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #fbbf24;
+        }
+
+        /* Validation Styles */
+        .field-validation-error {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .input-validation-error {
+            border-color: #ef4444 !important;
+        }
+
+            .input-validation-error:focus {
+                box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+            }
+
+        /* Loading State */
+        .btn-primary-gradient:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.2rem;
+        }
+
+        /* Responsive */
+        @@media (max-width: 576px) {
+            .card-header-gradient
+
+        {
+            padding: 1.5rem;
+        }
+
+        .icon-wrapper {
+            width: 50px;
+            height: 50px;
+            font-size: 1.25rem;
+        }
+
+        .category-card h2 {
+            font-size: 1.5rem;
+        }
+
+        }
+    </style>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            // Form submission with loading state
+            $('#categoryForm').on('submit', function(e) {
+                var $submitBtn = $('#submitBtn');
+                var originalHtml = $submitBtn.html();
+
+                if ($(this).valid()) {
+                    $submitBtn.prop('disabled', true)
+                        .html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Creating...');
+
+                    // Show loading bar
+                    if (window.eShopNav && window.eShopNav.showLoading) {
+                        window.eShopNav.showLoading();
+                    }
+                }
+            });
+
+            // Enhanced input focus effects
+            $('.modern-input').on('focus', function() {
+                $(this).closest('.input-group').addClass('focused');
+            }).on('blur', function() {
+                $(this).closest('.input-group').removeClass('focused');
+            });
+
+            // Animate elements on load
+            $('.fade-in').each(function(index) {
+                $(this).css('animation-delay', (index * 0.1) + 's');
+            });
+
+            // Show validation summary if there are errors
+            if ($('.validation-summary-errors').length) {
+                $('.alert-danger').show();
+            }
+        });
+    </script>
+}

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using eShop.BLL.Services.Abstraction;
-using eShop.BLL.ViewModels;
+using eShop.BLL.ViewModels.Account;
 using eShop.Core.Entities;
 using eShop.DAL.Interface;
 using eShop.DAL.Utilities;

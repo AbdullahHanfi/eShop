@@ -1,6 +1,7 @@
 ﻿using eShop.BLL.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace eShop.BLL.ViewModels.Product
@@ -19,14 +20,23 @@ namespace eShop.BLL.ViewModels.Product
 
         public List<byte[]>? SendProductImages { get; set; }
         [HiddenInput]
-        public List<Guid> IDProductImages { get; set; }
+        public List<Guid>? IDProductImages { get; set; }
         [HiddenInput]
-        public List<bool> IsDeletedProductImages { get; set; }
+        public List<bool>? IsDeletedProductImages { get; set; }
         public List<IFormFile>? BackProductImages { get; set; }
-        
+
         [Required, Display(Name = "Price"), PriceComparison(nameof(PrevPrice), "Current Price must be lower than previous Price")]
         public decimal CurrentPrice { get; set; }
         [Display(Name = "previous Price")]
         public decimal? PrevPrice { get; set; }
+
+        [Display(Name = "Product Visibility")]
+        public bool Active { get; set; } = true;
+
+        [Display(Name = "Category")]
+        [Required(ErrorMessage = "Please select a category")]
+        public Guid CategoryId { get; set; }
+
+        public SelectList? Categories { get; set; }
     }
 }

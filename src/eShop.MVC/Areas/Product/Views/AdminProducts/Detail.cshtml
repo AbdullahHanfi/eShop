@@ -4,8 +4,8 @@
     ViewData["Title"] = "Product Details - " + Model.Name;
 }
 @section style {
-    <link rel="stylesheet" href="~/css/AdminProduct/EditProduct.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/AdminProduct/DetailProduct.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Product/EditProduct.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Product/DetailProduct.css" asp-append-version="true" />
 
 }
 <div class="admin-container">
@@ -124,7 +124,7 @@
                     <div class="info-section">
                         <div class="section-title">
                             <i class="bi bi-star"></i>
-                            Customer Rating
+                            Customer
                         </div>
                         <div class="info-item">
                             <div class="info-label">
@@ -143,6 +143,29 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-eye-fill"></i>
+                                Visibility
+                            </div>
+                            <div class="info-value">
+                                @if (Model.Active)
+                                {
+                                    <span class="visibility-badge active">
+                                        <i class="bi bi-eye"></i>
+                                        Visible
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="visibility-badge inactive">
+                                        <i class="bi bi-eye-slash"></i>
+                                        Hidden
+                                    </span>
+                                }
+                            </div>
+                        </div> 
                     </div>
 
                     <!-- Product Description -->
@@ -244,12 +267,12 @@
             // Add pulse animation to low stock items
             @if (Model.Quantity <= 10)
             {
-                                    <text>
-                                        const stockBadge = document.querySelector('.stock-badge');
-                                        if (stockBadge) {
-                                            stockBadge.classList.add('pulse-animation');
-                                        }
-                                    </text>
+                                        <text>
+                                            const stockBadge = document.querySelector('.stock-badge');
+                                            if (stockBadge) {
+                                                stockBadge.classList.add('pulse-animation');
+                                            }
+                                        </text>
             }
         });
 

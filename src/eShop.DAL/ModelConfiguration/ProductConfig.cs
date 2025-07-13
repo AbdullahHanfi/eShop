@@ -18,6 +18,9 @@ namespace eShop.DAL.ModelConfiguration
             builder.Property(e => e.Name)
                 .HasMaxLength(StringConstants.MaxSize)
                 .IsRequired();
+            
+            builder.Property(e => e.Active)
+                .HasDefaultValueSql("1");
 
             builder.Property(e => e.Description)
                 .HasMaxLength(StringConstants.MaxSize)
@@ -36,6 +39,11 @@ namespace eShop.DAL.ModelConfiguration
 
             builder.HasMany(e => e.ItemsInOrder)
                 .WithOne(e => e.Product)
+                .IsRequired(false);
+
+            builder.HasOne(e => e.Category)
+                .WithMany(e => e.Products)
+                .HasForeignKey(e => e.CategoryId)
                 .IsRequired(false);
 
             builder.HasQueryFilter(p => !p.IsDeleted);

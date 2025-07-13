@@ -1,0 +1,669 @@
+﻿@model IEnumerable<eShop.BLL.ViewModels.Product.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Products";
+    var productsList = Model?.ToList() ?? new List<eShop.BLL.ViewModels.Product.ProductViewModel>();
+}
+@section style {
+    <link rel="stylesheet" href="~/css/Product/ProductsByCategory.css">
+}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-modern">
+            <li class="breadcrumb-item">
+                <a asp-action="Index" asp-controller="Home" asp-area="" class="text-decoration-none">
+                    <i class="bi bi-house"></i> Home
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-action="Index" class="text-decoration-none">
+                    <i class="bi bi-grid"></i> Products
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="bi bi-eye"></i> Category
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h1 class="display-6 fw-bold text-gradient mb-2">@(ViewBag.CategoryName ?? "Products")</h1>
+            <p class="text-muted mb-0">
+                @if (productsList.Any())
+                {
+                    <span>Found @productsList.Count product@(productsList.Count != 1 ? "s" : "") in this category</span>
+                }
+                else
+                {
+                    <span>Browse our collection of products</span>
+                }
+            </p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+            <!-- Sort Dropdown -->
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-sort me-2"></i>Sort By
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sortDropdown">
+                    <li><a class="dropdown-item sort-option active" href="#" data-sort="default">Default</a></li>
+                    <li><a class="dropdown-item sort-option" href="#" data-sort="name-asc">Name (A-Z)</a></li>
+                    <li><a class="dropdown-item sort-option" href="#" data-sort="name-desc">Name (Z-A)</a></li>
+                    <li><a class="dropdown-item sort-option" href="#" data-sort="price-asc">Price (Low to High)</a></li>
+                    <li><a class="dropdown-item sort-option" href="#" data-sort="price-desc">Price (High to Low)</a></li>
+                    <li><a class="dropdown-item sort-option" href="#" data-sort="rating">Highest Rated</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="filters-bar mb-4">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="productSearch" placeholder="Search products...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="priceFilter">
+                    <option value="">All Prices</option>
+                    <option value="0-50">Under $50</option>
+                    <option value="50-100">$50 - $100</option>
+                    <option value="100-200">$100 - $200</option>
+                    <option value="200+">Over $200</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="availabilityFilter">
+                    <option value="">All Products</option>
+                    <option value="instock">In Stock</option>
+                    <option value="outofstock">Out of Stock</option>
+                </select>
+            </div>
+            <div class="col-md-3 text-end">
+                <button class="btn btn-link text-danger" id="clearFilters" style="display: none;">
+                    <i class="fas fa-times me-1"></i>Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid/List Container -->
+    <div id="productsContainer">
+        @if (productsList.Any())
+        {
+            <div class="row g-4" id="productsGrid">
+                @foreach (var product in productsList)
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6 product-item"
+                         data-name="@product.Name.ToLower()"
+                         data-price="@product.CurrentPrice"
+                         data-stock="@(product.Quantity > 0 ? "instock" : "outofstock")"
+                         data-rating="@product.Rate">
+                        <div class="product-card h-100">
+                            <!-- Discount Badge -->
+                            @if (product.PrevPrice.HasValue && product.PrevPrice > product.CurrentPrice)
+                            {
+                                var discount = Math.Round((1 - (double)(product.CurrentPrice / product.PrevPrice.Value)) * 100);
+                                <div class="discount-badge">-@discount%</div>
+                            }
+
+                            <!-- Product Image -->
+                            <div class="product-image-wrapper">
+                                @if (product.Images != null && product.Images.Any())
+                                {
+                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(product.Images.First())"
+                                         alt="@product.Name" class="product-image">
+
+                                    @if (product.Images.Count > 1)
+                                    {
+                                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(product.Images[1])"
+                                             alt="@product.Name" class="product-image-hover">
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="no-image-placeholder">
+                                        <i class="fas fa-image"></i>
+                                        <span>No Image</span>
+                                    </div>
+                                }
+
+                                <!-- Quick Actions -->
+                                <div class="product-actions">
+                                    <button class="action-btn quick-view" data-id="@product.Id" title="Quick View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Product Details -->
+                            <div class="product-details">
+                                <h5 class="product-title">
+                                    <a href="/products/details/@product.Id">@product.Name</a>
+                                </h5>
+
+                                <!-- Rating -->
+                                <div class="product-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Floor(product.Rate))
+                                        {
+                                            <i class="fas fa-star"></i>
+                                        }
+                                        else if (i - 0.5 <= product.Rate)
+                                        {
+                                            <i class="fas fa-star-half-alt"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="far fa-star"></i>
+                                        }
+                                    }
+                                    <span class="rating-text">(@product.Rate.ToString("0.0"))</span>
+                                </div>
+
+                                <!-- Price -->
+                                <div class="product-price">
+                                    <span class="current-price">$@product.CurrentPrice.ToString("N2")</span>
+                                    @if (product.PrevPrice.HasValue && product.PrevPrice > product.CurrentPrice)
+                                    {
+                                        <span class="prev-price">$@product.PrevPrice.Value.ToString("N2")</span>
+                                    }
+                                </div>
+
+                                <!-- Stock Status -->
+                                <div class="stock-status">
+                                    @if (product.Quantity > 0)
+                                    {
+                                        @if (product.Quantity <= 5)
+                                        {
+                                            <span class="low-stock">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                                Only @product.Quantity left
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="in-stock">
+                                                <i class="fas fa-check-circle me-1"></i>
+                                                In Stock
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="out-of-stock">
+                                            <i class="fas fa-times-circle me-1"></i>
+                                            Out of Stock
+                                        </span>
+                                    }
+                                </div>
+
+                                <!-- Add to Cart Button -->
+                                @if (!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
+                                {
+                                    <button class="btn btn-primary btn-add-to-cart @(product.Quantity == 0 ? "disabled" : "")"
+                                            data-id="@product.Id"
+                                            @(product.Quantity == 0 ? "disabled" : "")>
+                                        <i class="fas fa-shopping-cart me-2"></i>
+                                        @(product.Quantity == 0 ? "Out of Stock" : "Add to Cart")
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-box-open empty-icon mb-4"></i>
+                <h3 class="mb-3">No Products Found</h3>
+                <p class="text-muted mb-4">There are no products in this category yet.</p>
+                <a href="/products" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Browse All Products
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- No Results State (Hidden by default) -->
+    <div id="noResultsState" class="empty-state text-center py-5" style="display: none;">
+        <i class="fas fa-search empty-icon mb-4"></i>
+        <h3 class="mb-3">No Products Match Your Filters</h3>
+        <p class="text-muted mb-4">Try adjusting your filters or search terms.</p>
+        <button class="btn btn-primary" onclick="clearAllFilters()">
+            <i class="fas fa-times me-2"></i>Clear All Filters
+        </button>
+    </div>
+</div>
+
+<!-- Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quick View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Product listing functionality
+        let originalProducts = [];
+        let currentSort = 'default';
+        let currentView = 'grid';
+        const allProducts = @Html.Raw(Json.Serialize(Model));
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cache original product order
+            cacheOriginalProducts();
+
+            // Initialize event listeners
+            initializeEventListeners();
+
+            // Initialize cart functionality
+            initializeCartButtons();
+        });
+
+        function cacheOriginalProducts() {
+            const productItems = document.querySelectorAll('.product-item');
+            originalProducts = Array.from(productItems);
+        }
+
+        function initializeEventListeners() {
+            // Sort functionality
+            document.querySelectorAll('.sort-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sortType = this.getAttribute('data-sort');
+                    sortProducts(sortType);
+
+                    // Update active state
+                    document.querySelectorAll('.sort-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update button text
+                    document.getElementById('sortDropdown').innerHTML =
+                        `<i class="fas fa-sort me-2"></i>${this.textContent}`;
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('productSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(filterProducts, 300));
+            }
+
+            // Filter functionality
+            document.getElementById('priceFilter')?.addEventListener('change', filterProducts);
+            document.getElementById('availabilityFilter')?.addEventListener('change', filterProducts);
+
+            // Clear filters
+            document.getElementById('clearFilters')?.addEventListener('click', clearAllFilters);
+
+            // Quick view
+            document.querySelectorAll('.quick-view').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    showQuickView(productId);
+                });
+            });
+        }
+
+        function sortProducts(sortType) {
+            currentSort = sortType;
+            const container = document.getElementById('productsGrid');
+            const products = Array.from(container.querySelectorAll('.product-item'));
+
+            products.sort((a, b) => {
+                switch(sortType) {
+                    case 'name-asc':
+                        return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+                    case 'name-desc':
+                        return b.getAttribute('data-name').localeCompare(a.getAttribute('data-name'));
+                    case 'price-asc':
+                        return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+                    case 'price-desc':
+                        return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+                    case 'rating':
+                        return parseFloat(b.getAttribute('data-rating')) - parseFloat(a.getAttribute('data-rating'));
+                    default:
+                        return 0;
+                }
+            });
+
+            // Re-append sorted products
+            products.forEach(product => container.appendChild(product));
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('productSearch')?.value.toLowerCase() || '';
+            const priceFilter = document.getElementById('priceFilter')?.value || '';
+            const availabilityFilter = document.getElementById('availabilityFilter')?.value || '';
+
+            let visibleCount = 0;
+            const products = document.querySelectorAll('.product-item');
+
+            products.forEach(product => {
+                let show = true;
+
+                // Search filter
+                if (searchTerm && !product.getAttribute('data-name').includes(searchTerm)) {
+                    show = false;
+                }
+
+                // Price filter
+                if (priceFilter && show) {
+                    const price = parseFloat(product.getAttribute('data-price'));
+                    const [min, max] = priceFilter.split('-').map(p => p === '+' ? Infinity : parseFloat(p));
+
+                    if (max === undefined) { // "200+" case
+                        if (price < min) show = false;
+                    } else {
+                        if (price < min || price > max) show = false;
+                    }
+                }
+
+                // Availability filter
+                if (availabilityFilter && show) {
+                    const stock = product.getAttribute('data-stock');
+                    if (stock !== availabilityFilter) show = false;
+                }
+
+                // Show/hide product
+                product.style.display = show ? '' : 'none';
+                if (show) visibleCount++;
+            });
+
+            // Show/hide no results state
+            const container = document.getElementById('productsContainer');
+            const noResults = document.getElementById('noResultsState');
+
+            if (visibleCount === 0) {
+                container.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                container.style.display = 'block';
+                noResults.style.display = 'none';
+            }
+
+            // Show/hide clear filters button
+            const hasFilters = searchTerm || priceFilter || availabilityFilter;
+            document.getElementById('clearFilters').style.display = hasFilters ? 'inline-block' : 'none';
+
+            // Add active class to filters
+            document.getElementById('productSearch')?.classList.toggle('active', !!searchTerm);
+            document.getElementById('priceFilter')?.classList.toggle('active', !!priceFilter);
+            document.getElementById('availabilityFilter')?.classList.toggle('active', !!availabilityFilter);
+        }
+
+        function clearAllFilters() {
+            document.getElementById('productSearch').value = '';
+            document.getElementById('priceFilter').value = '';
+            document.getElementById('availabilityFilter').value = '';
+
+            filterProducts();
+        }
+
+        function initializeCartButtons() {
+            document.querySelectorAll('.btn-add-to-cart').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    if (this.classList.contains('disabled')) return;
+
+                    const productId = this.getAttribute('data-id');
+                    await addToCart(productId, this);
+                });
+            });
+        }
+
+        async function addToCart(productId, button) {
+            // Add loading state
+            button.classList.add('loading');
+            const originalHtml = button.innerHTML;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding...';
+
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId: productId, quantity: 1 })
+                });
+
+                if (response.ok) {
+                    // Success animation
+                    button.innerHTML = '<i class="fas fa-check me-2"></i>Added!';
+                    button.classList.add('btn-success');
+
+                    // Update cart count in navbar
+                    if (window.eShopNav) {
+                        const cartData = await response.json();
+                                                window.eShopNav.updateCartCount(cartData.totalItems);
+                    }
+
+                    // Reset button after delay
+                    setTimeout(() => {
+                        button.innerHTML = originalHtml;
+                        button.classList.remove('btn-success');
+                    }, 2000);
+                } else {
+                    throw new Error('Failed to add to cart');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+
+                // Error state
+                button.innerHTML = '<i class="fas fa-times me-2"></i>Error';
+                button.classList.add('btn-danger');
+
+                // Show error toast
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to add item to cart. Please try again.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
+
+                // Reset button
+                setTimeout(() => {
+                    button.innerHTML = originalHtml;
+                    button.classList.remove('btn-danger');
+                }, 2000);
+            } finally {
+                button.classList.remove('loading');
+            }
+        }
+
+        async function showQuickView(productId) {
+            const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+            const modalBody = document.querySelector('#quickViewModal .modal-body');
+
+            // Show loading state
+            modalBody.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Loading product details...</p>
+                </div>
+            `;
+
+            modal.show();
+
+            try {
+
+                const product = allProducts.find(e=>e.id === productId);
+
+                // Render product details
+                modalBody.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="quickViewCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    ${product.images && product.images.length > 0 ?
+                                        product.images.map((img, index) => `
+                                            <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                                                <img src="data:image/jpeg;base64,${img}" class="d-block w-100" alt="${product.name}">
+                                            </div>
+                                        `).join('') :
+                                        `<div class="carousel-item active">
+                                            <div class="no-image-placeholder" style="height: 400px;">
+                                                <i class="fas fa-image"></i>
+                                                <span>No Image</span>
+                                            </div>
+                                        </div>`
+                                    }
+                                </div>
+                                ${product.images && product.images.length > 1 ? `
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#quickViewCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#quickViewCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="mb-3">${product.name}</h3>
+
+                            <div class="product-rating mb-3">
+                                ${generateRatingStars(product.rate)}
+                                <span class="rating-text">(${product.rate.toFixed(1)})</span>
+                            </div>
+
+                            <div class="product-price mb-3">
+                                <span class="current-price fs-3">$${product.currentPrice.toFixed(2)}</span>
+                                ${product.prevPrice && product.prevPrice > product.currentPrice ?
+                                    `<span class="prev-price fs-5 ms-2">$${product.prevPrice.toFixed(2)}</span>` : ''}
+                            </div>
+
+                            <p class="text-muted mb-4">${product.description || 'No description available.'}</p>
+
+                            <div class="stock-status mb-4">
+                                ${generateStockStatus(product.quantity)}
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                ${!isAdminUser() ? `
+                                    <button class="btn btn-primary flex-grow-1 ${product.quantity === 0 ? 'disabled' : ''}"
+                                            onclick="addToCart('${product.id}', this)"
+                                            ${product.quantity === 0 ? 'disabled' : ''}>
+                                        <i class="fas fa-shopping-cart me-2"></i>
+                                        ${product.quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                                    </button>
+                                ` : ''}
+                                <a href="/product/detail/${product.id}" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye me-2"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading product details:', error);
+                modalBody.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-circle text-danger fs-1 mb-3"></i>
+                        <p class="text-muted">Failed to load product details. Please try again.</p>
+                        <button class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Utility functions
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function generateRatingStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i - 0.5 <= rating) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+
+        function generateStockStatus(quantity) {
+            if (quantity > 5) {
+                return `<span class="in-stock"><i class="fas fa-check-circle me-1"></i>In Stock (${quantity} available)</span>`;
+            } else if (quantity > 0) {
+                return `<span class="low-stock"><i class="fas fa-exclamation-triangle me-1"></i>Only ${quantity} left in stock</span>`;
+            } else {
+                return '<span class="out-of-stock"><i class="fas fa-times-circle me-1"></i>Out of Stock</span>';
+            }
+        }
+
+        function isAdminUser() {
+            // This should be set based on your actual user role check
+            return @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin")) ? "true" : "false");
+        }
+
+        function showToast(type, message) {
+            if (typeof Swal !== 'undefined') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+
+                Toast.fire({
+                    icon: type,
+                    title: message
+                });
+            }
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    </script>
+}

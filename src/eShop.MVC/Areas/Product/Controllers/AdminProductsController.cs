@@ -5,6 +5,7 @@ using eShop.Core.Utilities;
 using eShop.DAL.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NToastNotify;
 
 namespace eShop.MVC.Areas.Product.Controllers
@@ -19,12 +20,12 @@ namespace eShop.MVC.Areas.Product.Controllers
         private readonly IImageServices _imageService;
         private readonly IMapper _mapper;
 
-        public AdminProductsController(IMapper _mapper, IUnitOfWork UnitOfWork, IToastNotification ToastNotification, IImageServices ImageServices)
+        public AdminProductsController(IMapper mapper, IUnitOfWork unitOfWork, IToastNotification toastNotification, IImageServices imageServices)
         {
-            _unitOfWork = UnitOfWork;
-            _toastNotification = ToastNotification;
-            _imageService = ImageServices;
-            this._mapper = _mapper;
+            _unitOfWork = unitOfWork;
+            _toastNotification = toastNotification;
+            _imageService = imageServices;
+            _mapper = mapper;
         }
 
         [HttpGet("products")]
@@ -35,7 +36,6 @@ namespace eShop.MVC.Areas.Product.Controllers
             ViewBag.Pages = (ViewBag.TotalItems + Page.MaxElementsInPage - 1) / Page.MaxElementsInPage;
             ViewBag.PageNumber = pageNumber;
 
-            //update bad Performance
             var model = _unitOfWork.Products.Include("Images").Skip((pageNumber - 1) * Page.MaxElementsInPage).Take(Page.MaxElementsInPage).ToList();
 
             var result = _mapper.Map<List<ProductViewModel>>(model);
@@ -45,7 +45,19 @@ namespace eShop.MVC.Areas.Product.Controllers
 
 
         [HttpGet("product/add")]
-        public async Task<IActionResult> Add() => View(new CreateProductViewModel());
+        public async Task<IActionResult> Add()
+        {
+            var model = new CreateProductViewModel()
+            {
+                Categories =
+                new SelectList((
+                await _unitOfWork.Categories.GetAllAsync())
+                .ToList()
+                , "Id"
+                , "Name")
+            };
+            return View(model);
+        }
 
         [HttpPost("product/add")]
         public async Task<IActionResult> Add(CreateProductViewModel model)
@@ -92,7 +104,7 @@ namespace eShop.MVC.Areas.Product.Controllers
         {
             if (id == Guid.Empty)
                 return RedirectToAction(nameof(Index));
-            var product = _unitOfWork.Products.GetById(id);
+            var product = await _unitOfWork.Products.FindAsync(e => e.Id == id, e => e.Images);
 
             if (product is null)
             {
@@ -100,16 +112,25 @@ namespace eShop.MVC.Areas.Product.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            product.Images = _unitOfWork.Products.GetProductImages(id).ToList();
+            var model = _mapper.Map<EditProductViewModel>(product);
 
-            return View(_mapper.Map<EditProductViewModel>(product));
+            model.Categories = new SelectList((
+                await _unitOfWork.Categories.GetAllAsync())
+                .ToList()
+                , "Id"
+                , "Name");
+
+            return View(model);
         }
 
         [HttpPost("product/edit")]
         public async Task<IActionResult> Edit(EditProductViewModel product)
         {
             if (!ModelState.IsValid)
+            {
+                product.SendProductImages = _mapper.Map<List<byte[]>>(_unitOfWork.Products.GetProductImages(product.Id).ToList());
                 return View(product);
+            }
 
             if (product.Id == Guid.Empty)
             {
@@ -118,10 +139,10 @@ namespace eShop.MVC.Areas.Product.Controllers
             }
 
             var model = _mapper.Map<Core.Entities.Product>(product);
-            if (!model.Images.Any() && product.IsDeletedProductImages.Count(e => e) == 0)
+            if (!model.Images.Any() && product.IsDeletedProductImages.Count(e => !e) == 0)
             {
                 _toastNotification.AddWarningToastMessage("Plz upload alreast one image");
-                return View(product);
+                return RedirectToAction(nameof(Index));
             }
 
             for (int i = 0; i < product.IDProductImages.Count(); i++)
@@ -150,7 +171,6 @@ namespace eShop.MVC.Areas.Product.Controllers
         [HttpDelete("product/delete/{Id}")]
         public async Task<IActionResult> Delete(Guid Id)
         {
-            Console.WriteLine(Id);
             if (Id == Guid.Empty)
             {
                 return BadRequest("Product ID is required.");

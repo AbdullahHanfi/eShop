@@ -380,3 +380,202 @@
         transform: translateY(0);
     }
 }
+
+.visibility-container {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.visibility-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.switch-track {
+    width: 48px;
+    height: 24px;
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.visibility-switch.active .switch-track {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.visibility-switch.inactive .switch-track {
+    background: #e5e7eb;
+}
+
+.switch-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.visibility-switch.active .switch-thumb {
+    left: 26px;
+}
+
+.visibility-switch.inactive .switch-thumb {
+    left: 2px;
+}
+
+.switch-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.visibility-switch.active .switch-label {
+    color: #047857;
+}
+
+.visibility-switch.inactive .switch-label {
+    color: #6b7280;
+}
+
+/* Category Dropdown Styles */
+.modern-select {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+    .modern-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+
+    .modern-select option {
+        padding: 0.5rem;
+    }
+
+/* Hidden checkbox for toggle functionality */
+.visibility-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.visibility-container {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.visibility-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.switch-track {
+    width: 48px;
+    height: 24px;
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.visibility-switch.active .switch-track {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.visibility-switch.inactive .switch-track {
+    background: #e5e7eb;
+}
+
+.switch-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.visibility-switch.active .switch-thumb {
+    left: 26px;
+}
+
+.visibility-switch.inactive .switch-thumb {
+    left: 2px;
+}
+
+.switch-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.visibility-switch.active .switch-label {
+    color: #047857;
+}
+
+.visibility-switch.inactive .switch-label {
+    color: #6b7280;
+}
+
+/* Category Dropdown Styles */
+.modern-select {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+    .modern-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+
+    .modern-select option {
+        padding: 0.5rem;
+    }
+
+/* Hidden checkbox for toggle functionality */
+.visibility-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}

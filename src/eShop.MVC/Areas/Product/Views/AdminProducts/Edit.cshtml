@@ -4,7 +4,8 @@
     ViewData["Title"] = "Edit Product";
 }
 @section style {
-    <link rel="stylesheet" href="~/css/AdminProduct/EditProduct.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Product/CreateProduct.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Product/EditProduct.css" asp-append-version="true" />
 }
 
 <div class="container mt-4 fade-in">
@@ -67,6 +68,46 @@
                                 </label>
                                 <input asp-for="PrevPrice" type="number" step="0.01" class="form-control modern-input" placeholder="0.00" />
                                 <span asp-validation-for="PrevPrice" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Category & Visibility Section -->
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label asp-for="CategoryId" class="form-label">
+                                        <i class="fas fa-th-large"></i>
+                                        Product Category
+                                    </label>
+                                    <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control modern-select">
+                                        <option value="">-- Select a Category --</option>
+                                    </select>
+                                    <span asp-validation-for="CategoryId" class="validation-message"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="bi bi-eye-fill"></i>
+                                        Product Visibility
+                                    </label>
+
+                                    <div class="visibility-container">
+                                        <input asp-for="Active" type="checkbox" class="visibility-checkbox" id="activeToggle" />
+                                        <div class="visibility-switch @(Model.Active ? "active" : "inactive")" id="visibilitySwitch">
+                                            <div class="switch-track">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                            <span class="switch-label">@(Model.Active ? "Visible to Customers" : "Hidden from Customers")</span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">
+                                            <i class="fas fa-info-circle"></i>
+                                            When hidden, this product will only be visible to administrators
+                                        </small>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -253,6 +294,74 @@
                     return false;
                 }
 
+                const CurrentPrice = document.getElementById('CurrentPrice').value;
+                const PrevPrice = document.getElementById('PrevPrice').value;
+
+                if (PrevPrice != 0 && (CurrentPrice >= PrevPrice)) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'price',
+                        text: 'previous value must be higher.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#2563eb',
+                        customClass: {
+                            popup: 'modern-swal'
+                        }
+                    });
+                    return false;
+                }
+
+                const ProductName = document.getElementById('Name').length;
+
+                if (ProductName == 0) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Proudct name',
+                        text: 'Product must have Name.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#2563eb',
+                        customClass: {
+                            popup: 'modern-swal'
+                        }
+                    });
+                    return false;
+                }
+
+                const CategoryId = document.getElementById('CategoryId').value;
+
+                if (CategoryId == 0) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'No category selected',
+                        text: 'Product must have append to category.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#2563eb',
+                        customClass: {
+                            popup: 'modern-swal'
+                        }
+                    });
+                    return false;
+                }
+                const descriptionContent = document.getElementById('Description').length;
+
+                if (descriptionContent>=2 && descriptionContent<= @StringConstants.MaxSize) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Description',
+                        text: 'Description must have length between 2 & @StringConstants.MaxSize.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#2563eb',
+                        customClass: {
+                            popup: 'modern-swal'
+                        }
+                    });
+                    return false;
+                }
+
                 // Show loading
                 window.eShopNav.showLoading();
 
@@ -328,6 +437,90 @@
 
                 setTimeout(() => ripple.remove(), 600);
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image preview functionality (keep existing code)
+            const imageInput = document.getElementById('productImageInput');
+            const imagePreview = document.getElementById('imagePreview');
+
+            if (imageInput && imagePreview) {
+                imageInput.addEventListener('change', function(e) {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                        let imagesHTML="";
+                        Array.from(files).forEach((file)=>{
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                imagesHTML+=`
+                                    <img src="${e.target.result}" alt="Product Preview" style="margin:0px 3px;max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px;">`
+                                    imagePreview.innerHTML = imagesHTML;
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+                });
+
+                // Click to upload
+                imagePreview.addEventListener('click', function() {
+                    imageInput.click();
+                });
+            }
+
+            // Visibility Toggle Switch
+            const visibilitySwitch = document.getElementById('visibilitySwitch');
+            const activeToggle = document.getElementById('activeToggle');
+
+            if (visibilitySwitch && activeToggle) {
+                visibilitySwitch.addEventListener('click', function() {
+                    activeToggle.checked = !activeToggle.checked;
+
+                    if (activeToggle.checked) {
+                        visibilitySwitch.classList.remove('inactive');
+                        visibilitySwitch.classList.add('active');
+                        visibilitySwitch.querySelector('.switch-label').textContent = 'Visible to Customers';
+                    } else {
+                        visibilitySwitch.classList.remove('active');
+                        visibilitySwitch.classList.add('inactive');
+                        visibilitySwitch.querySelector('.switch-label').textContent = 'Hidden from Customers';
+                    }
+                });
+            }
+
+            // Loading bar animation
+            const loadingBar = document.getElementById('loadingBar');
+            if (loadingBar) {
+                setTimeout(() => {
+                    loadingBar.style.width = '100%';
+                    setTimeout(() => {
+                        loadingBar.style.opacity = '0';
+                    }, 300);
+                }, 100);
+            }
+
+            // Form validation enhancement
+            const form = document.querySelector('.modern-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('.btn-create');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            }
+
+            // Category dropdown enhancement
+            const categorySelect = document.querySelector('.modern-select');
+            if (categorySelect) {
+                categorySelect.addEventListener('change', function() {
+                    if (this.value) {
+                        this.style.color = '#1f2937';
+                    } else {
+                        this.style.color = '#6b7280';
+                    }
+                });
+            }
         });
     </script>
 

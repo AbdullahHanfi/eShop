@@ -9,5 +9,9 @@ namespace eShop.Core.Utilities
     {
         public const int MaxElementsInPage = 5;
     }
-
+    public static class CacheKeys
+    {
+        public const string CategoriesKey = "Categories_list";
+        public const string ProductsKey = "products_list";
+    }
 }

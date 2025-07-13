@@ -16,6 +16,7 @@ namespace eShop.DAL
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
 
             services.Configure<IdentityOptions>(options =>
             {

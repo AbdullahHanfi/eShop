@@ -20,10 +20,10 @@ namespace eShop.DAL.Repositories.Interface
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> criteria);
 
 
-        TEntity Find(Expression<Func<TEntity, bool>> criteria, string[] includes = null);
-        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> criteria, string[] includes = null);
-        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> criteria, string[] includes = null);
-        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> criteria, string[] includes = null);
+        TEntity Find(Expression<Func<TEntity, bool>> criteria,params Expression<Func<TEntity, object>>[] includes);
+        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> criteria,params Expression<Func<TEntity, object>>[] includes);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> criteria,params Expression<Func<TEntity, object>>[] includes);
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> criteria,params Expression<Func<TEntity, object>>[] includes);
 
 
         TEntity Add(TEntity entity);
@@ -49,6 +49,6 @@ namespace eShop.DAL.Repositories.Interface
 
         IEnumerable<TEntity> Skip(int count);
         IEnumerable<TEntity> Take(int count);
-        IEnumerable<TEntity> Include(string navigationPropert);
+        IQueryable<TEntity> Include(string navigationPropert);
     }
 }
