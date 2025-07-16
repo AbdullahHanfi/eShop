@@ -4,6 +4,7 @@ using eShop.BLL.ViewModels.Account;
 using eShop.Core.Entities;
 using eShop.DAL.Interface;
 using eShop.DAL.Utilities;
+using eShop.MVC.Controllers;
 using eShop.MVC.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -186,95 +187,93 @@ namespace eShop.MVC.Areas.Auth.Controllers
             {
                 return View("Error");
             }
-            var user = await _unitOfWork.Users.FindByIdAsync(model.userId);
+            var user = await _unitOfWork.Users.FindByIdAsync(model.UserId);
             if (user != null)
             {
-                var result = await _unitOfWork.Users.ConfirmEmailAsync(user, model.token);
+                var result = await _unitOfWork.Users.ConfirmEmailAsync(user, model.Token);
                 if (result.Succeeded)
                     return View();
             }
             return View("Error");
         }
 
-        //[Route("ForgotPassword")]
-        //public IActionResult ForgotPassword()
-        //    => View(new ForgotPasswordViewModel());
+        [Route("ForgotPassword")]
+        public IActionResult ForgotPassword()
+            => View(new ForgotPasswordViewModel());
 
-        //[HttpPost("ForgotPassword")]
-        //public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View("Error");
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("Error");
 
-        //    User? user = await _accountServies.UserByEmailOrName(model.item);
+            var user = await _accountServies.UserByEmailOrName(model.item);
 
-        //    if (user is not null)
-        //    {
-        //        var state = await _accountServies.ResetPasswordToken(model.item);
-        //        if (state)
-        //        {
-        //            _toastNotification.AddSuccessToastMessage("Plz check your Email");
-        //            return RedirectToAction(nameof(ForgotPasswordConfirmation));
-        //        }
-        //    }
-        //    ModelState.AddModelError("", "Wrong");
-        //    return View(model);
-        //}
-        //[AllowAnonymous]
-        //public ActionResult ForgotPasswordConfirmation()
-        //    => View();
+            if (user is not null)
+            {
+                var state = await _accountServies.ResetPasswordToken(model.item);
+                if (state)
+                {
+                    _toastNotification.AddSuccessToastMessage("Check your email for password reset URL.");
+                    return Redirect("/");
+                }
+            }
+            ModelState.AddModelError("", "Wrong");
+            return View(model);
+        }
 
+        [HttpGet("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ComfirmViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("Error");
+            var user = await _unitOfWork.Users.FindByIdAsync(model.UserId);
 
-        //public async Task<IActionResult> ResetPassword(ComfirmViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View("Error");
-        //    var user = await _UnitOfWork.user.FindByIdAsync(model.userId);
+            if (user != null)
+                return View(new ResetPasswordViewModel() { Email = user.Email, userId = user.Id, Token = model.Token });
 
-        //    if (user != null)
-        //        return View(new ResetPasswordViewModel() { Email = user.Email, userId = user.Id, Token = model.token });
+            return View("Error");
+        }
 
-        //    return View("Error");
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View("Error");
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("Error");
 
-        //    var user = await _UnitOfWork.user.FindByIdAsync(model.userId);
-        //    if (user is null || user.Email != model.Email)
-        //        return View("Error");
+            var user = await _unitOfWork.Users.FindByIdAsync(model.userId);
+            if (user is null || user.Email != model.Email)
+                return View("Error");
 
-        //    var result = await _UnitOfWork.user.ResetPasswordAsync(user, model.Token, model.Password);
-        //    if (result.Succeeded)
-        //        return View(nameof(ResetPasswordConfirmation));
+            var result = await _unitOfWork.Users.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                _toastNotification.AddSuccessToastMessage("The password has been successfully reset.");
+                await _signInManager.PasswordSignInAsync(user, model.Password, true, false);
+                return Redirect("/");
+            }
 
-        //    return View("Error");
-        //}
-        //[AllowAnonymous]
-        //public ActionResult ResetPasswordConfirmation()
-        //=> View();
+            return View("Error");
+        }
 
+        //Valdition serviers
+        public async Task<JsonResult> IsAlreadySigned(string? Email)
+        {
+            if (string.IsNullOrEmpty(Email))
+                return Json(true);
 
-        ////Valdition serviers
-        //public async Task<JsonResult> IsAlreadySigned(string? Email)
-        //{
-        //    if (string.IsNullOrEmpty(Email))
-        //        return Json(true);
+            var user = await _accountServies.UserByEmailOrName(Email);
 
-        //    User? user = await _accountServies.UserByEmailOrName(Email);
+            return Json(user is null);
+        }
+        public async Task<JsonResult> IsUsedName(string? UserName)
+        {
+            if (string.IsNullOrEmpty(UserName))
+                return Json(true);
 
-        //    return Json(user is null);
-        //}
-        //public async Task<JsonResult> IsUsedName(string? UserName)
-        //{
-        //    if (string.IsNullOrEmpty(UserName))
-        //        return Json(true);
+            var user = await _accountServies.UserByEmailOrName(UserName);
 
-        //    User? user = await _accountServies.UserByEmailOrName(UserName);
-
-        //    return Json(user is null);
-        //}
+            return Json(user is null);
+        }
     }
 }

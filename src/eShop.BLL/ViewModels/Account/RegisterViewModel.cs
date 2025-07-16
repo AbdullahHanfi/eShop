@@ -11,11 +11,11 @@ namespace eShop.BLL.ViewModels.Account
     public class RegisterViewModel
     {
         [Required, EmailAddress, Display(Name = "Email")]
-        [Remote(action: "IsAlreadySigned", controller: "Account", areaName: "Auth", HttpMethod = "POST", ErrorMessage = "Email is already exists.")]
+        [Remote(action: "IsAlreadySigned", controller: "Auth", areaName: "Auth", HttpMethod = "POST", ErrorMessage = "Email is already exists.")]
         public string? Email { get; set; }
 
         [Required, Display(Name = "UserName")]
-        [Remote(action: "IsUsedName", controller: "Account", areaName: "Auth", HttpMethod = "POST", ErrorMessage = "User Name is already exists.")]
+        [Remote(action: "IsUsedName", controller: "Auth", areaName: "Auth", HttpMethod = "POST", ErrorMessage = "User Name is already exists.")]
         public string? UserName { get; set; }
 
         [Required]

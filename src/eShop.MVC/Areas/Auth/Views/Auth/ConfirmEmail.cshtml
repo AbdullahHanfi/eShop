@@ -1,12 +1,457 @@
-﻿
 ﻿@{
-    ViewBag.Title = "Confirm Email";
+    ViewBag.Title = "Email Confirmed";
+    Layout = null; // Using custom layout for this special page
 }
 
-<h2 class="text-center">@ViewBag.Title.</h2>
-<div>
-    <p class="text-center">
-        Thank you for confirming your email. 
-        Please<a class="text-decoration-none" href="/Login">Click here to Log in</a>
-    </p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - eShop</title>
+    <link rel="icon" type="image/x-icon" href="~/assets/online-shop.ico" />
+    <meta name="description" content="Email confirmation page for eShop. Your email has been successfully verified.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .confirm-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .confirm-container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: var(--success-gradient);
+                border-radius: 24px 24px 0 0;
+            }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            animation: successPulse 2s ease-in-out infinite;
+            position: relative;
+        }
+
+            .success-icon::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: var(--success-gradient);
+                border-radius: 50%;
+                animation: ripple 2s ease-in-out infinite;
+                opacity: 0.3;
+            }
+
+            .success-icon i {
+                font-size: 2.5rem;
+                color: white;
+                animation: checkmark 0.8s ease-in-out 0.3s both;
+            }
+
+        @@keyframes successPulse {
+            0%, 100%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        }
+
+        @@keyframes ripple {
+            0%
+
+        {
+            transform: scale(1);
+            opacity: 0.3;
+        }
+
+        100% {
+            transform: scale(1.4);
+            opacity: 0;
+        }
+
+        }
+
+        @@keyframes checkmark {
+            0%
+
+        {
+            transform: scale(0) rotate(45deg);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+
+        }
+
+        .confirm-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 1rem;
+            animation: slideInUp 0.8s ease-out 0.5s both;
+        }
+
+        .confirm-subtitle {
+            font-size: 1.125rem;
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            animation: slideInUp 0.8s ease-out 0.7s both;
+        }
+
+        .login-button {
+            background: var(--bg-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.8s ease-out 0.9s both;
+        }
+
+            .login-button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .login-button:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-lg);
+                color: white;
+            }
+
+                .login-button:hover::before {
+                    left: 100%;
+                }
+
+            .login-button:active {
+                transform: translateY(0);
+            }
+
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            animation: float 6s ease-in-out infinite;
+        }
+
+            .floating-shape:nth-child(1) {
+                width: 60px;
+                height: 60px;
+                top: 20%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .floating-shape:nth-child(2) {
+                width: 80px;
+                height: 80px;
+                top: 60%;
+                right: 15%;
+                animation-delay: 2s;
+            }
+
+            .floating-shape:nth-child(3) {
+                width: 40px;
+                height: 40px;
+                bottom: 20%;
+                left: 20%;
+                animation-delay: 4s;
+            }
+
+        @@keyframes float {
+            0%, 100%
+
+        {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-20px) rotate(180deg);
+        }
+
+        }
+
+        @@keyframes slideInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            animation: slideInUp 0.8s ease-out 0.1s both;
+        }
+
+        .additional-info {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            animation: slideInUp 0.8s ease-out 1.1s both;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+            .info-item i {
+                color: var(--success-color);
+            }
+
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            transition: color 0.3s ease;
+        }
+
+            .home-link:hover {
+                color: var(--primary-color);
+            }
+
+        /* Responsive Design */
+        @@media (max-width: 576px) {
+            .confirm-container
+
+        {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .confirm-title {
+            font-size: 1.5rem;
+        }
+
+        .success-icon {
+            width: 60px;
+            height: 60px;
+        }
+
+            .success-icon i {
+                font-size: 2rem;
+            }
+
+        .login-button {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        }
+
+        /* Loading animation for page transitions */
+        .page-transition {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @@keyframes fadeIn {
+            to
+
+        {
+            opacity: 1;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="confirm-container page-transition">
+        <div class="decorative-elements">
+            <div class="floating-shape"></div>
+            <div class="floating-shape"></div>
+            <div class="floating-shape"></div>
+        </div>
+
+        <div class="brand-logo">
+            <i class="bi bi-shop me-2"></i>eShop
+        </div>
+
+        <div class="success-icon">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <h1 class="confirm-title">@ViewBag.Title!</h1>
+
+        <p class="confirm-subtitle">
+            Great news! Your email has been successfully verified.
+            You can now access all features of your eShop account.
+        </p>
+
+        <a href="/Login" class="login-button">
+            <i class="bi bi-box-arrow-in-right"></i>
+            Continue to Login
+        </a>
+
+        <div class="additional-info">
+            <div class="info-item">
+                <i class="bi bi-shield-check"></i>
+                <span>Your account is now secure and verified</span>
+            </div>
+            <div class="info-item">
+                <i class="bi bi-cart-check"></i>
+                <span>Ready to start shopping</span>
+            </div>
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="home-link">
+                <i class="bi bi-house"></i>
+                <span>Return to Home</span>
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add smooth page transition
+        document.addEventListener('DOMContentLoaded', function() {
+            // Trigger animations after a short delay
+            setTimeout(() => {
+                document.querySelector('.page-transition').style.opacity = '1';
+            }, 100);
+
+            // Add click effect to login button
+            const loginButton = document.querySelector('.login-button');
+            loginButton.addEventListener('click', function(e) {
+                // Create ripple effect
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: rippleEffect 0.6s ease-out;
+                    pointer-events: none;
+                `;
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+
+            // Add CSS for ripple effect
+            const style = document.createElement('style');
+            style.textContent = `
+                @@keyframes rippleEffect {
+                    to {
+                        transform: scale(2);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
