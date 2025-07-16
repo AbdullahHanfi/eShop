@@ -3,6 +3,7 @@ using eShop.BLL.Services.Abstraction;
 using eShop.BLL.ViewModels.Product;
 using eShop.Core.Utilities;
 using eShop.DAL.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 
@@ -10,6 +11,7 @@ namespace eShop.MVC.Areas.Product.Controllers
 {
     [Area("product")]
     [Route("customer-products")]
+    [Authorize("GuestOrCustomer")]
     public class CustomerProductsController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
