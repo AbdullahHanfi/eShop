@@ -20,7 +20,7 @@ A simple and modular eCommerce web application built using **ASP.NET Core MVC**.
 -   🧩 N-tiers architecture (MVC + Repository Pattern + Unit of work)
     
 -   🛠️ SQL Server with Entity Framework Core (Code-First)
--   
+
 -   🛠️ Dapper for reading data (Micro ORM)
     
 
