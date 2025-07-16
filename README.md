@@ -17,35 +17,30 @@ A simple and modular eCommerce web application built using **ASP.NET Core MVC**.
     
 -   🔍 Product search and filtering
     
--   🧩 N-tiers architecture (MVC + Repository Pattern + Unit of work)
-    
--   🛠️ SQL Server with Entity Framework Core (Code-First)
 
--   🛠️ Dapper for reading data (Micro ORM)
-    
 
 ----------
 
 ## 🧱 Tech Stack
 
 -   ASP.NET Core MVC (.NET 8)
-    
--   Entity Framework Core
 
--   Dapper
+-   C# (LINQ, Dependency Injection)
+
+-   Dapper for reading data (Micro ORM)
     
--   SQL Server
+-   SQL Server with Entity Framework Core (Code-First)
     
 -   ASP.NET Core Identity
     
 -   Bootstrap 5
     
 -   Razor Views
-    
--   LINQ, Dependency Injection
-    
--   Design Patterns
 
+-   Design Patterns (MVC + Repository Pattern + Unit of work + Strategy Pattern)
+
+-   N-tiers architecture 
+    
 -   In memory Caching
 
 ----------
@@ -54,10 +49,10 @@ A simple and modular eCommerce web application built using **ASP.NET Core MVC**.
 ```
 eShop/
 ├── src/
-├  ├── eShop.MVC         => UI & Controller Layer (ASP.NET Core MVC) .
-├  ├── eShop.Core        => Entities, Utilities .
-├  ├── eShop.DAL         => Unit of Work & Repositories & Data Context & Migrations & Disk i/o .
-├  ├── eShop.Business    => Services & ViewModel & Attributes & Exceptions & Mapping.
+├  ├── eShop.MVC         => UI & Controller Layer (ASP.NET Core MVC) 
+├  ├── eShop.Core        => Entities, Utilities 
+├  ├── eShop.DAL         => Unit of Work & Repositories & Data Context & Migrations & Disk i/o 
+├  ├── eShop.Business    => Services & ViewModel & Attributes & Exceptions & Mapping
 ├── test/
 ├   ├── unit/
 ├       ├── eShop.BLL.Tests       => Unit Tests 
@@ -89,19 +84,23 @@ Then go to `https://localhost:7064` in your browser.
 
 ----------
 
-## 🔐 Admin Login
+## 🔐 Login Details
 
-seeded admin user in the database.
+### 👑 Super Admin
 
-bash
-`Email: superadmin@gmail.com
-Password: superadmin@gmail.com` 
+-   **Email:** `superadmin@gmail.com`
+    
+-   **Password:** `superadmin@gmail.com`
+    
 
-seeded normal user in the database.
+### 👤 Normal User
 
-bash
-`Email: user@gmail.com
-Password: user@gmail.com` 
+-   **Email:** `user@gmail.com`
+    
+-   **Password:** `user@gmail.com`
+    
+
+> ⚠️ _These credentials are for testing or demo purposes only. Make sure to update them before deploying to production._
 
 ----------
 
