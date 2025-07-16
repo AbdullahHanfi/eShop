@@ -46,6 +46,14 @@ namespace eShop.MVC
                 .AddEntityFrameworkStores<eShopDbContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("GuestOrCustomer", policy =>
+                    policy.RequireAssertion(context =>
+                        !context.User.Identity.IsAuthenticated ||
+                        context.User.IsInRole("Customer")
+                    ));
+            });
 
             ServiceRegisterationDAL.Add(builder.Services);
             builder.Services.Configure<PhotoSettings>(builder.Configuration.GetSection("PhotoSettings"));
@@ -56,6 +64,7 @@ namespace eShop.MVC
             {
                 options.LoginPath = "/Login";
                 options.LogoutPath = "/Logout";
+                //options.AccessDeniedPath = "/AccessDenied";
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 options.Cookie = new CookieBuilder
@@ -86,10 +95,11 @@ namespace eShop.MVC
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            //app.UseStatusCodePagesWithRedirects("/Error/{0}");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

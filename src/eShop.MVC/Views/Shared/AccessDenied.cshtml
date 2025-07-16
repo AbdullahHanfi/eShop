@@ -1,0 +1,782 @@
+﻿@{
+    ViewData["Title"] = "Access Forbidden";
+}
+
+<div class="forbidden-page-container">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-lg-7 col-md-9">
+                <div class="forbidden-card fade-in">
+                    <!-- Lock Animation -->
+                    <div class="lock-wrapper">
+                        <div class="lock-container">
+                            <div class="lock-body">
+                                <div class="lock-hole"></div>
+                            </div>
+                            <div class="lock-shackle"></div>
+                        </div>
+                        <div class="shield-badge">
+                            <i class="bi bi-shield-x"></i>
+                        </div>
+                        <div class="pulse-rings">
+                            <div class="pulse-ring"></div>
+                            <div class="pulse-ring"></div>
+                            <div class="pulse-ring"></div>
+                        </div>
+                    </div>
+
+                    <h1 class="forbidden-title">Access Forbidden</h1>
+                    <div class="error-code-badge">Error 403</div>
+
+                    <p class="forbidden-subtitle">
+                        Sorry, you don't have permission to access this area.
+                        This section is restricted to authorized users only.
+                    </p>
+
+                    <!-- Reason Cards -->
+                    <div class="reason-section">
+                        <h5 class="reason-title">This might be because:</h5>
+                        <div class="reason-cards">
+                            <div class="reason-card">
+                                <div class="reason-icon">
+                                    <i class="bi bi-person-x"></i>
+                                </div>
+                                <p>You're not logged in</p>
+                            </div>
+                            <div class="reason-card">
+                                <div class="reason-icon">
+                                    <i class="bi bi-key"></i>
+                                </div>
+                                <p>Insufficient permissions</p>
+                            </div>
+                            <div class="reason-card">
+                                <div class="reason-icon">
+                                    <i class="bi bi-clock-history"></i>
+                                </div>
+                                <p>Session has expired</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="forbidden-actions">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a href="/Identity/Account/Login" class="btn-action btn-gradient">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Sign In
+                            </a>
+                        }
+                        <button onclick="history.back()" class="btn-action btn-secondary-custom">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Go Back
+                        </button>
+                        <a href="/" class="btn-action btn-outline-custom">
+                            <i class="bi bi-house me-2"></i>
+                            Home Page
+                        </a>
+                    </div>
+
+                    <!-- Help Section -->
+                    <div class="help-section">
+                        <p class="help-text">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Need help? <a href="/contact" class="help-link">Contact Support</a>
+                        </p>
+                    </div>
+
+                    <!-- Decorative Elements -->
+                    <div class="decorative-elements">
+                        <div class="floating-key key-1">
+                            <i class="bi bi-key-fill"></i>
+                        </div>
+                        <div class="floating-key key-2">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                        <div class="floating-key key-3">
+                            <i class="bi bi-lock-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .forbidden-page-container {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .forbidden-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Lock Animation */
+    .lock-wrapper {
+        position: relative;
+        margin-bottom: 2rem;
+        height: 150px;
+    }
+
+    .lock-container {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        animation: shake 4s infinite;
+    }
+
+    .lock-body {
+        width: 80px;
+        height: 60px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border-radius: 10px;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .lock-hole {
+        width: 20px;
+        height: 25px;
+        background: white;
+        border-radius: 0 0 10px 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .lock-shackle {
+        width: 50px;
+        height: 45px;
+        border: 12px solid #dc2626;
+        border-bottom: none;
+        border-radius: 25px 25px 0 0;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: lock-shake 2s infinite;
+    }
+
+    .shield-badge {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120px;
+        height: 120px;
+        background: rgba(239, 68, 68, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: -1;
+    }
+
+        .shield-badge i {
+            font-size: 4rem;
+            color: rgba(239, 68, 68, 0.2);
+        }
+
+    .pulse-rings {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .pulse-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 150px;
+        height: 150px;
+        border: 2px solid rgba(239, 68, 68, 0.3);
+        border-radius: 50%;
+        animation: pulse-expand 3s infinite;
+    }
+
+        .pulse-ring:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        .pulse-ring:nth-child(3) {
+            animation-delay: 2s;
+        }
+
+    @@keyframes shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+
+        10%, 30%, 50%, 70%, 90% {
+            transform: translateX(-2px);
+        }
+
+        20%, 40%, 60%, 80% {
+            transform: translateX(2px);
+        }
+    }
+
+    @@keyframes lock-shake {
+        0%, 100% {
+            transform: translateX(-50%) rotate(0deg);
+        }
+
+        25% {
+            transform: translateX(-50%) rotate(-5deg);
+        }
+
+        75% {
+            transform: translateX(-50%) rotate(5deg);
+        }
+    }
+
+    @@keyframes pulse-expand {
+        0% {
+            width: 100px;
+            height: 100px;
+            opacity: 0.6;
+        }
+
+        100% {
+            width: 200px;
+            height: 200px;
+            opacity: 0;
+        }
+    }
+
+    .forbidden-title {
+        color: #1f2937;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .error-code-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .forbidden-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Reason Cards */
+    .reason-section {
+        margin: 2rem 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 15px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .reason-title {
+        color: #2563eb;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    .reason-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .reason-card {
+        background: white;
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+        .reason-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+    .reason-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #ef444420 0%, #dc262620 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .reason-icon i {
+            font-size: 1.5rem;
+            color: #ef4444;
+        }
+
+    .reason-card:hover .reason-icon {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+        .reason-card:hover .reason-icon i {
+            color: white;
+        }
+
+    .reason-card p {
+        margin: 0;
+        color: #64748b;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    /* Action Buttons */
+    .forbidden-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 2rem 0;
+    }
+
+    .btn-action {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+        .btn-gradient:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.4);
+            filter: brightness(1.1);
+        }
+
+    .btn-secondary-custom {
+        background: #64748b;
+        color: white;
+    }
+
+        .btn-secondary-custom:hover {
+            background: #475569;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(100, 116, 139, 0.3);
+        }
+
+    .btn-outline-custom {
+        background: transparent;
+        color: #2563eb;
+        border: 2px solid #2563eb;
+    }
+
+        .btn-outline-custom:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
+        }
+
+    /* Help Section */
+    .help-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .help-text {
+        color: #64748b;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .help-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .help-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+    /* Decorative Elements */
+    .decorative-elements {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .floating-key {
+        position: absolute;
+        color: rgba(239, 68, 68, 0.1);
+        font-size: 2rem;
+        animation: float-keys 20s infinite ease-in-out;
+    }
+
+    .key-1 {
+        top: 15%;
+        left: 5%;
+        animation-delay: 0s;
+    }
+
+    .key-2 {
+        top: 70%;
+        right: 5%;
+        animation-delay: 7s;
+    }
+
+    .key-3 {
+        bottom: 15%;
+        left: 50%;
+        animation-delay: 14s;
+    }
+
+    @@keyframes float-keys {
+        0%, 100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        25% {
+            transform: translate(30px, -30px) rotate(90deg);
+        }
+
+        50% {
+            transform: translate(-30px, 30px) rotate(180deg);
+        }
+
+        75% {
+            transform: translate(30px, 30px) rotate(270deg);
+        }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .forbidden-card {
+            padding: 2.5rem 1.5rem;
+        }
+
+        .forbidden-title {
+            font-size: 2rem;
+        }
+
+        .reason-cards {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .lock-container {
+            transform: scale(0.8);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .forbidden-card {
+            padding: 2rem 1.25rem;
+        }
+
+        .forbidden-title {
+            font-size: 1.75rem;
+        }
+
+        .forbidden-subtitle {
+            font-size: 1rem;
+        }
+
+        .forbidden-actions {
+            flex-direction: column;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .reason-section {
+            padding: 1.5rem 1rem;
+        }
+
+        .lock-wrapper {
+            height: 120px;
+        }
+
+        .lock-container {
+            transform: scale(0.7);
+        }
+    }
+
+    /* Loading transition */
+    .loading-transition {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        animation: loading 1s ease-in-out;
+    }
+
+    @@keyframes loading {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    /* Additional animations */
+    @@keyframes entrance {
+        from {
+            opacity: 0;
+            transform: scale(0.5) rotate(-180deg);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+    }
+
+    @@keyframes ripple-effect {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    .animate-in {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+
+    /* Gradient text animation */
+    .forbidden-title {
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+    }
+
+    @@keyframes gradient-shift {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    /* Lock glow effect */
+    .lock-body {
+        position: relative;
+    }
+
+        .lock-body::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 10px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            filter: blur(10px);
+        }
+
+    .lock-container:hover .lock-body::after {
+        opacity: 0.5;
+    }
+
+    /* Button hover shine effect */
+    .btn-action {
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient( 90deg, transparent, rgba(255, 255, 255, 0.3), transparent );
+            transition: left 0.5s;
+        }
+
+        .btn-action:hover::before {
+            left: 100%;
+        }
+</style>
+
+<script>
+    // Add entrance animation to elements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate reason cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe reason cards
+        document.querySelectorAll('.reason-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+            observer.observe(card);
+        });
+
+        // Lock animation on load
+        const lockContainer = document.querySelector('.lock-container');
+        if (lockContainer) {
+            setTimeout(() => {
+                lockContainer.style.animation = 'shake 4s infinite, entrance 0.8s ease-out';
+            }, 100);
+        }
+    });
+
+    // Add ripple effect on button click
+    document.querySelectorAll('.btn-action').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                left: ${x}px;
+                top: ${y}px;
+                animation: ripple-effect 0.6s ease-out;
+                pointer-events: none;
+            `;
+
+            this.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+
+    // Add loading animation when navigating
+    document.querySelectorAll('a.btn-action').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (!this.href.includes('#')) {
+                e.preventDefault();
+
+                // Add loading bar
+                const loadingBar = document.createElement('div');
+                loadingBar.className = 'loading-transition';
+                document.body.appendChild(loadingBar);
+
+                // Navigate after animation starts
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 100);
+            }
+        });
+    });
+
+    // Hover effect for reason cards
+    document.querySelectorAll('.reason-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px) scale(1.02)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+
+    // Password reveal animation (if login redirect)
+    const loginBtn = document.querySelector('a[href*="Login"]');
+    if (loginBtn) {
+        loginBtn.addEventListener('mouseenter', function() {
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.classList.remove('bi-box-arrow-in-right');
+                icon.classList.add('bi-unlock');
+            }
+        });
+
+        loginBtn.addEventListener('mouseleave', function() {
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.classList.remove('bi-unlock');
+                icon.classList.add('bi-box-arrow-in-right');
+            }
+        });
+    }
+</script>

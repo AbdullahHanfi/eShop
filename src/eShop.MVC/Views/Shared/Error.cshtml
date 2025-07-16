@@ -1,25 +1,357 @@
-﻿@model ErrorViewModel
-@{
+﻿@{
     ViewData["Title"] = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+@section style {
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
+    <style>
+        .error-page-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: calc(100vh - 200px);
+            display: flex;
+            align-items: center;
+        }
+
+        .error-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .error-icon-wrapper {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .error-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            animation: pulse 2s infinite;
+        }
+
+            .error-icon i {
+                font-size: 3rem;
+                color: white;
+            }
+
+        .error-icon-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-radius: 50%;
+            z-index: 1;
+            animation: pulse-bg 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @@keyframes pulse-bg {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.3;
+            }
+        }
+
+        .error-title {
+            color: #1f2937;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .error-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .error-suggestions {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .suggestion-title {
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .suggestion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #64748b;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .suggestion-item:hover {
+                background: rgba(37, 99, 235, 0.1);
+                color: #2563eb;
+                transform: translateX(5px);
+            }
+
+            .suggestion-item i {
+                color: #2563eb;
+                font-size: 1.1rem;
+                width: 24px;
+            }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn-action {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary-custom {
+            background: #2563eb;
+            color: white;
+        }
+
+            .btn-primary-custom:hover {
+                background: #1d4ed8;
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
+            }
+
+        .btn-secondary-custom {
+            background: #64748b;
+            color: white;
+        }
+
+            .btn-secondary-custom:hover {
+                background: #475569;
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px -5px rgba(100, 116, 139, 0.3);
+            }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+            .btn-gradient:hover {
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.4);
+                filter: brightness(1.1);
+            }
+
+            .btn-gradient::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .btn-gradient:hover::before {
+                left: 100%;
+            }
+
+        .error-reference {
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+            .error-reference code {
+                background: rgba(37, 99, 235, 0.1);
+                color: #2563eb;
+                padding: 0.25rem 0.5rem;
+                border-radius: 6px;
+                font-weight: 600;
+                font-size: 0.875rem;
+            }
+
+        /* Responsive Design */
+        @@media (max-width: 576px) {
+            .error-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .error-title {
+                font-size: 2rem;
+            }
+
+            .error-subtitle {
+                font-size: 1rem;
+            }
+
+            .error-icon {
+                width: 100px;
+                height: 100px;
+            }
+
+                .error-icon i {
+                    font-size: 2.5rem;
+                }
+
+            .error-actions {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Loading animation for page transitions */
+        .loading-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: loading 1s ease-in-out;
+        }
+
+        @@keyframes loading {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @@keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
 }
+<div class="error-page-container">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-lg-6 col-md-8 col-sm-10">
+                <div class="error-card fade-in">
+                    <div class="error-icon-wrapper">
+                        <div class="error-icon">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="error-icon-bg"></div>
+                    </div>
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+                    <h1 class="error-title">Oops! Something went wrong</h1>
+                    <p class="error-subtitle">We're sorry, but we encountered an unexpected error while processing your request.</p>
+
+                    <div class="error-suggestions">
+                        <p class="suggestion-title">Here's what you can try:</p>
+                        <div class="suggestion-list">
+                            <div class="suggestion-item">
+                                <i class="bi bi-arrow-clockwise"></i>
+                                <span>Refresh the page to try again</span>
+                            </div>
+                            <div class="suggestion-item">
+                                <i class="bi bi-arrow-left"></i>
+                                <span>Go back to the previous page</span>
+                            </div>
+                            <div class="suggestion-item">
+                                <i class="bi bi-house"></i>
+                                <span>Return to the home page</span>
+                            </div>
+                            <div class="suggestion-item">
+                                <i class="bi bi-headset"></i>
+                                <span>Contact our support team if the issue persists</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="error-actions">
+                        <button onclick="location.reload()" class="btn-action btn-primary-custom">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            Refresh Page
+                        </button>
+                        <button onclick="history.back()" class="btn-action btn-secondary-custom">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Go Back
+                        </button>
+                        <a href="/" class="btn-action btn-gradient">
+                            <i class="bi bi-house me-2"></i>
+                            Home Page
+                        </a>
+                    </div>
+
+                    @if (ViewData["RequestId"] != null)
+                    {
+                        <div class="error-reference">
+                            <p class="text-muted mb-0">
+                                <small>Error Reference: <code>@ViewData["RequestId"]</code></small>
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

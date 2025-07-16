@@ -1,0 +1,541 @@
+﻿@{
+    ViewData["Title"] = "Page Not Found";
+}
+
+<div class="notfound-page-container">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-lg-8 col-md-10">
+                <div class="notfound-card fade-in">
+                    <!-- Animated 404 -->
+                    <div class="error-code-wrapper">
+                        <h1 class="error-code">
+                            <span class="digit digit-4">4</span>
+                            <span class="digit digit-0">
+                                <i class="bi bi-cart-x"></i>
+                            </span>
+                            <span class="digit digit-4">4</span>
+                        </h1>
+                        <div class="error-code-shadow">404</div>
+                    </div>
+
+                    <h2 class="notfound-title">Page Not Found</h2>
+                    <p class="notfound-subtitle">
+                        Looks like you lost successflly!
+                        @* Looks like this page went shopping and never came back! *@
+                        The page you're looking for doesn't exist or has been moved.
+                    </p>
+
+                    <!-- Search Box -->
+                    <div class="search-section">
+                        <div class="search-box">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" class="search-input" placeholder="Search for products..." id="searchInput">
+                            <button class="search-button" onclick="performSearch()">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Popular Links -->
+                    <div class="popular-links">
+                        <h5 class="links-title">Popular Pages</h5>
+                        <div class="links-grid">
+                            <a href="/" class="link-card">
+                                <i class="bi bi-house"></i>
+                                <span>Home</span>
+                            </a>
+                            <a href="/products" class="link-card">
+                                <i class="bi bi-grid"></i>
+                                <span>Products</span>
+                            </a>
+                            <a href="/cart" class="link-card">
+                                <i class="bi bi-cart3"></i>
+                                <span>Cart</span>
+                            </a>
+                            <a href="/about" class="link-card">
+                                <i class="bi bi-info-circle"></i>
+                                <span>About</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="notfound-actions">
+                        <button onclick="history.back()" class="btn-action btn-secondary-custom">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Go Back
+                        </button>
+                        <a href="/" class="btn-action btn-gradient">
+                            <i class="bi bi-house me-2"></i>
+                            Return Home
+                        </a>
+                    </div>
+
+                    <!-- Fun Animation -->
+                    <div class="floating-elements">
+                        <div class="floating-item item-1">
+                            <i class="bi bi-bag"></i>
+                        </div>
+                        <div class="floating-item item-2">
+                            <i class="bi bi-tag"></i>
+                        </div>
+                        <div class="floating-item item-3">
+                            <i class="bi bi-box"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .notfound-page-container {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .notfound-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Animated 404 */
+    .error-code-wrapper {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .error-code {
+        font-size: 8rem;
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .digit {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: bounce 2s infinite;
+    }
+
+    .digit-4:first-child {
+        animation-delay: 0s;
+    }
+
+    .digit-0 {
+        animation-delay: 0.2s;
+    }
+
+        .digit-0 i {
+            font-size: 6rem;
+        }
+
+    .digit-4:last-child {
+        animation-delay: 0.4s;
+    }
+
+    @@keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    .error-code-shadow {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 12rem;
+        font-weight: 800;
+        color: rgba(102, 126, 234, 0.05);
+        z-index: -1;
+    }
+
+    .notfound-title {
+        color: #1f2937;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .notfound-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Search Section */
+    .search-section {
+        margin: 2rem 0;
+    }
+
+    .search-box {
+        max-width: 500px;
+        margin: 0 auto;
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border-radius: 50px;
+        padding: 0.5rem;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+        .search-box:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: white;
+        }
+
+    .search-icon {
+        position: absolute;
+        left: 1.5rem;
+        color: #64748b;
+        font-size: 1.2rem;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .search-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .search-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+    /* Popular Links */
+    .popular-links {
+        margin: 3rem 0 2rem;
+    }
+
+    .links-title {
+        color: #2563eb;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .link-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #64748b;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .link-card i {
+            font-size: 1.5rem;
+            color: #2563eb;
+        }
+
+        .link-card:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.3);
+        }
+
+            .link-card:hover i {
+                color: white;
+            }
+
+    /* Action Buttons */
+    .notfound-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .btn-action {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-secondary-custom {
+        background: #64748b;
+        color: white;
+    }
+
+        .btn-secondary-custom:hover {
+            background: #475569;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(100, 116, 139, 0.3);
+        }
+
+    .btn-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+        .btn-gradient:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-gradient:hover::before {
+            left: 100%;
+        }
+
+    /* Floating Elements Animation */
+    .floating-elements {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .floating-item {
+        position: absolute;
+        color: rgba(102, 126, 234, 0.1);
+        font-size: 2rem;
+        animation: float 15s infinite ease-in-out;
+    }
+
+    .item-1 {
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .item-2 {
+        top: 60%;
+        right: 10%;
+        animation-delay: 5s;
+    }
+
+    .item-3 {
+        bottom: 20%;
+        left: 50%;
+        animation-delay: 10s;
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+
+        33% {
+            transform: translateY(-30px) rotate(120deg);
+        }
+
+        66% {
+            transform: translateY(30px) rotate(240deg);
+        }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .error-code {
+            font-size: 5rem;
+        }
+
+        .error-code-shadow {
+            font-size: 8rem;
+        }
+
+        .digit-0 i {
+            font-size: 4rem;
+        }
+
+        .notfound-title {
+            font-size: 2rem;
+        }
+
+        .links-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .notfound-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .error-code {
+            font-size: 4rem;
+        }
+
+        .digit-0 i {
+            font-size: 3rem;
+        }
+
+        .notfound-actions {
+            flex-direction: column;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    function performSearch() {
+        const searchInput = document.getElementById('searchInput');
+        const searchTerm = searchInput.value.trim();
+
+        if (searchTerm) {
+            // Add loading animation
+            const loadingBar = document.createElement('div');
+            loadingBar.className = 'loading-transition';
+            loadingBar.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                animation: loading 1s ease-in-out;
+            `;
+            document.body.appendChild(loadingBar);
+
+            // Redirect to search results
+            setTimeout(() => {
+                window.location.href = `/products?search=${encodeURIComponent(searchTerm)}`;
+            }, 100);
+        }
+    }
+
+    // Handle Enter key in search
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // Add ripple effect
+    document.querySelectorAll('.btn-action, .link-card').forEach(element => {
+        element.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                left: ${x}px;
+                top: ${y}px;
+                animation: ripple-effect 0.6s ease-out;
+                pointer-events: none;
+            `;
+
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+</script>
+
+<style>
+    @@keyframes loading {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    @@keyframes ripple-effect {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+</style>

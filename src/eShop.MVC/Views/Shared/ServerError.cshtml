@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Server Error";
+}
+
+<div class="error-page">
+    <div class="container text-center">
+        <div class="error-content">
+            <h1 class="display-1 text-danger">500</h1>
+            <h2 class="display-4">Internal Server Error</h2>
+            <p class="lead">We're sorry, something went wrong on our server.</p>
+
+            <div class="error-details my-4">
+                <p class="text-muted">
+                    The server encountered an internal error and was unable to complete your request.
+                    Please try again later or contact support if the problem persists.
+                </p>
+            </div>
+
+            <div class="error-actions">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
+                    <i class="fas fa-home"></i> Go to Homepage
+                </a>
+                <button onclick="history.back()" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </button>
+            </div>
+
+            @if (ViewBag.RequestId != null)
+            {
+                <div class="mt-4">
+                    <p class="text-muted small">
+                        Error Reference: <code>@ViewBag.RequestId</code>
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section style {
+    <style>
+        .error-page {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .display-1 {
+            font-size: 8rem;
+            font-weight: 300;
+            line-height: 1;
+        }
+
+        .error-actions {
+            margin-top: 30px;
+        }
+
+            .error-actions .btn {
+                margin: 0 10px;
+            }
+
+        @@media (max-width: 768px) {
+            .display-1
+
+        {
+            font-size: 5rem;
+        }
+
+        .error-actions .btn {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        }
+    </style>
+}

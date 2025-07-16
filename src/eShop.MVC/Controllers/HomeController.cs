@@ -20,15 +20,21 @@ namespace eShop.MVC.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        public IActionResult About() => View();
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Privacy() => View();
+
+        [Route("Error/{statusCode}")]
+        public IActionResult Error(int statusCode)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+            return statusCode switch
+            {
+                500 => View("ServerError"),
+                404 => View("NotFound"),
+                403 => View("AccessDenied"),
+                401 => View("Unauthorized"),
+                _ => View("Error"),
+            };
+        } 
     }
 }
