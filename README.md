@@ -11,14 +11,17 @@ A simple and modular eCommerce web application built using **ASP.NET Core MVC**.
     
 -   🧾 Shopping cart
     
--   👤 User registration & login & Reset password & Forget password & Confirm Email (ASP.NET Core Identity)
+-   👤 User registration , login , Reset password , Forget password & Confirm Email (ASP.NET Core Identity)
     
 -   📦 Admin panel for managing products and categories
     
--   🔍 Product search and filtering
-    
+-   🔍 Product search and filtering by (name | description)
 
+-   🧩 responsive design
 
+-   📱 Get products by category
+
+-   ⚠️ Error Pages (401 , 403 , 404 , 500 & general error page)
 ----------
 
 ## 🧱 Tech Stack
