@@ -6,6 +6,7 @@
 *.suo
 *.userosscache
 *.sln.docstates
+appsettings.json
 
 # Build results
 [Dd]ebug/
