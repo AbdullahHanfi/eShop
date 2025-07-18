@@ -2,7 +2,9 @@
 using eShop.BLL.Services.Abstraction;
 using eShop.BLL.ViewModels.Account;
 using eShop.Core.Entities;
+using eShop.Core.Utilities;
 using eShop.DAL.Interface;
+using eShop.DAL.Repositories.implementation;
 using eShop.DAL.Utilities;
 using eShop.MVC.Controllers;
 using eShop.MVC.Filters;
@@ -107,10 +109,13 @@ namespace eShop.MVC.Areas.Auth.Controllers
                 return View(model);
 
             var user = _mapper.Map<ApplicationUser>(model);
+            user.EmailConfirmed = true;
 
             var result = await _unitOfWork.Users.CreateAsync(user, model.Password);
+
             if (result.Succeeded)
             {
+                result = await _unitOfWork.Users.AddToRoleAsync(user, Roles.Customer);
                 var state = await _accountServies.ConfirmationMail(model.Email);
                 if (state)
                 {
@@ -146,9 +151,9 @@ namespace eShop.MVC.Areas.Auth.Controllers
                 ModelState.AddModelError("", "Invalid login attempt");
                 IsUser = false;
             }
-            if (IsUser && user is not null && !await _unitOfWork.Users.IsEmailConfirmedAsync(user))
+            if (IsUser && !await _unitOfWork.Users.IsEmailConfirmedAsync(user))
             {
-                ModelState.AddModelError("", "Invalid login attempt");
+                ModelState.AddModelError("", "Confirm your Email first.");
                 IsUser = false;
             }
 

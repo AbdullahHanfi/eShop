@@ -1,23 +1,39 @@
-﻿using eShop.DAL.Interface;
-using eShop.MVC.Models;
+﻿using AutoMapper;
+using eShop.BLL.ViewModels.Product;
+using eShop.DAL.Interface;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace eShop.MVC.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+
+        public HomeController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _logger = logger;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            int productCount = _unitOfWork.Products.Count();
+            var products = _unitOfWork.Products.Take(Math.Min(5, productCount));
+            if (products.Count() != 0)
+            {
+                foreach (var product in products)
+                {
+                    product.Images = [.. await _unitOfWork.Products.GetProductImagesAsync(product.Id)];
+                }
+                foreach (var product in products)
+                {
+                    ViewData[product.Name] = _unitOfWork.Products.Find(e => e.Id == product.Id, e => e.Category).Category.Name;
+                }
+
+                return View(_mapper.Map<List<ProductViewModel>>(products));
+            }
+            return View(new List<ProductViewModel>());
         }
 
         public IActionResult About() => View();
@@ -35,6 +51,6 @@ namespace eShop.MVC.Controllers
                 401 => View("Unauthorized"),
                 _ => View("Error"),
             };
-        } 
+        }
     }
 }

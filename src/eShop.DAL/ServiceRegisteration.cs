@@ -32,7 +32,9 @@ namespace eShop.DAL
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+/ ";
                 
                 //SignIn
+                options.SignIn.RequireConfirmedAccount = false;
                 options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
 
                 // Lockout
                 options.Lockout.MaxFailedAccessAttempts = 5;

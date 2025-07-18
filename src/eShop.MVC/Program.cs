@@ -1,5 +1,6 @@
 using eShop.BLL;
 using eShop.Core.Entities;
+using eShop.Core.Utilities;
 using eShop.DAL;
 using eShop.DAL.Data;
 using eShop.DAL.Seeds;
@@ -51,7 +52,7 @@ namespace eShop.MVC
                 options.AddPolicy("GuestOrCustomer", policy =>
                     policy.RequireAssertion(context =>
                         !context.User.Identity.IsAuthenticated ||
-                        context.User.IsInRole("Customer")
+                        context.User.IsInRole(Roles.Customer)
                     ));
             });
 
