@@ -13,7 +13,7 @@ namespace eShop.BLL.Mapping
     {
         public AccountProfile()
         {
-            CreateMap<AccountDataViewModel, ApplicationUser>().ReverseMap();
+            CreateMap<AccountViewModel, ApplicationUser>().ReverseMap();
             CreateMap<RegisterViewModel, ApplicationUser>().ReverseMap();
         }
     }

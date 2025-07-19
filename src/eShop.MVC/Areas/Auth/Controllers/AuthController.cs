@@ -52,7 +52,7 @@ namespace eShop.MVC.Areas.Auth.Controllers
 
             ViewBag.accept = _photoSettings.AllowedExtensions.Aggregate((x, z) => x + ", " + z);
 
-            var model = _mapper.Map<AccountDataViewModel>(user);
+            var model = _mapper.Map<AccountViewModel>(user);
 
             if (string.IsNullOrEmpty(user.imgPath) is false)
                 model.ProfilePicture = await _imageService.GetAsync(user.imgPath);

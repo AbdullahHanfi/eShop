@@ -1,12 +1,13 @@
 using eShop.BLL;
+using eShop.BLL.Services.Abstraction;
 using eShop.Core.Entities;
 using eShop.Core.Utilities;
 using eShop.DAL;
 using eShop.DAL.Data;
 using eShop.DAL.Seeds;
 using eShop.DAL.Utilities;
-using eShop.MVC.Middelwares;
-using Microsoft.AspNetCore.HttpOverrides;
+using eShop.MVC.Infrastructure;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
@@ -32,7 +33,11 @@ namespace eShop.MVC
             });
             builder.Services.AddControllersWithViews();
             builder.Services.AddMemoryCache();
-
+            builder.Services.AddHangfire(configuration =>
+            {
+                configuration.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+            builder.Services.AddHangfireServer();
             //builder.Services.AddSingleton<RequestResponseLoggingMiddleware>();
             //Relationanl DataBase
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -61,6 +66,7 @@ namespace eShop.MVC
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
             ServiceRegisterationBLL.Add(builder.Services);
+            builder.Services.AddScoped<IBackgroundJobServices, HangfireServices>();
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Login";
@@ -118,6 +124,7 @@ namespace eShop.MVC
             app.UseAuthentication();
 
             app.UseAuthorization();
+            app.UseHangfireDashboard("/dashboard");
 
             app.UseEndpoints(endpoints =>
             {

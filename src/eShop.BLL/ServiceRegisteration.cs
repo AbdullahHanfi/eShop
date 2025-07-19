@@ -1,7 +1,6 @@
 ﻿using eShop.BLL.Mapping;
 using eShop.BLL.Services.Abstraction;
 using eShop.BLL.Services.src;
-using eShop.DAL.Utilities;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +16,7 @@ namespace eShop.BLL
             services.AddScoped<IImageServices, ImageServices>();
             services.AddScoped<IMailTransport, MailTransport>();
             services.AddScoped<IGuidProvider, GuidProvider>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddAutoMapper(typeof(AccountProfile));
             services.AddAutoMapper(typeof(ProductProfile));
 

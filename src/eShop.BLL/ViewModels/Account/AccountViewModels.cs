@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace eShop.BLL.ViewModels.Account
 {
-    public class AccountDataViewModel
+    public class AccountViewModel
     {
         [Display(Name = "Email")]
         [ReadOnly(true)]
