@@ -37,14 +37,16 @@ A simple and modular eCommerce web application built using **ASP.NET Core MVC**.
 -   ASP.NET Core Identity
     
 -   Bootstrap 5
-    
--   Razor Views
 
 -   Design Patterns (MVC + Repository Pattern + Unit of work + Strategy Pattern)
 
 -   N-tiers architecture 
     
 -   In memory Caching
+
+-   Hangfire (Background job)
+
+-   Docker (Dokcer-Compose)
 
 ----------
 
@@ -64,7 +66,9 @@ eShop/
 
 ## 🛠️ Setup & Run
 
-### Prerequisites
+### 🔧 Without Docker
+
+#### Prerequisites
 
 -   [.NET SDK 8](https://dotnet.microsoft.com/download)
     
@@ -73,17 +77,46 @@ eShop/
 -   Visual Studio / VS Code
     
 
-### Steps
+#### Steps
 
 bash
 ```
-# 1. Clone the repository git clone https://github.com/AbdullahHanfi/eShop.git 
-# 2. Navigate to the Web project  cd eShop/eShop.MVC 
-# 3. Apply migrations and seed data dotnet ef database update 
-# 4. Run the application dotnet run
+# 1. Clone the repository
+git clone https://github.com/AbdullahHanfi/eShop.git 
+
+# 2. Navigate to the MVC project
+cd eShop/eShop.MVC 
+
+# 3. Run the application
+dotnet run
 ```
+✅ The database will be created, and migrations will be applied automatically at startup.
 
 Then go to `https://localhost:7064` in your browser.
+
+### 🐳 Using Docker
+
+#### Prerequisites
+
+-   [Docker](https://docs.docker.com/desktop/setup/install/windows-install/)    
+
+#### Steps
+
+bash
+```
+# 1. Clone the repository
+git clone https://github.com/AbdullahHanfi/eShop.git 
+
+# 2. Navigate to the root project directory
+cd eShop
+
+# 3. Build and run the application using Docker Compose
+docker-compose up --build
+```
+
+✅ The database will be initialized automatically by the application on startup.
+
+Then go to `http://localhost:8080` in your browser.
 
 ----------
 
@@ -231,8 +264,6 @@ public class Program
 -   Ability for super admin to manage admins 
 
 -   Unit testing for other component 
-
--   Adding docker image in Docker Hub 
 
 -   Add Logging
 
