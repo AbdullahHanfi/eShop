@@ -13,7 +13,7 @@ services:
       - "8080:8080"
       - "8081:8081"
     environment:
-      ConnectionStrings__DefaultConnection: "Server=docker_sqlserver; Database=eShop; User Id=sa; Password=myStrongPassword2002;TrustServerCertificate=True;"
+      ConnectionStrings__DefaultConnection: "Server=docker_sqlserver; Database=eShop; User Id=sa; Password=StrongPassword2002;TrustServerCertificate=True;"
     depends_on:
       docker_sqlserver:
         condition: service_healthy
@@ -27,7 +27,7 @@ services:
     networks:
       internal-network:
     healthcheck:
-      test: [ "CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "myStrongPassword2002" ,"-Q", "SELECT 1","-C" ]
+      test: [ "CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "StrongPassword2002" ,"-Q", "SELECT 1","-C" ]
       interval: 60s
       retries: 20
 networks:

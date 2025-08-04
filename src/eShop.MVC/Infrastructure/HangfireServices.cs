@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace eShop.MVC.Infrastructure
 {
-    public sealed class HangfireServices : IBackgroundJobServices
+    public class HangfireServices : IBackgroundJobServices
     {
         public string Enqueue(Expression<Action> call)
             => BackgroundJob.Enqueue(call);

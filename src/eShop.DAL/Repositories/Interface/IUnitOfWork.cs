@@ -7,6 +7,7 @@ namespace eShop.DAL.Interface
     {
         public IUserRepository Users { get; }
         public IProductRepository Products { get; }
+        public IRoleRepository Roles{ get; }
         public IBaseRepository<Image> Images { get; }
         public IBaseRepository<Order> Orders { get; }
         public IBaseRepository<ItemInOrder> ItemInOrders { get; }

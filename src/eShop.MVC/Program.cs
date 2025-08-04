@@ -6,6 +6,7 @@ using eShop.DAL;
 using eShop.DAL.Data;
 using eShop.DAL.Seeds;
 using eShop.DAL.Utilities;
+using eShop.MVC.Filters;
 using eShop.MVC.Infrastructure;
 using Hangfire;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +17,7 @@ namespace eShop.MVC
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.WriteLine($"Tunnel URL: " +
               $"{Environment.GetEnvironmentVariable("VS_TUNNEL_URL")}");
@@ -83,21 +84,26 @@ namespace eShop.MVC
 
             var app = builder.Build();
 
-            //Seed
-            Task.Run(async () =>
+            using (var scope = app.Services.CreateScope())
             {
-                using (var scope = app.Services.CreateScope())
-                {
-                    var services = scope.ServiceProvider;
-                    var Db = scope.ServiceProvider.GetRequiredService<eShopDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<eShopDbContext>();
+                db.Database.Migrate();
+            }
 
-                    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
-                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            //Seed
+            await Task.Run(async () =>
+            {
+                using var scope = app.Services.CreateScope();
 
-                    await DefaultRoles.SeedAsync(roleManager);
-                    await DefaultUsers.SeedAsync(userManager);
-                }
-            }).GetAwaiter().GetResult();
+                var services = scope.ServiceProvider;
+                var Db = scope.ServiceProvider.GetRequiredService<eShopDbContext>();
+
+                var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
+                await DefaultRoles.SeedAsync(roleManager);
+                await DefaultUsers.SeedAsync(userManager);
+            });
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -124,19 +130,20 @@ namespace eShop.MVC
             app.UseAuthentication();
 
             app.UseAuthorization();
-            app.UseHangfireDashboard("/dashboard");
+            app.UseHangfireDashboard("/dashboard",
+             new DashboardOptions
+             {
+                 Authorization = [new HangfireAuthorizationFilter()],
+             });
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "areas",
-                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
-                );
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}"
-                );
-            });
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.Run();
         }
     }

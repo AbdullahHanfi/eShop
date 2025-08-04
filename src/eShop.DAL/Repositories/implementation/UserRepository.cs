@@ -5,9 +5,9 @@ using eShop.DAL.Repositories.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using System.Text.RegularExpressions;
 
 namespace eShop.DAL.Repositories.implementation
 {
@@ -59,6 +59,33 @@ namespace eShop.DAL.Repositories.implementation
         public async Task<IdentityOperationResult<ApplicationUser>> RemoveFromRolesAsync(ApplicationUser user, IEnumerable<string> Roles)
             => ConvertIdentityToCustome(await _userManager.RemoveFromRolesAsync(user, Roles));
 
+        public async Task<IdentityOperationResult<ApplicationUser>> RemoveFromRoleAsync(Guid userId, Guid Role)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return new IdentityOperationResult<ApplicationUser>
+                {
+                    Succeeded = false,
+                    Errors = ["User not found."]
+                };
+            }
+            var roleName = await _context.Roles
+                .Where(r => r.Id == Role.ToString())
+                .Select(r => r.Name)
+                .FirstOrDefaultAsync();
+            if (string.IsNullOrEmpty(roleName))
+            {
+                return new IdentityOperationResult<ApplicationUser>
+                {
+                    Succeeded = false,
+                    Errors = ["Role not found."]
+                };
+            }
+            var result = await _userManager.RemoveFromRoleAsync(user, roleName);
+            return ConvertIdentityToCustome(result);
+        }
+
         public async Task<IdentityOperationResult<ApplicationUser>> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
             => ConvertIdentityToCustome(await _userManager.ChangePasswordAsync(user, currentPassword, newPassword));
 
@@ -76,6 +103,21 @@ namespace eShop.DAL.Repositories.implementation
 
         public async Task<IList<string>> GetRolesAsync(ApplicationUser user)
             => await _userManager.GetRolesAsync(user);
+
+        public async Task<IList<ApplicationRole>> GetRolesAsync(Guid userId)
+        {
+
+            var query = _context.Roles.FromSqlRaw(@"
+            SELECT *
+            FROM [AspNetRoles]
+            where [Id] in (SELECT[RoleId]
+                           FROM[AspNetUserRoles]
+                           where[UserId] = @userId)"
+            , new SqlParameter("@userId", userId));
+            
+            return await query
+                .ToListAsync();
+        }
 
         public async Task<bool> IsInRoleAsync(ApplicationUser user, string Role)
             => await _userManager.IsInRoleAsync(user, Role);
@@ -129,6 +171,32 @@ namespace eShop.DAL.Repositories.implementation
                 };
             }
             var result = await _userManager.AddToRoleAsync(user, Role);
+            return ConvertIdentityToCustome(result);
+        }
+        public async Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, Guid Role)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return new IdentityOperationResult<ApplicationUser>
+                {
+                    Succeeded = false,
+                    Errors = ["User not found."]
+                };
+            }
+            var roleName = await _context.Roles
+                .Where(r => r.Id == Role.ToString())
+                .Select(r => r.Name)
+                .FirstOrDefaultAsync();
+            if (string.IsNullOrEmpty(roleName))
+            {
+                return new IdentityOperationResult<ApplicationUser>
+                {
+                    Succeeded = false,
+                    Errors = ["Role not found."]
+                };
+            }
+            var result = await _userManager.AddToRoleAsync(user, roleName);
             return ConvertIdentityToCustome(result);
         }
 
@@ -185,9 +253,9 @@ namespace eShop.DAL.Repositories.implementation
                         FROM [AspNetUserRoles]
                         where [RoleId] in (SELECT [Id]
                                             FROM [AspNetRoles]
-                                            where [NormalizedName] = 'CUSTOMER'))"
+                                            where [NormalizedName] = @role))"
             , new SqlParameter("@role", role));
-            
+
             if (includes != null && includes.Length != 0)
             {
                 foreach (var include in includes)
@@ -195,6 +263,26 @@ namespace eShop.DAL.Repositories.implementation
                     query = query.Include(include);
                 }
             }
+            return await query.ToListAsync();
+        }
+        public async Task<IList<ApplicationUser>> GetAllByRoleAsync(Guid roleId, params Expression<Func<ApplicationUser, object>>[] includes)
+        {
+            IQueryable<ApplicationUser> query = _context.Users.FromSqlRaw(@"
+            SELECT *
+            FROM AspNetUsers
+            where Id in (SELECT [UserId]
+                        FROM [AspNetUserRoles]
+                        where [RoleId] = @roleId)"
+            , new SqlParameter("@roleId", roleId.ToString()));
+
+            if (includes != null && includes.Length != 0)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
             return await query.ToListAsync();
         }
     }

@@ -35,4 +35,8 @@
     <ProjectReference Include="..\eShop.BLL\eShop.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\css\Error\" />
+  </ItemGroup>
+
 </Project>

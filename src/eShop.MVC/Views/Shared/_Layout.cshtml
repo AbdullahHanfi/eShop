@@ -91,6 +91,16 @@
                             </a>
                         }
                     </li>
+                    
+                    <!-- Manage Roles section -->
+                    <li class="nav-item">
+                        @if (User.IsInRole(Roles.SuperAdmin))
+                        {
+                            <a class="nav-link" asp-area="Auth" asp-controller="ManageRoles" asp-action="Index">
+                                <i class="bi bi-grid me-1"></i>Manage Roles
+                            </a>
+                        }
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">

@@ -8,6 +8,9 @@ namespace eShop.BLL.ViewModels.Account
 {
     public class AccountViewModel
     {
+        [HiddenInput]
+        public Guid Id { get; set; }
+        
         [Display(Name = "Email")]
         [ReadOnly(true)]
         public string? Email { get; set; }

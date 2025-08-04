@@ -42,7 +42,6 @@ namespace eShop.DAL.Seeds
                     var x = await userManager.CreateAsync(admintUser, "superadmin@gmail.com");
                     await userManager.AddToRoleAsync(admintUser, Roles.SuperAdmin);
                     await userManager.AddToRoleAsync(admintUser, Roles.Admin);
-                    await userManager.AddToRoleAsync(admintUser, Roles.Customer);
                 }
             }
         }

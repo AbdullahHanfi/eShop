@@ -13,6 +13,7 @@ namespace eShop.DAL.Repositories.Interface
         Task<IList<ApplicationUser>> GetAllAsync(Expression<Func<ApplicationUser, bool>> criteria);
         Task<IList<ApplicationUser>> GetAllAsync(Expression<Func<ApplicationUser, bool>> criteria, params Expression<Func<ApplicationUser, object>>[] includes);
         Task<IList<ApplicationUser>> GetAllByRoleAsync(string role, params Expression<Func<ApplicationUser, object>>[] includes);
+        Task<IList<ApplicationUser>> GetAllByRoleAsync(Guid role, params Expression<Func<ApplicationUser, object>>[] includes);
 
         Task<ApplicationUser?> FindByIdAsync(string userId);
         Task<ApplicationUser?> FindByEmailAsync(string Email);
@@ -25,14 +26,17 @@ namespace eShop.DAL.Repositories.Interface
         Task<IdentityOperationResult<ApplicationUser>> ResetPasswordAsync(ApplicationUser user, string token, string newPassword);
         Task<bool> IsEmailConfirmedAsync(ApplicationUser user);
         Task<IList<string>> GetRolesAsync(ApplicationUser user);
+        Task<IList<ApplicationRole>> GetRolesAsync(Guid userId);
         Task<bool> IsInRoleAsync(ApplicationUser user, string Role);
 
         Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(ApplicationUser user, string Role);
         Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, string Role);
+        Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, Guid Role);
 
         Task<IdentityOperationResult<ApplicationUser>> AddToRolesAsync(ApplicationUser user, IEnumerable<string> Roles);
         Task<IdentityOperationResult<ApplicationUser>> AddToRolesAsync(Guid userId, IEnumerable<string> Roles);
 
+        Task<IdentityOperationResult<ApplicationUser>> RemoveFromRoleAsync(Guid userId, Guid Role);
         Task<IdentityOperationResult<ApplicationUser>> RemoveFromRolesAsync(ApplicationUser user, IEnumerable<string> Roles);
         Task<IdentityOperationResult<ApplicationUser>> RemoveFromRolesAsync(Guid userId, IEnumerable<string> Roles);
 
