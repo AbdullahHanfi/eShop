@@ -27,7 +27,9 @@ A simple and modular eCommerce web application built using **ASP.NET Core MVC**.
 
 -   Dashboard for admin 
   
--   Order history and checkout process 
+-   Order history and checkout process
+
+-   Locking Product row using Pessimistic Locking and using transction for roll back if product updated.
 ----------
 
 ## 🧱 Tech Stack
