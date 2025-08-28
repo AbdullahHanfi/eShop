@@ -11,7 +11,14 @@ namespace eShop.DAL.Data {
         }
         protected override void OnModelCreating(ModelBuilder builder) {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
+            // Configuration for Pessimistic locking row 
+            foreach (var entityType in builder.Model.GetEntityTypes()){
+                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType)){
+                    builder.Entity(entityType.ClrType)
+                        .Property(nameof(BaseEntity.RowVersion))
+                        .IsRowVersion();
+                }
+            }
             base.OnModelCreating(builder);
         }
         public virtual DbSet<ItemInOrder> ItemInOrders { get; set; }
