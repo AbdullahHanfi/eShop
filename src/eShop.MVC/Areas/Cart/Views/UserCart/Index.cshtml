@@ -1,0 +1,515 @@
+@model List<CartItem>
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var totalAmount = Model.Sum(item => item.Price * item.Quantity);
+}
+
+@section style {
+    <link rel="stylesheet" href="~/css/Cart/Index.css" asp-append-version="true"/>
+}
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<div class="cart-container container">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="cart-card">
+                <div class="cart-header">
+                    <h2>
+                        <i class="bi bi-cart3"></i>
+                        Shopping Cart
+                        <span class="badge bg-white text-primary ms-2" id="itemCount">@Model.Count items</span>
+                    </h2>
+                </div>
+                <div class="cart-body">
+                    @if (Model.Any()){
+                        <div id="cartItems">
+                            @foreach (var item in Model){
+                                <div class="cart-item" data-product-id="@item.ProductId">
+                                    <div class="update-indicator">Updated!</div>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <img src="/api/products/image/@item.ProductId"
+                                                 class="product-image"
+                                                 alt="@item.ProductName">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="product-details">
+                                                <h5>@item.ProductName</h5>
+                                                <p class="text-muted mb-0">
+                                                    <small>Added: @item.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="product-price">
+                                                $@item.Price.ToString("F2")
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="quantity-control">
+                                                <button class="quantity-btn"
+                                                        onclick="updateQuantity('@item.ProductId', -1)">
+                                                    <i class="bi bi-dash"></i>
+                                                </button>
+                                                <input type="number"
+                                                       class="quantity-input"
+                                                       value="@item.Quantity"
+                                                       min="1"
+                                                       max="99"
+                                                       data-product-id="@item.ProductId"
+                                                       onchange="handleQuantityChange(this)">
+                                                <button class="quantity-btn"
+                                                        onclick="updateQuantity('@item.ProductId', 1)">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="remove-btn" onclick="removeFromCart('@item.ProductId')">
+                                                <i class="bi bi-trash me-1"></i>
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button class="btn btn-outline-danger" onclick="clearCart()">
+                                <i class="bi bi-trash me-1"></i>
+                                Clear Cart
+                            </button>
+                        </div>
+                    }
+                    else{
+                        <div class="empty-cart">
+                            <i class="bi bi-cart-x empty-cart-icon"></i>
+                            <h3>Your cart is empty</h3>
+                            <p class="text-muted">Add some products to get started!</p>
+                            <a href="/products" class="continue-shopping-btn">
+                                <i class="bi bi-bag-plus me-2"></i>
+                                Continue Shopping
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Any()){
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h4 class="mb-4">Order Summary</h4>
+
+                    <div class="summary-row">
+                        <span>Subtotal (@Model.Count items)</span>
+                        <span id="subtotal">$@totalAmount.ToString("F2")</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span class="text-success">FREE</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Tax</span>
+                        <span id="tax">$@((totalAmount * 0.08m).ToString("F2"))</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Total</span>
+                        <span id="total">$@((totalAmount * 1.08m).ToString("F2"))</span>
+                    </div>
+
+                    <button class="checkout-btn" onclick="proceedToCheckout()">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        Proceed to Checkout
+                    </button>
+
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="bi bi-shield-check me-1"></i>
+                            Secure checkout powered by SSL
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Promo Code Section -->
+                <div class="cart-summary mt-3">
+                    <h5 class="mb-3">Have a promo code?</h5>
+                    <div class="input-group">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Enter code"
+                               id="promoCode">
+                        <button class="btn btn-outline-primary" onclick="applyPromoCode()">
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let isUpdating = false;
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function showUpdateIndicator(productId) {
+            const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
+            const indicator = cartItem.querySelector('.update-indicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        function updateQuantity(productId, change) {
+            const input = document.querySelector(`input[data-product-id="${productId}"]`);
+            const currentValue = parseInt(input.value);
+            const newValue = currentValue + change;
+
+            if (newValue >= 1 && newValue <= 99) {
+                input.value = newValue;
+                handleQuantityChange(input);
+            }
+        }
+
+        function handleQuantityChange(input) {
+            const productId = input.dataset.productId;
+            const quantity = parseInt(input.value);
+
+            if (quantity < 1) {
+                input.value = 1;
+                return;
+            }
+
+            if (quantity > 99) {
+                input.value = 99;
+                return;
+            }
+
+            updateCart(productId, quantity);
+        }
+
+        function updateCart(productId, quantity) {
+            if (isUpdating) return;
+            isUpdating = true;
+
+            fetch('/api/cart/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ProductId: productId,
+                    Quantity: quantity
+                })
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to update cart');
+                    return response.json();
+                })
+                .then(data => {
+                    showUpdateIndicator(productId);
+                    updateSummary();
+                    window.eShopNav.updateCartCount();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cart Updated!',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        position: 'top-end',
+                        toast: true
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: 'Failed to update quantity',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        position: 'top-end',
+                        toast: true
+                    });
+                })
+                .finally(() => {
+                    isUpdating = false;
+                });
+        }
+
+        function removeFromCart(productId) {
+            Swal.fire({
+                title: 'Remove from Cart?',
+                text: "Are you sure you want to remove this item?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+
+                    fetch(`/api/cart/remove/${productId}`, {
+                        method: 'DELETE'
+                    })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Failed to remove item');
+                            return response.json();
+                        })
+                        .then(data => {
+                            const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
+                            cartItem.classList.add('removing');
+
+                            setTimeout(() => {
+                                cartItem.remove();
+                                updateSummary();
+                                checkEmptyCart();
+                                window.eShopNav.updateCartCount();
+                            }, 500);
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Removed!',
+                                text: 'Item has been removed from cart',
+                                showConfirmButton: false,
+                                timer: 1500,
+                                position: 'top-end',
+                                toast: true
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed!',
+                                text: 'Failed to remove item',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        })
+                        .finally(() => {
+                            hideLoading();
+                        });
+                }
+            });
+        }
+
+        function clearCart() {
+            Swal.fire({
+                title: 'Clear Cart?',
+                text: "This will remove all items from your cart!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, clear it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+
+                    fetch('/api/cart/clear', {
+                        method: 'DELETE'
+                    })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Failed to clear cart');
+                            return response.json();
+                        })
+                        .then(data => {
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed!',
+                                text: 'Failed to clear cart',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            hideLoading();
+                        });
+                }
+            });
+        }
+
+        function updateSummary() {
+            let subtotal = 0;
+            const cartItems = document.querySelectorAll('.cart-item:not(.removing)');
+
+            cartItems.forEach(item => {
+                const priceText = item.querySelector('.product-price').textContent;
+                const price = parseFloat(priceText.replace('$', ''));
+                const quantity = parseInt(item.querySelector('.quantity-input').value);
+                subtotal += price * quantity;
+            });
+
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('itemCount').textContent = `${cartItems.length} items`;
+        }
+
+        function checkEmptyCart() {
+            const cartItems = document.querySelectorAll('.cart-item:not(.removing)');
+            if (cartItems.length === 0) {
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            }
+        }
+
+        function proceedToCheckout() {
+            showLoading();
+
+            // Simulate checkout process
+            setTimeout(() => {
+                hideLoading();
+                Swal.fire({
+                    title: 'Proceeding to Checkout',
+                    text: 'Redirecting to secure payment...',
+                    icon: 'info',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = '/checkout';
+                });
+            }, 1000);
+        }
+
+        function applyPromoCode() {
+            const promoCode = document.getElementById('promoCode').value.trim();
+
+            if (!promoCode) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Code Entered',
+                    text: 'Please enter a promo code',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    position: 'top-end',
+                    toast: true
+                });
+                return;
+            }
+
+            showLoading();
+            //  promocode validation
+            fetch('/api/promocode/valid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    Code: promoCode
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Code',
+                            text: 'The promo code you entered is not valid',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            position: 'top-end',
+                            toast: true
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Promo Applied!',
+                        text: `${data * 100}% discount applied to your order`,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        position: 'top-end',
+                        toast: true
+                    });
+                    console.log(data);
+                    // Update summary with discount
+                    const currentTotal = parseFloat(document.getElementById('total').textContent.replace('$', ''));
+                    const discountedTotal = currentTotal * (1 - data);
+
+                    // Add discount row
+                    const summaryRows = document.querySelectorAll('.summary-row');
+                    const lastRow = summaryRows[summaryRows.length - 1];
+
+                    const discountRow = document.createElement('div');
+                    discountRow.className = 'summary-row text-success';
+                    discountRow.innerHTML = `
+                        <span>Discount (${data * 100}%)</span>
+                        <span>-$${(currentTotal * data).toFixed(2)}</span>
+                    `;
+
+                    lastRow.parentNode.insertBefore(discountRow, lastRow);
+                    document.getElementById('total').textContent = `$${discountedTotal.toFixed(2)}`;
+
+                    document.getElementById('promoCode').value = '';
+                    document.getElementById('promoCode').disabled = true;
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed!',
+                        text: 'Failed to send promo code',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                })
+                .finally(() => {
+                    hideLoading();
+                });
+        }
+
+        // Auto-save cart changes
+        let saveTimeout;
+
+        function autoSaveCart() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                console.log('Auto-saving cart...');
+            }, 2000);
+        }
+
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            // Ctrl + Delete to clear cart
+            if (e.ctrlKey && e.key === 'Delete') {
+                clearCart();
+            }
+        });
+    </script>
+}

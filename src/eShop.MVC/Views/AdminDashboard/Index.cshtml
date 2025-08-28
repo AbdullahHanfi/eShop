@@ -1,0 +1,466 @@
+@model DashboardViewModel
+@inject IImageServices imageServices
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+@section style {
+    <link rel="stylesheet" href="~/css/Dashboard/AdminIndex.css" asp-append-version="true"/>
+}
+
+<div class="dashboard-container">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="h2 mb-0 font-weight-bold">Admin Dashboard</h1>
+                <p class="text-muted mb-0">Welcome back! Here's what's happening with your store today.</p>
+            </div>
+        </div>
+
+        <!-- Quick Revenue Stats -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="quick-stat">
+                    <div class="quick-stat-title">Today's Revenue</div>
+                    <div class="quick-stat-value">$@Model.TodayRevenue.ToString("N2")</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="quick-stat">
+                    <div class="quick-stat-title">Monthly Revenue</div>
+                    <div class="quick-stat-value">$@Model.MonthlyRevenue.ToString("N2")</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="quick-stat">
+                    <div class="quick-stat-title">Total Revenue</div>
+                    <div class="quick-stat-value">$@Model.TotalRevenue.ToString("N2")</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <div class="stat-value">@Model.TotalProducts</div>
+                    <div class="stat-label">Total Products</div>
+                    <div class="stat-change positive">
+                        <i class="bi bi-arrow-up"></i> 12% from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
+                    <div class="stat-value">@Model.TotalOrders</div>
+                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-change positive">
+                        <i class="bi bi-arrow-up"></i> 8% from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="bi bi-folder"></i>
+                    </div>
+                    <div class="stat-value">@Model.TotalCategories</div>
+                    <div class="stat-label">Categories</div>
+                    <div class="stat-change positive">
+                        <i class="bi bi-arrow-up"></i> 2 new this month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-value">@Model.TotalUsers</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-change positive">
+                        <i class="bi bi-arrow-up"></i> 23 new this week
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <div class="col-lg-8 mb-4">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Revenue Overview</h3>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-secondary active">30 Days</button>
+                            <button type="button" class="btn btn-outline-secondary">90 Days</button>
+                            <button type="button" class="btn btn-outline-secondary">1 Year</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="dashboard-table h-100">
+                    <div class="table-header">
+                        <h3 class="table-title">Top Selling Products</h3>
+                        <a asp-area="product" asp-controller="AdminProducts" asp-action="Index"
+                           class="text-primary text-decoration-none">
+                            View All <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <tbody>
+                            @foreach (var product in Model.TopSellingProducts){
+                                <tr>
+                                    <td class="d-flex align-items-center">
+                                        @if (product.ImagePath is not null){
+                                            <img src="data:image/*;base64,@Convert.ToBase64String(await imageServices.GetAsync(product.ImagePath))"
+                                                 alt="@product.Name" class="product-img me-3">
+                                        }
+                                        else{
+                                            <div
+                                                class="product-img me-3 bg-secondary d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-image text-white"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <div class="fw-semibold">@product.Name</div>
+                                            <div class="text-muted small">@product.TotalSold sold</div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="fw-semibold">$@product.Revenue.ToString("N2")</div>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Row -->
+        <div class="row">
+            <!-- Recent Orders -->
+            <div class="col-lg-7 mb-4">
+                <div class="dashboard-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Recent Orders</h3>
+                        <a asp-area="Orders" asp-controller="AdminOrders" asp-action="Index"
+                           class="text-primary text-decoration-none">
+                            View All <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var order in Model.RecentOrders){
+                                <tr>
+                                    <td>
+                                        <code>#@order.OrderId.ToString().Substring(0, 8)</code>
+                                    </td>
+                                    <td>@order.UserEmail</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@order.ItemCount items</span>
+                                    </td>
+                                    <td class="fw-semibold">$@order.TotalAmount.ToString("N2")</td>
+                                    <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <a asp-area="orders" asp-controller="AdminOrders" asp-action="Details"
+                                           asp-route-Id="@order.OrderId" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Alert -->
+            <div class="col-lg-5 mb-4">
+                <div class="dashboard-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Low Stock Alert</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var product in Model.LowStockProducts){
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <div class="fw-semibold">@product.Name</div>
+                                            <div class="text-muted small">@product.CategoryName</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold">@product.CurrentStock</span>
+                                    </td>
+                                    <td>
+                                        @if (product.CurrentStock == 0){ <span class="status-badge out-stock">Out of Stock</span> }
+                                        else if (product.CurrentStock <= 5){ <span class="status-badge low-stock">Critical</span> }
+                                        else{ <span class="status-badge low-stock">Low Stock</span> }
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-9">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Quick Actions</h4>
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <a asp-area="product" asp-controller="AdminProducts" asp-action="Add"
+                                   class="action-btn primary d-block text-center">
+                                    <i class="bi bi-plus-circle me-2"></i>Add New Product
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <a asp-area="Category" asp-controller="AdminCategory" asp-action="Add"
+                                   class="action-btn primary d-block text-center">
+                                    <i class="bi bi-folder-plus me-2"></i>Add Category
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <a asp-area="orders" asp-controller="AdminOrders" asp-action="Index"
+                                   class="action-btn primary d-block text-center">
+                                    <i class="bi bi-receipt me-2"></i>View All Orders
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Revenue Chart
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.2)');
+            gradient.addColorStop(1, 'rgba(102, 126, 234, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.RevenueChartData.Labels)),
+                    datasets: [{
+                        label: 'Revenue',
+                        data: @Html.Raw(Json.Serialize(Model.RevenueChartData.Data)),
+                        borderColor: 'rgb(102, 126, 234)',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgb(102, 126, 234)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            cornerRadius: 8,
+                            titleFont: {
+                                size: 14,
+                                weight: '600'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            callbacks: {
+                                label: function (context) {
+                                    return 'Revenue: $' + context.parsed.y.toLocaleString('en-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return '$' + value.toLocaleString();
+                                },
+                                font: {
+                                    size: 12
+                                },
+                                color: '#718096'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#718096'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+
+            // Time period buttons functionality
+            const periodButtons = document.querySelectorAll('.btn-group button');
+            periodButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    periodButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Here you would typically fetch new data based on the selected period
+                    const period = this.textContent.trim();
+                    console.log('Selected period:', period);
+                    // You could make an AJAX call here to update the chart data
+                });
+            });
+
+            // Add animation to stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function (entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '0';
+                        entry.target.style.transform = 'translateY(20px)';
+
+                        setTimeout(() => {
+                            entry.target.style.transition = 'all 0.6s ease-out';
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, 100);
+
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            statCards.forEach(card => {
+                observer.observe(card);
+            });
+
+            // Auto-refresh functionality (optional)
+            let autoRefreshInterval;
+            const startAutoRefresh = () => {
+                autoRefreshInterval = setInterval(() => {
+                    // Refresh dashboard data
+                    refreshDashboardData();
+                }, 300000); // Refresh every 5 minutes
+            };
+
+            const stopAutoRefresh = () => {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                }
+            };
+
+            // Start auto-refresh when page loads
+            startAutoRefresh();
+
+            // Stop auto-refresh when user leaves the page
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopAutoRefresh();
+                } else {
+                    startAutoRefresh();
+                }
+            });
+
+            function refreshDashboardData() {
+                // Show loading indicator
+                const loadingBar = document.getElementById('loadingBar');
+                if (loadingBar) {
+                    loadingBar.style.width = '30%';
+                }
+
+                // Here you would make an AJAX call to refresh the dashboard data
+                console.log('Refreshing dashboard data...');
+
+                // Simulate completion
+                setTimeout(() => {
+                    if (loadingBar) {
+                        loadingBar.style.width = '100%';
+                        setTimeout(() => {
+                            loadingBar.style.width = '0%';
+                        }, 500);
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,148 @@
+@model List<OrderViewModel>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+@section style {
+    <link rel="stylesheet" href="~/css/Order/OrderIndex.css" asp-append-version="true"/>
+}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="mb-4 fade-in">
+                <h1 class="display-5 fw-bold text-gradient">
+                    <i class="bi bi-bag-check me-2"></i>My Orders
+                </h1>
+                <p class="text-muted">View and manage your order history</p>
+            </div>
+
+            <!-- Orders Summary Card -->
+            <div class="orders-summary-card mb-4 fade-in">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <i class="bi bi-cart-check-fill"></i>
+                            <div>
+                                <h5 class="mb-0">@Model.Count</h5>
+                                <span>Total Orders</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <i class="bi bi-box-seam-fill"></i>
+                            <div>
+                                <h5 class="mb-0">@Model.Sum(o => o.NumberOfProducts)</h5>
+                                <span>Total Products</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <i class="bi bi-currency-dollar"></i>
+                            <div>
+                                <h5 class="mb-0">$@Model.Sum(o => o.Price).ToString("N2")</h5>
+                                <span>Total Spent</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders List -->
+            @if (Model == null || !Model.Any())
+            {
+                <!-- Empty State -->
+                <div class="empty-orders text-center py-5 fade-in">
+                    <i class="bi bi-bag-x display-1 text-muted mb-3"></i>
+                    <h3 class="text-muted">No orders yet</h3>
+                    <p class="text-muted mb-4">Start shopping to see your orders here!</p>
+                    <a asp-area="product" asp-controller="CustomerProducts" asp-action="Index" class="btn btn-gradient">
+                        <i class="bi bi-shop me-2"></i>Start Shopping
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="orders-container">
+                    @foreach (var order in Model.OrderByDescending(o => o.CreatedDate))
+                    {
+                        <div class="order-card mb-3 fade-in">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <div class="order-info">
+                                        <div class="order-header">
+                                            <h5 class="mb-1">Order #@order.Id.ToString().Substring(0, 8).ToUpper()</h5>
+                                            <span class="order-date">
+                                                <i class="bi bi-calendar3 me-1"></i>
+                                                @order.CreatedDate.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                                            </span>
+                                        </div>
+                                        <div class="order-details mt-3">
+                                            <span class="detail-item">
+                                                <i class="bi bi-box me-1"></i>
+                                                <strong>@order.NumberOfProducts</strong> Product@(order.NumberOfProducts != 1 ? "s" : "")
+                                            </span>
+                                            <span class="detail-item">
+                                                <i class="bi bi-tag-fill me-1"></i>
+                                                Total: <strong>$@order.Price.ToString("N2")</strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                    <a asp-area="Orders" asp-controller="UserOrder" asp-action="Details" asp-route-orderId="@order.Id" class="btn btn-view-details">
+                                        <i class="bi bi-eye me-2"></i>View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination (if needed) -->
+                @if (Model.Count > 10)
+                {
+                    <nav aria-label="Orders pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add staggered animation to order cards
+            const orderCards = document.querySelectorAll('.order-card');
+            orderCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Add hover effect to summary items
+            const summaryItems = document.querySelectorAll('.summary-item');
+            summaryItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.querySelector('i').style.transform = 'scale(1.1)';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.querySelector('i').style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+}

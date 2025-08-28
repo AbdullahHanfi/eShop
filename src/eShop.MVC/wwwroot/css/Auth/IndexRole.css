@@ -1,0 +1,132 @@
+﻿/* Custom styles matching the master theme */
+.card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+.table > :not(caption) > * > * {
+    padding: 1rem 0.75rem;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+    .table tbody tr:hover {
+        background-color: rgba(37, 99, 235, 0.04);
+    }
+
+.form-select, .form-control {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+    .form-select:focus, .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #5a67d8;
+    transition: all 0.2s ease;
+}
+
+    .role-badge:hover {
+        background: linear-gradient(135deg, #667eea25 0%, #764ba225 100%);
+        transform: translateY(-1px);
+    }
+
+    .role-badge .remove-role {
+        margin-left: 0.5rem;
+        cursor: pointer;
+        color: #e53e3e;
+        transition: transform 0.2s ease;
+    }
+
+        .role-badge .remove-role:hover {
+            transform: scale(1.2);
+        }
+
+.modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading animation */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+    .loading-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+        .btn-group .btn {
+            border-radius: 8px !important;
+            margin: 2px 0;
+        }
+
+    .modal-dialog {
+        margin: 1rem;
+    }
+
+    .role-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}

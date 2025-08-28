@@ -1,0 +1,108 @@
+@model LogDetailsViewModel
+@{
+    ViewData["Title"] = "Log Details";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>Log Details</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Logs">Logs</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Log #@Model.Log.Id</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Log Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">ID:</dt>
+                        <dd class="col-sm-9">@Model.Log.Id</dd>
+
+                        <dt class="col-sm-3">Timestamp:</dt>
+                        <dd class="col-sm-9">@Model.Log.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss.fff")</dd>
+
+                        <dt class="col-sm-3">Level:</dt>
+                        <dd class="col-sm-9">
+                            @{
+                                var badgeClass = Model.Log.Level switch
+                                {
+                                    "Fatal" => "bg-dark",
+                                    "Error" => "bg-danger",
+                                    "Warning" => "bg-warning text-dark",
+                                    "Information" => "bg-info text-dark",
+                                    "Debug" => "bg-secondary",
+                                    _ => "bg-light text-dark"
+                                };
+                            }
+                            <span class="badge @badgeClass">@Model.Log.Level</span>
+                        </dd>
+
+                        <dt class="col-sm-3">Message:</dt>
+                        <dd class="col-sm-9">
+                            <div class="alert alert-light">
+                                @Model.Log.Message
+                            </div>
+                        </dd>
+
+                        @if (!string.IsNullOrEmpty(Model.Log.MessageTemplate))
+                        {
+                            <dt class="col-sm-3">Message Template:</dt>
+                            <dd class="col-sm-9">
+                                <code>@Model.Log.MessageTemplate</code>
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Log.Exception))
+            {
+                <div class="card mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">Exception Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded"><code>@Model.Log.Exception</code></pre>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            @if (Model.ParsedProperties.Any())
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Properties</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl>
+                            @foreach (var property in Model.ParsedProperties)
+                            {
+                                <dt>@property.Key:</dt>
+                                <dd class="mb-2">
+                                    <code>@property.Value</code>
+                                </dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+            }
+
+            <div class="mt-3">
+                <a asp-action="Logs" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Logs
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

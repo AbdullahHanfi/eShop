@@ -1,0 +1,303 @@
+@model OrderDetailsViewModel
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+@section style {
+<link rel="stylesheet" href="~/css/Order/OrderDetails.css" asp-append-version="true"/>
+    
+}
+
+<div class="order-details-container">
+    <div class="order-summary-card">
+        <div class="order-header">
+            <h1 class="order-title">
+                <i class="bi bi-receipt me-2"></i>Order Details
+            </h1>
+            <div class="order-price">
+                <span class="price-label">Total Price</span>
+                <span class="price-amount">$@Model.Price.ToString("N2")</span>
+            </div>
+        </div>
+
+        @if (Model.Products != null && Model.Products.Any()){
+            <div class="products-grid">
+                @foreach (var product in Model.Products){
+                    <div class="product-card">
+                        <div class="product-content">
+                            <!-- Product Images -->
+                            <div class="product-images">
+                                <div class="image-carousel" id="carousel-@product.Id">
+                                    @if (product.Images != null && product.Images.Any()){
+                                        <img
+                                            src="data:image/jpeg;base64,@Convert.ToBase64String(product.Images.First())"
+                                            alt="@product.Name"
+                                            class="carousel-image"
+                                            id="image-@product.Id"/>
+
+                                        @if (product.Images.Count > 1){
+                                            <div class="image-indicators">
+                                                @for (int i = 0; i < product.Images.Count; i++){
+                                                    var index = i;
+                                                    <span class="image-indicator @(i == 0 ? "active" : "")"
+                                                          data-product="@product.Id"
+                                                          data-index="@i"
+                                                          onclick="changeImage('@product.Id', @index)"></span>
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                    else{
+                                        <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Product Info -->
+                            <div class="product-info">
+                                <h3 class="product-name">@product.Name</h3>
+
+                                @if (!string.IsNullOrEmpty(product.Description)){
+                                    <p class="product-description">@product.Description</p>
+                                }
+
+                                <!-- Product Meta -->
+                                <div class="product-meta">
+                                    <div class="meta-item">
+                                        <span class="meta-label">Quantity</span>
+                                        <span class="meta-value">
+                                            <span class="quantity-badge">
+                                                <i class="bi bi-box-seam"></i>
+                                                @product.Quantity
+                                            </span>
+                                        </span>
+                                    </div>
+
+                                    @if (product.Rate > 0){
+                                        <div class="meta-item">
+                                            <span class="meta-label">Rating</span>
+                                            <div class="product-rating">
+                                                <span class="stars">
+                                                    @for (int i = 1; i <= 5; i++){
+                                                        if (i <= Math.Floor((double)product.Rate)){
+                                                            <i
+                                                                class="fas fa-star"></i>
+                                                        }
+                                                        else if (i - 0.5 <= product.Rate){
+                                                            <i
+                                                                class="fas fa-star-half-alt"></i>
+                                                        }
+                                                        else{ <i class="far fa-star"></i> }
+                                                    }
+                                                </span>
+                                                <span class="rating-value">@product.Rate.ToString("F1")</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Pricing -->
+                                <div class="product-pricing">
+                                    <span class="current-price">$@product.CurrentPrice.ToString("N2")</span>
+
+                                    @if (product.PrevPrice.HasValue && product.PrevPrice.Value > product.CurrentPrice){
+                                        <span class="prev-price">$@product.PrevPrice.Value.ToString("N2")</span>
+
+                                        var discount = Math.Round((double)((product.PrevPrice.Value - product.CurrentPrice) / product.PrevPrice.Value) * 100);
+                                        <span class="price-badge">-@discount % </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Order Actions -->
+            <div class="order-actions">
+                <a href="/Products" class="btn-action btn-primary-gradient">
+                    <i class="bi bi-bag-plus"></i>
+                    Continue Shopping
+                </a>
+                <a href="/Orders" class="btn-action btn-outline">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Orders
+                </a>
+            </div>
+        }
+        else{
+            <div class="empty-state">
+                <i class="bi bi-cart-x empty-icon"></i>
+                <h2 class="empty-title">No Products Found</h2>
+                <p class="empty-text">This order doesn't contain any products.</p>
+                <a href="/Products" class="btn-action btn-primary-gradient">
+                    <i class="bi bi-shop"></i>
+                    Browse Products
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Image carousel functionality
+        function changeImage(productId, index) {
+            const product = @Html.Raw(Json.Serialize(Model.Products));
+            const selectedProduct = product.find(p => p.id === productId);
+
+            if (selectedProduct && selectedProduct.images && selectedProduct.images[index]) {
+                const image = document.getElementById(`image-${productId}`);
+                image.src = `data:image/jpeg;base64,${selectedProduct.images[index]}`;
+
+                // Update indicators
+                const indicators = document.querySelectorAll(`[data-product="${productId}"]`);
+                indicators.forEach((indicator, i) => {
+                    if (i === index) {
+                        indicator.classList.add('active');
+                    } else {
+                        indicator.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        // Add hover effects
+        document.addEventListener('DOMContentLoaded', function () {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Add touch support for mobile image carousel
+            const carousels = document.querySelectorAll('.image-carousel');
+            carousels.forEach(carousel => {
+                let startX = 0;
+                let currentX = 0;
+                const productId = carousel.id.split('-')[1];
+
+                carousel.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                }, {passive: true});
+
+                carousel.addEventListener('touchmove', (e) => {
+                    currentX = e.touches[0].clientX;
+                }, {passive: true});
+
+                carousel.addEventListener('touchend', () => {
+                    const diffX = startX - currentX;
+                    const threshold = 50;
+
+                    if (Math.abs(diffX) > threshold) {
+                        const indicators = document.querySelectorAll(`[data-product="${productId}"]`);
+                        const activeIndex = Array.from(indicators).findIndex(ind => ind.classList.contains('active'));
+
+                        if (diffX > 0 && activeIndex < indicators.length - 1) {
+                            // Swipe left - next image
+                            changeImage(productId, activeIndex + 1);
+                        } else if (diffX < 0 && activeIndex > 0) {
+                            // Swipe right - previous image
+                            changeImage(productId, activeIndex - 1);
+                        }
+                    }
+                });
+            });
+
+            // Add loading animation for images
+            const images = document.querySelectorAll('.carousel-image');
+            images.forEach(img => {
+                img.addEventListener('load', function () {
+                    this.style.opacity = '0';
+                    this.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => {
+                        this.style.opacity = '1';
+                    }, 10);
+                });
+            });
+
+            // Add keyboard navigation for image carousel
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    const focusedElement = document.activeElement;
+                    const carousel = focusedElement.closest('.image-carousel');
+
+                    if (carousel) {
+                        const productId = carousel.id.split('-')[1];
+                        const indicators = document.querySelectorAll(`[data-product="${productId}"]`);
+                        const activeIndex = Array.from(indicators).findIndex(ind => ind.classList.contains('active'));
+
+                        if (e.key === 'ArrowRight' && activeIndex < indicators.length - 1) {
+                            changeImage(productId, activeIndex + 1);
+                        } else if (e.key === 'ArrowLeft' && activeIndex > 0) {
+                            changeImage(productId, activeIndex - 1);
+                        }
+                    }
+                }
+            });
+
+            // Add print functionality
+            window.printOrderDetails = function () {
+                window.print();
+            };
+
+            // Add share functionality
+            window.shareOrderDetails = function () {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Order Details',
+                        text: `Order Total: $${@Model.Price.ToString("N2")}`,
+                        url: window.location.href
+                    }).catch(err => console.log('Error sharing:', err));
+                } else {
+                    // Fallback to copy URL
+                    navigator.clipboard.writeText(window.location.href).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Link Copied!',
+                            text: 'Order details link has been copied to clipboard',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            position: 'top-end',
+                            toast: true
+                        });
+                    });
+                }
+            };
+
+            // Add save as PDF functionality (requires additional library like jsPDF)
+            window.downloadOrderPDF = function () {
+                // This is a placeholder - you would need to implement PDF generation
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Feature Coming Soon',
+                    text: 'PDF download will be available soon!',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    position: 'top-end',
+                    toast: true
+                });
+            };
+        });
+
+        // Add resize observer for responsive behavior
+        const resizeObserver = new ResizeObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.contentRect.width < 768) {
+                    // Mobile adjustments
+                    document.querySelectorAll('.product-card').forEach(card => {
+                        card.style.padding = '1rem';
+                    });
+                } else {
+                    // Desktop adjustments
+                    document.querySelectorAll('.product-card').forEach(card => {
+                        card.style.padding = '1.5rem';
+                    });
+                }
+            });
+        });
+
+        resizeObserver.observe(document.querySelector('.order-details-container'));
+    </script>
+}

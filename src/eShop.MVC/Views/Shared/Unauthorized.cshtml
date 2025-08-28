@@ -1,0 +1,310 @@
+﻿@{
+    ViewData["Title"] = "Unauthorized Access";
+}
+@section style {
+    <link rel="stylesheet" href="~/css/Error/Unauthorized.css" asp-append-version="true" />
+}
+<div class="unauthorized-page-container">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-lg-7 col-md-9">
+                <div class="unauthorized-card fade-in">
+                    <!-- User Icon Animation -->
+                    <div class="user-icon-wrapper">
+                        <div class="user-icon-container">
+                            <div class="user-icon">
+                                <i class="bi bi-person"></i>
+                            </div>
+                            <div class="user-badge">
+                                <i class="bi bi-x-lg"></i>
+                            </div>
+                        </div>
+                        <div class="scan-lines">
+                            <div class="scan-line"></div>
+                            <div class="scan-line"></div>
+                            <div class="scan-line"></div>
+                        </div>
+                        <div class="fingerprint-bg">
+                            <i class="bi bi-fingerprint"></i>
+                        </div>
+                    </div>
+
+                    <h1 class="unauthorized-title">Authentication Required</h1>
+                    <div class="error-code-badge">Error 401</div>
+
+                    <p class="unauthorized-subtitle">
+                        Please sign in to access this content. You need to be authenticated to view this page.
+                    </p>
+
+                    <!-- Security Info Cards -->
+                    <div class="security-section">
+                        <div class="security-cards">
+                            <div class="security-card">
+                                <div class="security-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <h6>Secure Access</h6>
+                                <p>Protected content requires valid credentials</p>
+                            </div>
+                            <div class="security-card">
+                                <div class="security-icon">
+                                    <i class="bi bi-person-badge"></i>
+                                </div>
+                                <h6>User Verification</h6>
+                                <p>Identity confirmation needed to proceed</p>
+                            </div>
+                            <div class="security-card">
+                                <div class="security-icon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+                                <h6>Session Status</h6>
+                                <p>Your session may have expired</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-section">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a href="/Login?ReturnUrl=@Context.Request.Path" class="btn-action btn-gradient">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Sign In to Continue
+                            </a>
+                        }
+                        
+                        <div class="secondary-actions">
+                            <button onclick="history.back()" class="btn-action btn-secondary-custom">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Go Back
+                            </button>
+                            <a href="/" class="btn-action btn-outline-custom">
+                                <i class="bi bi-house me-2"></i>
+                                Home Page
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Alternative Actions -->
+                    <div class="alternative-actions">
+                        <a href="/register" class="btn-link">
+                            <i class="bi bi-person-plus"></i>
+                            Create Account
+                        </a>
+                        <a href="/contact" class="btn-link">
+                            <i class="bi bi-headset"></i>
+                            Get Help
+                        </a>
+                        <a href="/ForgotPassword" class="btn-link">
+                            <i class="bi bi-key"></i>
+                            Forgot Password?
+                        </a>
+                    </div>
+
+                    <!-- Background Decoration -->
+                    <div class="bg-decoration">
+                        <div class="floating-lock lock-1">
+                            <i class="bi bi-lock"></i>
+                        </div>
+                        <div class="floating-lock lock-2">
+                            <i class="bi bi-key"></i>
+                        </div>
+                        <div class="floating-lock lock-3">
+                            <i class="bi bi-shield"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ripple effect
+        document.querySelectorAll('.btn-action').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.5);
+                    left: ${x}px;
+                    top: ${y}px;
+                    animation: ripple-effect 0.6s ease-out;
+                    pointer-events: none;
+                `;
+
+                this.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Page transition animation
+        document.querySelectorAll('a.btn-action, .btn-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (!this.href || this.href.includes('#')) return;
+
+                e.preventDefault();
+
+                // Add loading bar
+                const loadingBar = document.createElement('div');
+                loadingBar.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 3px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    animation: loading-slide 1s ease-in-out;
+                    z-index: 9999;
+                `;
+                document.body.appendChild(loadingBar);
+
+                // Navigate after animation starts
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 100);
+            });
+        });
+                // Animate elements on load
+        const animateOnLoad = () => {
+            // User icon entrance
+            const userIcon = document.querySelector('.user-icon-container');
+            if (userIcon) {
+                userIcon.style.opacity = '0';
+                userIcon.style.transform = 'scale(0) rotate(-180deg)';
+
+                setTimeout(() => {
+                    userIcon.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                    userIcon.style.opacity = '1';
+                    userIcon.style.transform = 'scale(1) rotate(0deg)';
+                }, 100);
+            }
+
+            // Security cards entrance
+            document.querySelectorAll('.security-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 + (index * 100));
+            });
+
+            // Button entrance animations
+            document.querySelectorAll('.btn-action').forEach((btn, index) => {
+                btn.style.opacity = '0';
+                btn.style.transform = 'translateY(20px)';
+
+                setTimeout(() => {
+                    btn.style.transition = 'all 0.5s ease-out';
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                }, 400 + (index * 100));
+            });
+
+            // Alternative actions entrance
+            document.querySelectorAll('.btn-link').forEach((link, index) => {
+                link.style.opacity = '0';
+                link.style.transform = 'translateX(-20px)';
+
+                setTimeout(() => {
+                    link.style.transition = 'all 0.5s ease-out';
+                    link.style.opacity = '1';
+                    link.style.transform = 'translateX(0)';
+                }, 600 + (index * 50));
+            });
+        };
+
+        animateOnLoad();
+
+        // Interactive hover effects
+        const userIconContainer = document.querySelector('.user-icon-container');
+        if (userIconContainer) {
+            userIconContainer.addEventListener('mouseenter', function() {
+                const badge = this.querySelector('.user-badge');
+                if (badge) {
+                    badge.style.animation = 'shake-badge 0.5s ease-in-out';
+                    setTimeout(() => {
+                        badge.style.animation = 'shake-badge 2s infinite';
+                    }, 500);
+                }
+            });
+        }
+
+        // Add typing indicator for subtitle
+        const addTypingIndicator = (element) => {
+            const text = element.textContent;
+            element.textContent = '';
+            element.style.minHeight = '1.5em';
+
+            let index = 0;
+            const typeInterval = setInterval(() => {
+                if (index < text.length) {
+                    element.textContent += text[index];
+                    index++;
+                } else {
+                    clearInterval(typeInterval);
+                }
+            }, 30);
+        };
+
+        // Apply typing effect to subtitle
+        const subtitle = document.querySelector('.unauthorized-subtitle');
+        if (subtitle) {
+            setTimeout(() => addTypingIndicator(subtitle), 800);
+        }
+
+        // Add hover sound effect simulation (visual feedback)
+        document.querySelectorAll('.security-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+
+                // Create pulse effect
+                const pulse = document.createElement('div');
+                pulse.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 100%;
+                    height: 100%;
+                    border: 2px solid #2563eb;
+                    border-radius: 12px;
+                    opacity: 0;
+                    pointer-events: none;
+                    animation: pulse-out 0.6s ease-out;
+                `;
+                this.style.position = 'relative';
+                this.appendChild(pulse);
+
+                setTimeout(() => pulse.remove(), 600);
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Loading button state
+        document.querySelectorAll('.btn-action').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.classList.contains('loading')) {
+                    this.classList.add('loading');
+                }
+            });
+        });
+    });
+</script>
+

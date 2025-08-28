@@ -1,0 +1,328 @@
+@inject IImageServices imageServices
+@model AdminOrderViewModel
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+@section style {
+    <style>
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: #e9ecef;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -21px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 1px #dee2e6;
+        }
+
+        .timeline-content {
+            padding-left: 10px;
+        }
+
+        /* Print Styles */
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .card {
+                border: 1px solid #dee2e6 !important;
+                page-break-inside: avoid;
+            }
+
+            .timeline-marker {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        /* Card hover effects */
+        .card {
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Image hover effect */
+        .table img {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .table img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Custom scrollbar for order items */
+        .table-responsive {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Order Details</h2>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Order Summary Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Order ID:</dt>
+                        <dd class="col-sm-7 text-muted">@($"ORD-{Model.CreatedDate:yyyyMMdd}-{Model.Id.ToString().Substring(0, 8).ToUpper()}")</dd>
+
+                        <dt class="col-sm-5">Order Date:</dt>
+                        <dd class="col-sm-7 text-muted">@Model.CreatedDate.ToString("MMM dd, yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-5">Total Items:</dt>
+                        <dd class="col-sm-7 text-muted">@Model.TotalItems</dd>
+
+                        <dt class="col-sm-5">Total Amount:</dt>
+                        <dd class="col-sm-7 text-primary fw-bold h5">$@Model.TotalAmount.ToString("N2")</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Name:</dt>
+                        <dd class="col-sm-8 text-muted">@Model.UserName</dd>
+
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8 text-muted">
+                            <a href="mailto:@Model.UserEmail">@Model.UserEmail</a>
+                        </dd>
+
+                        <dt class="col-sm-4">User ID:</dt>
+                        <dd class="col-sm-8 text-muted small">@Model.UserId</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="printOrder()">
+                            <i class="fas fa-print me-2"></i>Print Order
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="sendEmail()">
+                            <i class="fas fa-envelope me-2"></i>Send Email
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-shopping-basket me-2"></i>Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center">Price</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in Model.Items){
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img
+                                                src="@(item.ProductImage == null ? "/assets/no-image.jpg" : $"data:image/*;base64,{Convert.ToBase64String(await imageServices.GetAsync(item.ProductImage))}")"
+                                                alt="@item.ProductName"
+                                                class="rounded me-3"
+                                                style="width: 60px; height: 60px; object-fit: cover;">
+                                            <div>
+                                                <h6 class="mb-0">@item.ProductName</h6>
+                                                <small
+                                                    class="text-muted">ID: @item.ProductId.ToString().Substring(0, 8).ToUpper()</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center align-middle">$@item.Price.ToString("N2")</td>
+                                    <td class="text-center align-middle">
+                                        <span class="badge bg-secondary">@item.Quantity</span>
+                                    </td>
+                                    <td class="text-end align-middle fw-bold">$@item.Total.ToString("N2")</td>
+                                </tr>
+                            }
+                            </tbody>
+                            <tfoot>
+                            <tr class="border-top">
+                                <td colspan="3" class="text-end pt-3">
+                                    <strong>Subtotal:</strong>
+                                </td>
+                                <td class="text-end pt-3">
+                                    <strong>$@Model.TotalAmount.ToString("N2")</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end">
+                                    <strong>Tax (0%):</strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong>$0.00</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end">
+                                    <strong>Shipping:</strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong>$0.00</strong>
+                                </td>
+                            </tr>
+                            <tr class="border-top">
+                                <td colspan="3" class="text-end pt-3">
+                                    <h5 class="mb-0">Grand Total:</h5>
+                                </td>
+                                <td class="text-end pt-3">
+                                    <h5 class="mb-0 text-primary">$@Model.TotalAmount.ToString("N2")</h5>
+                                </td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Timeline -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Order Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Order Placed</h6>
+                                <p class="text-muted mb-0">@Model.CreatedDate.ToString("MMM dd, yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        function printOrder() {
+            window.print();
+        }
+
+        function sendEmail() {
+            Swal.fire({
+                title: 'Send Order Email',
+                text: 'Send order details to customer email?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Send Email',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Implement email sending functionality
+
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Feature Coming Soon',
+                        text: 'Email functionality will be implemented soon!'
+                    });
+                }
+            });
+        }
+
+        // Print styles
+        window.addEventListener('beforeprint', function () {
+            $('.btn, .card-header').hide();
+            $('.card').css('box-shadow', 'none');
+        });
+
+        window.addEventListener('afterprint', function () {
+            $('.btn, .card-header').show();
+            $('.card').css('box-shadow', '');
+        });
+    </script>
+}
+

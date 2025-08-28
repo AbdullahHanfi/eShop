@@ -1,0 +1,442 @@
+@model eShop.MVC.Areas.Checkout.Model.CheckoutSuccessModel
+@{
+    ViewData["Title"] = "Order Successful";
+    Layout = "_Layout";
+}
+
+@section style {
+    <style>
+        .success-container {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .success-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: var(--bg-gradient);
+            opacity: 0.05;
+            transform: rotate(45deg);
+            z-index: -1;
+        }
+
+        .success-icon-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            position: relative;
+            animation: scaleIn 0.5s ease-out 0.3s both;
+        }
+
+        @@keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-icon {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .success-icon i {
+            font-size: 3.5rem;
+            color: white;
+            animation: checkmark 0.6s ease-out 0.8s both;
+        }
+
+        @@keyframes checkmark {
+            from {
+                transform: scale(0) rotate(-45deg);
+            }
+            to {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            animation: pulse-ring 2s ease-out infinite;
+        }
+
+        @@keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .success-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.6s ease-out 1s both;
+        }
+
+        .success-message {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 1.2s both;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .order-details {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 1.4s both;
+        }
+
+        .order-details-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .order-details-item:last-child {
+            border-bottom: none;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            border-top: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .order-details-label {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .order-details-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .order-number {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            animation: fadeInUp 0.6s ease-out 1.6s both;
+        }
+
+        .btn-primary-gradient {
+            background: var(--bg-gradient);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-secondary-outline {
+            background: transparent;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            color: var(--primary-color);
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary-outline:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            color: var(--primary-color);
+        }
+
+        .delivery-info {
+            background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%);
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeInUp 0.6s ease-out 1.5s both;
+        }
+
+        .delivery-info i {
+            font-size: 2rem;
+            color: #10b981;
+        }
+
+        .delivery-info-text {
+            flex: 1;
+        }
+
+        .delivery-info-title {
+            font-weight: 600;
+            color: #047857;
+            margin-bottom: 0.25rem;
+        }
+
+        .delivery-info-subtitle {
+            color: #059669;
+            font-size: 0.9rem;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-color);
+            animation: confetti-fall 3s ease-out infinite;
+        }
+
+        @@keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti:nth-child(odd) {
+            background: var(--primary-color);
+            width: 8px;
+            height: 8px;
+            animation-duration: 4s;
+        }
+
+        .confetti:nth-child(2n) {
+            animation-delay: 0.3s;
+            left: 10%;
+        }
+
+        .confetti:nth-child(3n) {
+            animation-delay: 0.6s;
+            left: 30%;
+            background: #10b981;
+        }
+
+        .confetti:nth-child(4n) {
+            animation-delay: 0.9s;
+            left: 50%;
+        }
+
+        .confetti:nth-child(5n) {
+            animation-delay: 1.2s;
+            left: 70%;
+            background: var(--accent-color);
+        }
+
+        .confetti:nth-child(6n) {
+            animation-delay: 1.5s;
+            left: 90%;
+        }
+
+        @@media (max-width: 576px) {
+            .success-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .success-title {
+                font-size: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-primary-gradient,
+            .btn-secondary-outline {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+}
+
+<div class="success-container">
+    <!-- Confetti Animation -->
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="success-card">
+                    <!-- Success Icon -->
+                    <div class="success-icon-wrapper">
+                        <div class="success-icon">
+                            <div class="pulse-ring"></div>
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <h1 class="success-title text-center">Order Successful!</h1>
+                    <p class="success-message text-center">
+                        Thank you for your purchase. Your order has been successfully placed and is being processed.
+                    </p>
+
+                    <!-- Order Details -->
+                    <div class="order-details">
+                        <div class="order-details-item">
+                            <span class="order-details-label">Order Number</span>
+                            <span class="order-number">#@Model.OrderNumber</span>
+                        </div>
+                        <div class="order-details-item">
+                            <span class="order-details-label">Order Date</span>
+                            <span class="order-details-value">@Model.OrderDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <div class="order-details-item">
+                            <span class="order-details-label">Items</span>
+                            <span class="order-details-value">@Model.ItemCount items</span>
+                        </div>
+                        <div class="order-details-item">
+                            <span class="order-details-label">Total Amount</span>
+                            <span class="order-details-value">$@Model.TotalAmount.ToString("F2")</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="/Orders/@Model.OrderNumber" class="btn-primary-gradient">
+                            <i class="bi bi-eye"></i>
+                            View Order Details
+                        </a>
+                        <a href="/products" class="btn-secondary-outline">
+                            <i class="bi bi-arrow-left"></i>
+                            Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Show success notification
+        document.addEventListener('DOMContentLoaded', function () {
+            // Clear cart count after successful checkout
+            window.eShopNav.updateCartCount();
+
+            // Show success toast
+            Swal.fire({
+                icon: 'success',
+                title: 'Payment Successful!',
+                text: 'We\'ve sent you an email confirmation',
+                showConfirmButton: false,
+                timer: 3000,
+                position: 'top-end',
+                toast: true
+            });
+
+            // Optional: Add more confetti on click
+            document.querySelector('.success-icon').addEventListener('click', function () {
+                for (let i = 0; i < 10; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    document.querySelector('.success-container').appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 3000);
+                }
+            });
+        });
+    </script>
+}
