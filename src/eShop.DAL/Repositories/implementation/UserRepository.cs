@@ -9,15 +9,12 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
-namespace eShop.DAL.Repositories.implementation
-{
-    public class UserRepository : IUserRepository
-    {
+namespace eShop.DAL.Repositories.implementation {
+    public class UserRepository : IUserRepository {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly eShopDbContext _context;
 
-        public UserRepository(eShopDbContext context, UserManager<ApplicationUser> userManager)
-        {
+        public UserRepository(eShopDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
             _userManager = userManager;
         }
@@ -59,11 +56,9 @@ namespace eShop.DAL.Repositories.implementation
         public async Task<IdentityOperationResult<ApplicationUser>> RemoveFromRolesAsync(ApplicationUser user, IEnumerable<string> Roles)
             => ConvertIdentityToCustome(await _userManager.RemoveFromRolesAsync(user, Roles));
 
-        public async Task<IdentityOperationResult<ApplicationUser>> RemoveFromRoleAsync(Guid userId, Guid Role)
-        {
+        public async Task<IdentityOperationResult<ApplicationUser>> RemoveFromRoleAsync(Guid userId, Guid Role) {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-            {
+            if (user == null){
                 return new IdentityOperationResult<ApplicationUser>
                 {
                     Succeeded = false,
@@ -74,8 +69,7 @@ namespace eShop.DAL.Repositories.implementation
                 .Where(r => r.Id == Role.ToString())
                 .Select(r => r.Name)
                 .FirstOrDefaultAsync();
-            if (string.IsNullOrEmpty(roleName))
-            {
+            if (string.IsNullOrEmpty(roleName)){
                 return new IdentityOperationResult<ApplicationUser>
                 {
                     Succeeded = false,
@@ -104,17 +98,16 @@ namespace eShop.DAL.Repositories.implementation
         public async Task<IList<string>> GetRolesAsync(ApplicationUser user)
             => await _userManager.GetRolesAsync(user);
 
-        public async Task<IList<ApplicationRole>> GetRolesAsync(Guid userId)
-        {
+        public async Task<IList<ApplicationRole>> GetRolesAsync(Guid userId) {
 
             var query = _context.Roles.FromSqlRaw(@"
             SELECT *
             FROM [AspNetRoles]
             where [Id] in (SELECT[RoleId]
                            FROM[AspNetUserRoles]
-                           where[UserId] = @userId)"
-            , new SqlParameter("@userId", userId));
-            
+                           where[UserId] = @userId)",
+            new SqlParameter("@userId", userId));
+
             return await query
                 .ToListAsync();
         }
@@ -122,8 +115,7 @@ namespace eShop.DAL.Repositories.implementation
         public async Task<bool> IsInRoleAsync(ApplicationUser user, string Role)
             => await _userManager.IsInRoleAsync(user, Role);
 
-        private IdentityOperationResult<ApplicationUser> ConvertIdentityToCustome(IdentityResult identityResult)
-        {
+        private IdentityOperationResult<ApplicationUser> ConvertIdentityToCustome(IdentityResult identityResult) {
 
             var result = new IdentityOperationResult<ApplicationUser>
             {
@@ -134,36 +126,27 @@ namespace eShop.DAL.Repositories.implementation
             return result;
         }
 
-        public async Task<IList<ApplicationUser>> GetAllAsync()
-        {
+        public async Task<IList<ApplicationUser>> GetAllAsync() {
             return await _context.Users.ToListAsync();
         }
 
-        public async Task<IList<ApplicationUser>> GetAllAsync(Expression<Func<ApplicationUser, bool>> criteria)
-        {
+        public async Task<IList<ApplicationUser>> GetAllAsync(Expression<Func<ApplicationUser, bool>> criteria) {
             return await _context.Users
                 .Where(criteria)
                 .ToListAsync();
         }
 
-        public async Task<IList<ApplicationUser>> GetAllAsync(Expression<Func<ApplicationUser, bool>> criteria, params Expression<Func<ApplicationUser, object>>[] includes)
-        {
+        public async Task<IList<ApplicationUser>> GetAllAsync(Expression<Func<ApplicationUser, bool>> criteria, params Expression<Func<ApplicationUser, object>>[] includes) {
             IQueryable<ApplicationUser> query = _context.Users.Where(criteria);
-            if (includes != null && includes.Length != 0)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
+            if (includes != null && includes.Length != 0){
+                foreach (var include in includes){ query = query.Include(include); }
             }
             return await query.ToListAsync();
         }
 
-        public async Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, string Role)
-        {
+        public async Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, string Role) {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-            {
+            if (user == null){
                 return new IdentityOperationResult<ApplicationUser>
                 {
                     Succeeded = false,
@@ -173,11 +156,9 @@ namespace eShop.DAL.Repositories.implementation
             var result = await _userManager.AddToRoleAsync(user, Role);
             return ConvertIdentityToCustome(result);
         }
-        public async Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, Guid Role)
-        {
+        public async Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, Guid Role) {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-            {
+            if (user == null){
                 return new IdentityOperationResult<ApplicationUser>
                 {
                     Succeeded = false,
@@ -188,8 +169,7 @@ namespace eShop.DAL.Repositories.implementation
                 .Where(r => r.Id == Role.ToString())
                 .Select(r => r.Name)
                 .FirstOrDefaultAsync();
-            if (string.IsNullOrEmpty(roleName))
-            {
+            if (string.IsNullOrEmpty(roleName)){
                 return new IdentityOperationResult<ApplicationUser>
                 {
                     Succeeded = false,
@@ -200,11 +180,9 @@ namespace eShop.DAL.Repositories.implementation
             return ConvertIdentityToCustome(result);
         }
 
-        public async Task<IdentityOperationResult<ApplicationUser>> AddToRolesAsync(Guid userId, IEnumerable<string> Roles)
-        {
+        public async Task<IdentityOperationResult<ApplicationUser>> AddToRolesAsync(Guid userId, IEnumerable<string> Roles) {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-            {
+            if (user == null){
                 return new IdentityOperationResult<ApplicationUser>
                 {
                     Succeeded = false,
@@ -215,11 +193,9 @@ namespace eShop.DAL.Repositories.implementation
             return ConvertIdentityToCustome(result);
         }
 
-        public async Task<IdentityOperationResult<ApplicationUser>> RemoveFromRolesAsync(Guid userId, IEnumerable<string> Roles)
-        {
+        public async Task<IdentityOperationResult<ApplicationUser>> RemoveFromRolesAsync(Guid userId, IEnumerable<string> Roles) {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-            {
+            if (user == null){
                 return new IdentityOperationResult<ApplicationUser>
                 {
                     Succeeded = false,
@@ -230,21 +206,15 @@ namespace eShop.DAL.Repositories.implementation
             return ConvertIdentityToCustome(result);
         }
 
-        public async Task<IList<ApplicationUser>> GetAllAsync(params Expression<Func<ApplicationUser, object>>[] includes)
-        {
+        public async Task<IList<ApplicationUser>> GetAllAsync(params Expression<Func<ApplicationUser, object>>[] includes) {
             IQueryable<ApplicationUser> query = _context.Users;
-            if (includes != null && includes.Length != 0)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
+            if (includes != null && includes.Length != 0){
+                foreach (var include in includes){ query = query.Include(include); }
             }
             return await query.ToListAsync();
         }
 
-        public async Task<IList<ApplicationUser>> GetAllByRoleAsync(string role, params Expression<Func<ApplicationUser, object>>[] includes)
-        {
+        public async Task<IList<ApplicationUser>> GetAllByRoleAsync(string role, params Expression<Func<ApplicationUser, object>>[] includes) {
             role = role.ToUpper();
             IQueryable<ApplicationUser> query = _context.Users.FromSqlRaw(@"
             SELECT *
@@ -253,37 +223,34 @@ namespace eShop.DAL.Repositories.implementation
                         FROM [AspNetUserRoles]
                         where [RoleId] in (SELECT [Id]
                                             FROM [AspNetRoles]
-                                            where [NormalizedName] = @role))"
-            , new SqlParameter("@role", role));
+                                            where [NormalizedName] = @role))",
+            new SqlParameter("@role", role));
 
-            if (includes != null && includes.Length != 0)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
+            if (includes != null && includes.Length != 0){
+                foreach (var include in includes){ query = query.Include(include); }
             }
             return await query.ToListAsync();
         }
-        public async Task<IList<ApplicationUser>> GetAllByRoleAsync(Guid roleId, params Expression<Func<ApplicationUser, object>>[] includes)
-        {
+        public async Task<IList<ApplicationUser>> GetAllByRoleAsync(Guid roleId, params Expression<Func<ApplicationUser, object>>[] includes) {
             IQueryable<ApplicationUser> query = _context.Users.FromSqlRaw(@"
             SELECT *
             FROM AspNetUsers
             where Id in (SELECT [UserId]
                         FROM [AspNetUserRoles]
-                        where [RoleId] = @roleId)"
-            , new SqlParameter("@roleId", roleId.ToString()));
+                        where [RoleId] = @roleId)",
+            new SqlParameter("@roleId", roleId.ToString()));
 
-            if (includes != null && includes.Length != 0)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
+            if (includes != null && includes.Length != 0){
+                foreach (var include in includes){ query = query.Include(include); }
             }
 
             return await query.ToListAsync();
+        }
+
+        public async Task<int> CountAsync() {
+            var query = await _context.Users.CountAsync();
+
+            return query;
         }
     }
 }

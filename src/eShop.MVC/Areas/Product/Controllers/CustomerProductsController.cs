@@ -7,20 +7,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 
-namespace eShop.MVC.Areas.Product.Controllers
-{
-    [Area("product")]
-    [Route("customer-products")]
+namespace eShop.MVC.Areas.Product.Controllers {
+    [Area("Product")]
+    [Route("customer/products")]
     [Authorize("GuestOrCustomer")]
-    public class CustomerProductsController : Controller
-    {
+    public class CustomerProductsController : Controller {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IToastNotification _toastNotification;
         private readonly IImageServices _imageService;
         private readonly IMapper _mapper;
 
-        public CustomerProductsController(IMapper mapper, IUnitOfWork unitOfWork, IToastNotification toastNotification, IImageServices imageServices)
-        {
+        public CustomerProductsController(IMapper mapper, IUnitOfWork unitOfWork, IToastNotification toastNotification, IImageServices imageServices) {
             _unitOfWork = unitOfWork;
             _toastNotification = toastNotification;
             _imageService = imageServices;
@@ -28,15 +25,14 @@ namespace eShop.MVC.Areas.Product.Controllers
         }
 
         [HttpGet("/products")]
-        public IActionResult Index(ProductSearchResultViewModel? searchResult, int? page)
-        {
+        public IActionResult Index(ProductSearchResultViewModel? searchResult, int? page) {
             int pageNumber = (page.HasValue && page > 0) ? Convert.ToInt32(page) : 1;
             ViewBag.TotalItems = _unitOfWork.Products.Count();
             ViewBag.Pages = (ViewBag.TotalItems + Page.MaxElementsInPage - 1) / Page.MaxElementsInPage;
             ViewBag.PageNumber = pageNumber;
 
             var model = _mapper.Map<List<ProductViewModel>>(
-                _unitOfWork.Products.FindAll(e => e.Active, i => i.Images)
+            _unitOfWork.Products.FindAll(e => e.Active, i => i.Images)
                 .Skip((pageNumber - 1) * Page.MaxElementsInPage)
                 .Take(Page.MaxElementsInPage)
                 .ToList());
@@ -59,15 +55,13 @@ namespace eShop.MVC.Areas.Product.Controllers
         }
 
         [HttpGet("/product/detail/{Id}")]
-        public async Task<IActionResult> Detail(Guid Id)
-        {
+        public async Task<IActionResult> Detail(Guid Id) {
             if (Id == Guid.Empty)
                 return RedirectToAction(nameof(Index));
 
             var product = await _unitOfWork.Products.FindAsync(e => e.Id == Id && e.Active, i => i.Images);
 
-            if (product == null)
-            {
+            if (product == null){
                 _toastNotification.AddWarningToastMessage("Product not found!");
                 return RedirectToAction(nameof(Index));
             }
@@ -76,23 +70,20 @@ namespace eShop.MVC.Areas.Product.Controllers
         }
 
         [HttpGet("/products/category/{Id}")]
-        public async Task<IActionResult> ProductsByCategory(Guid Id)
-        {
+        public async Task<IActionResult> ProductsByCategory(Guid Id) {
             if (Id == Guid.Empty)
                 return RedirectToAction(nameof(Index));
 
             var category = await _unitOfWork.Categories.FindAsync(e => e.Id == Id);
 
-            if (category is null)
-            {
+            if (category is null){
                 _toastNotification.AddWarningToastMessage("Category not found!");
                 return RedirectToAction(nameof(Index));
             }
 
             var products = await _unitOfWork.Products.FindAllAsync(e => e.Category.Id == Id && e.Active, i => i.Images);
 
-            if (products == null)
-            {
+            if (products == null){
                 _toastNotification.AddWarningToastMessage("Products not found!");
                 return RedirectToAction(nameof(Index));
             }
@@ -103,10 +94,8 @@ namespace eShop.MVC.Areas.Product.Controllers
         }
 
         [HttpGet("/products/search")]
-        public async Task<IActionResult> Search(string searchString, int? page, string sortBy = "name", string sortOrder = "asc")
-        {
-            if (string.IsNullOrWhiteSpace(searchString))
-            {
+        public async Task<IActionResult> Search(string searchString, int? page, string sortBy = "name", string sortOrder = "asc") {
+            if (string.IsNullOrWhiteSpace(searchString)){
                 _toastNotification.AddWarningToastMessage("Please enter a search term.");
                 return RedirectToAction(nameof(Index));
             }
@@ -124,16 +113,15 @@ namespace eShop.MVC.Areas.Product.Controllers
 
             var matchProducts = await _unitOfWork.Products
                 .FindAllAsync(p => p.Name.ToLower().Contains(searchString.ToLower()) ||
-                           p.Description.ToLower().Contains(searchString.ToLower()),
-                           e => e.Images);
+                                   p.Description.ToLower().Contains(searchString.ToLower()),
+                e => e.Images);
 
             var query = _mapper.Map<List<ProductViewModel>>(matchProducts.ToList());
 
 
             var totalItems = query.Count();
 
-            if (totalItems == 0)
-            {
+            if (totalItems == 0){
                 _toastNotification.AddInfoToastMessage($"No products found for '{searchString}'");
                 ViewBag.SearchPerformed = true;
                 return View(nameof(Index));
@@ -162,10 +150,14 @@ namespace eShop.MVC.Areas.Product.Controllers
 
             return View(nameof(Index), result);
         }
-
+        [HttpGet("/api/products/image/{ProductId}")]
+        public async Task<IActionResult> SearchSuggestions(Guid ProductId) {
+            var img = await _unitOfWork.Products.GetProductImageAsync(ProductId);
+            Response.Headers.Add("Cache-Control", "public, max-age=86400"); // Cache for 1 day
+            return File(await _imageService.GetAsync(img.imgPath), "image/jpeg");
+        }
         [HttpGet("/search-suggestions")]
-        public IActionResult SearchSuggestions(string term)
-        {
+        public IActionResult SearchSuggestions(string term) {
             if (string.IsNullOrWhiteSpace(term) || term.Length <= 1)
                 return Json(new List<string>());
 
@@ -179,8 +171,7 @@ namespace eShop.MVC.Areas.Product.Controllers
             return Json(suggestions);
         }
 
-        private List<ProductViewModel> ApplySorting(List<ProductViewModel> query, string sortBy, string sortOrder)
-        {
+        private List<ProductViewModel> ApplySorting(List<ProductViewModel> query, string sortBy, string sortOrder) {
             var isDescending = sortOrder?.ToLower() == "desc";
 
             return sortBy?.ToLower() switch

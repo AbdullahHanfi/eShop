@@ -1,282 +1,415 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http;
+@using System.Security.Claims;
+@inject ICartService CartService
+@{
+    string? id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    var cartCount = id is not null ? await CartService.UserCartCountAsync(id) : 0;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
     <title>@ViewData["Title"] - eShop</title>
     <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="~/assets/online-shop.ico" />
+    <link rel="icon" type="image/x-icon" href="~/assets/online-shop.ico"/>
     <!-- Bootstrap icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"/>
     <!-- Font awesome icons-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
     <!-- Core theme CSS (includes Bootstrap)-->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <!-- SWAL icons-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"/>
     @await RenderSectionAsync("style", required: false)
 </head>
 <body class="d-flex flex-column">
-    <div class="loading-bar" id="loadingBar"></div>
+<div class="loading-bar" id="loadingBar"></div>
 
-    <nav class="navbar sticky-top navbar-expand-lg modern-navbar" id="mainNav">
-        <div class="container">
-            <!-- Brand -->
+<nav class="navbar sticky-top navbar-expand-lg modern-navbar" id="mainNav">
+    <div class="container">
+        <!-- Brand -->
+        @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin)){
+            <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="AdminDashboard"
+               asp-action="Index">
+                <i class="bi bi-shop me-2 fs-4"></i>
+                eShop
+            </a>
+        }
+        else{
             <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
                 <i class="bi bi-shop me-2 fs-4"></i>
                 eShop
             </a>
+        }
 
-            <!-- Mobile Toggle -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <!-- Navigation Content -->
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <!-- Left Navigation -->
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Navigation Content -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Left Navigation -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin)){
+                    <li class="nav-item">
+                        <a class="nav-link active" asp-area="" asp-controller="AdminDashboard" asp-action="Index">
+                            <i class="bi bi-house me-1"></i>Home
+                        </a>
+                    </li>
+                }
+                else{
                     <li class="nav-item">
                         <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">
                             <i class="bi bi-house me-1"></i>Home
                         </a>
                     </li>
-
-                    <!-- Catgory section -->
-                    <li class="nav-item">
-                        @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin))
-                        {
-                            <a class="nav-link" asp-area="Category" asp-controller="AdminCategory" asp-action="Index">
-                                <i class="fas fa-th-large me-1"></i>Categories
-                            </a>
-                        }
-                        else
-                        {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-th-large me-1"></i>
-                                Categories
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-modern" aria-labelledby="categoriesDropdown" id="categoryDropdownMenu">
-                                <li class="dropdown-loading">
-                                    <div class="d-flex align-items-center justify-content-center p-3">
-                                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                        <span class="text-muted">Loading categories...</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    }
-                    </li>
-
-                    <!-- product section -->
-                    <li class="nav-item">
-                        @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin))
-                        {
-                            <a class="nav-link" asp-area="product" asp-controller="AdminProducts" asp-action="Index">
-                                <i class="bi bi-grid me-1"></i>Products
-                            </a>
-                        }
-                        else
-                        {
-                            <a class="nav-link" asp-area="product" asp-controller="CustomerProducts" asp-action="Index">
-                                <i class="bi bi-grid me-1"></i>Products
-                            </a>
-                        }
-                    </li>
-                    
-                    <!-- Manage Roles section -->
-                    <li class="nav-item">
-                        @if (User.IsInRole(Roles.SuperAdmin))
-                        {
-                            <a class="nav-link" asp-area="Auth" asp-controller="ManageRoles" asp-action="Index">
-                                <i class="bi bi-grid me-1"></i>Manage Roles
-                            </a>
-                        }
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">
-                            <i class="bi bi-info-circle me-1"></i>About
-                        </a>
-                    </li>
-                </ul>
-
-                <!-- Cart Button -->
-                @if (!(User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin)))
-                {
-                    <div class="d-flex align-items-center me-3">
-                        <a href="/Cart" class="cart-btn d-flex align-items-center text-decoration-none">
-                            <i class="bi bi-cart3 me-2"></i>
-                            <span class="d-none d-sm-inline">Cart</span>
-                            <span class="cart-badge ms-2" id="cartCount">0</span>
-                        </a>
-                    </div>
                 }
-                <!-- Login Section -->
-                <div class="login-section">
-                    <partial name="_LoginPartial" />
+
+
+                <!-- Category section -->
+                <li class="nav-item">
+                    @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin)){
+                        <a class="nav-link" asp-area="Category" asp-controller="AdminCategory" asp-action="Index">
+                            <i class="fas fa-th-large me-1"></i>Categories
+                        </a>
+                    }
+                    else{
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-th-large me-1"></i>
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-modern" aria-labelledby="categoriesDropdown"
+                            id="categoryDropdownMenu">
+                            <li class="dropdown-loading">
+                                <div class="d-flex align-items-center justify-content-center p-3">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <span class="text-muted">Loading categories...</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                </li>
+
+                <!-- product section -->
+                <li class="nav-item">
+                    @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin)){
+                        <a class="nav-link" asp-area="product" asp-controller="AdminProducts" asp-action="Index">
+                            <i class="bi bi-grid me-1"></i>Products
+                        </a>
+                    }
+                    else{
+                        <a class="nav-link" asp-area="product" asp-controller="CustomerProducts" asp-action="Index">
+                            <i class="bi bi-grid me-1"></i>Products
+                        </a>
+                    }
+                </li>
+                <!--logs section  -->
+                @if (User.IsInRole(Roles.SuperAdmin)){
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="AdminLog" asp-action="Logs">
+                            <i class="bi bi-grid me-1"></i> System Logs
+                        </a>
+                    </li>
+                }
+                <!-- Orders section -->
+                @if (!(User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin))){
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Orders" asp-controller="UserOrder" asp-action="Index">
+                            <i class="bi bi-grid me-1"></i>Orders
+                        </a>
+                    </li>
+                }
+                else{
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Orders" asp-controller="AdminOrders" asp-action="Index">
+                            <i class="bi bi-grid me-1"></i>Orders
+                        </a>
+                    </li>
+                }
+
+                <!-- Manage Roles section -->
+                <li class="nav-item">
+                    @if (User.IsInRole(Roles.SuperAdmin)){
+                        <a class="nav-link" asp-area="Auth" asp-controller="ManageRoles" asp-action="Index">
+                            <i class="bi bi-grid me-1"></i>Manage Roles
+                        </a>
+                    }
+                </li>
+            </ul>
+
+            <!-- Cart Button -->
+            @if (!(User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin))){
+                <div class="d-flex align-items-center me-3">
+                    <a href="/Cart" class="cart-btn d-flex align-items-center text-decoration-none">
+                        <i class="bi bi-cart3 me-2"></i>
+                        <span class="d-none d-sm-inline">Cart</span>
+                        <span class="cart-badge ms-2"
+                              id="cartCount">
+                            @cartCount 
+                        </span>
+                    </a>
+                </div>
+            }
+            <!-- Login Section -->
+            <div class="login-section">
+                <partial name="_LoginPartial"/>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="flex-grow-1 fade-in">
+    @RenderBody()
+</main>
+
+<!-- Footer -->
+<footer class="modern-footer py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="m-0">&copy; 2024 eShop. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="d-flex justify-content-md-end justify-content-center mt-2 mt-md-0">
+                    <a href="#" class="text-light me-3 text-decoration-none">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="text-light me-3 text-decoration-none">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a href="#" class="text-light text-decoration-none">
+                        <i class="bi bi-instagram"></i>
+                    </a>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+</footer>
 
-    <!-- Main Content -->
-    <main class="flex-grow-1 fade-in">
-        @RenderBody()
-    </main>
+<!-- Scripts -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
 
-    <!-- Footer -->
-    <footer class="modern-footer py-4">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="m-0">&copy; 2024 eShop. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <div class="d-flex justify-content-md-end justify-content-center mt-2 mt-md-0">
-                        <a href="#" class="text-light me-3 text-decoration-none">
-                            <i class="bi bi-facebook"></i>
-                        </a>
-                        <a href="#" class="text-light me-3 text-decoration-none">
-                            <i class="bi bi-twitter"></i>
-                        </a>
-                        <a href="#" class="text-light text-decoration-none">
-                            <i class="bi bi-instagram"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+<script>
+    // Navigation JavaScript
+    document.addEventListener('DOMContentLoaded', function () {
+        const navbar = document.getElementById('mainNav');
 
-    <!-- Scripts -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
 
-    <script>
-        // Navigation JavaScript
-        document.addEventListener('DOMContentLoaded', function() {
-            const navbar = document.getElementById('mainNav');
-            const loadingBar = document.getElementById('loadingBar');
-
-            // Navbar scroll effect
-            window.addEventListener('scroll', function() {
-                if (window.scrollY > 50) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
+        // Search functionality
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    // Implement search functionality
+                    console.log('Search:', this.value);
                 }
             });
+        }
 
-            // Loading bar animation
-            function showLoading() {
+        // Mobile menu close on item click
+        const navLinks = document.querySelectorAll('.nav-link');
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
+                    bootstrap.Collapse.getInstance(navbarCollapse)?.hide();
+                }
+            });
+        });
+
+        // Add active class to current page
+        const currentPath = window.location.pathname;
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+    // Expose functions for MVC integration
+    window.eShopNav = {
+        updateCartCount: function () {
+            const cartBadge = document.getElementById('cartCount');
+            fetch("/api/cart/count", {
+                method: "get",
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                })
+                .then(data => {
+                    if (cartBadge) {
+                        cartBadge.textContent = data;
+                        cartBadge.style.animation = 'none';
+                        setTimeout(() => {
+                            cartBadge.style.animation = 'pulse 2s infinite';
+                        }, 10);
+                    }
+                })
+                .catch((error) => {
+                    @if (User.Identity.IsAuthenticated){ <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed to update Cart count!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            position: 'top-end',
+                            toast: true
+                        });
+                    </text> }
+                    else{ <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Login First!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            position: 'top-end',
+                            toast: true
+                        });
+                    </text> }
+                });
+
+        },
+        showLoading: function () {
+            const loadingBar = document.getElementById('loadingBar');
+            if (loadingBar) {
                 loadingBar.style.width = '100%';
                 setTimeout(() => {
                     loadingBar.style.width = '0%';
                 }, 500);
             }
+        }
+    };
 
-            // Cart count animation
-            function updateCartCount(count) {
-                const cartBadge = document.getElementById('cartCount');
-                cartBadge.textContent = count;
-                cartBadge.style.animation = 'none';
-                setTimeout(() => {
-                    cartBadge.style.animation = 'pulse 2s infinite';
-                }, 10);
-            }
+    // dropdown functionality
+    let categoriesCache = null;
+    let isFetching = false;
+    let dropdownSearch = '';
 
-            // Search functionality
-            const searchInput = document.querySelector('.search-input');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        // Implement search functionality
-                        console.log('Search:', this.value);
-                    }
-                });
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        const categoryDropdown = document.getElementById('categoriesDropdown');
 
-            // Mobile menu close on item click
-            const navLinks = document.querySelectorAll('.nav-link');
-            const navbarCollapse = document.querySelector('.navbar-collapse');
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 992) {
-                        bootstrap.Collapse.getInstance(navbarCollapse)?.hide();
-                    }
-                });
-            });
-
-            // Add active class to current page
-            const currentPath = window.location.pathname;
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
+        if (categoryDropdown) {
+            categoryDropdown.addEventListener('show.bs.dropdown', function () {
+                if (!categoriesCache && !isFetching) {
+                    fetchCategories();
+                } else if (categoriesCache) {
+                    renderCategories(categoriesCache);
                 }
             });
-        });
+        }
+    });
 
-        // Expose functions for MVC integration
-        window.eShopNav = {
-            updateCartCount: function(count) {
-                const cartBadge = document.getElementById('cartCount');
-                if (cartBadge) {
-                    cartBadge.textContent = count;
-                    cartBadge.style.animation = 'none';
-                    setTimeout(() => {
-                        cartBadge.style.animation = 'pulse 2s infinite';
-                    }, 10);
-                }
+    function addToCart(productId, quantity = 1) {
+        // Get the button element
+        const button = event.target;
+        const originalContent = button.innerHTML;
+
+        // Show loading on button
+        button.innerHTML = '';
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+        button.disabled = true;
+
+        fetch("/api/cart/update", {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
             },
-            showLoading: function() {
-                const loadingBar = document.getElementById('loadingBar');
-                if (loadingBar) {
-                    loadingBar.style.width = '100%';
-                    setTimeout(() => {
-                        loadingBar.style.width = '0%';
-                    }, 500);
+            body: JSON.stringify({ProductId: productId.toString(), Quantity: parseInt(quantity)})
+        })
+            .then(response => {
+                if (!response.ok) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'login First!',
+                        text: 'Product hasn\'t been added to your cart',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        position: 'top-end',
+                        toast: true
+                    });
                 }
-            }
-        };
-
-        // dropdown functionality
-        let categoriesCache = null;
-        let isFetching = false;
-        let dropdownSearch = '';
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const categoryDropdown = document.getElementById('categoriesDropdown');
-
-            if (categoryDropdown) {
-                categoryDropdown.addEventListener('show.bs.dropdown', function() {
-                    if (!categoriesCache && !isFetching) {
-                        fetchCategories();
-                    } else if (categoriesCache) {
-                        renderCategories(categoriesCache);
-                    }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Cart!',
+                    text: 'Product has been added to your cart',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    position: 'top-end',
+                    toast: true
                 });
-            }
-        });
 
-        function fetchCategories() {
-            isFetching = true;
-            const dropdownMenu = document.getElementById('categoryDropdownMenu');
+                window.eShopNav.updateCartCount();
 
-            // Show loading state
-            dropdownMenu.innerHTML = `
+                button.innerHTML = '<i class="bi bi-check-circle"></i>';
+            })
+            .catch(error => {
+                @if (User.Identity.IsAuthenticated){
+                    <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed to Cart!',
+                            text: 'Product hasn\'t been added to your cart',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            position: 'top-end',
+                            toast: true
+                        });
+                    </text>
+                }
+                else{ <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login First!',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        position: 'top-end',
+                        toast: true
+                    });
+                </text> }
+            })
+            .finally(() => {
+                button.innerHTML = originalContent;
+                button.disabled = false;
+            });
+    }
+
+    function fetchCategories() {
+
+        isFetching = true;
+        const dropdownMenu = document.getElementById('categoryDropdownMenu');
+
+        // Show loading state
+        dropdownMenu.innerHTML = `
                 <li class="dropdown-loading">
                     <div class="d-flex align-items-center justify-content-center p-3">
                         <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
@@ -287,24 +420,24 @@
                 </li>
             `;
 
-            fetch('/api/categories')
-                .then(response => {
-                    if (!response.ok) throw new Error('Failed to fetch categories');
-                    else if(response.ok && response.status === 204) {
-                        renderNoCategories();
-                        isFetching = false;
-                        return;
-                    }
-                    return response.json();
-                })
-                .then(categories => {
-                    categoriesCache = categories;
-                    renderCategories(categories);
+        fetch('/api/categories')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch categories');
+                else if (response.ok && response.status === 204) {
+                    renderNoCategories();
                     isFetching = false;
-                })
-                .catch(error => {
-                    console.error('Error fetching categories:', error);
-                    dropdownMenu.innerHTML = `
+                    return;
+                }
+                return response.json();
+            })
+            .then(categories => {
+                categoriesCache = categories;
+                renderCategories(categories);
+                isFetching = false;
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+                dropdownMenu.innerHTML = `
                         <li class="dropdown-error">
                             <div class="text-center p-3">
                                 <i class="fas fa-exclamation-circle d-block mb-2"></i>
@@ -315,15 +448,15 @@
                             </div>
                         </li>
                     `;
-                    isFetching = false;
-                });
-        }
+                isFetching = false;
+            });
+    }
 
-        const dropdownMenu = document.getElementById('categoryDropdownMenu');
-        
-        function renderNoCategories(){
+    const dropdownMenu = document.getElementById('categoryDropdownMenu');
 
-            dropdownMenu.innerHTML = `
+    function renderNoCategories() {
+
+        dropdownMenu.innerHTML = `
                     <li class="dropdown-empty">
                         <div class="text-center">
                             <i class="fas fa-folder-open d-block"></i>
@@ -331,36 +464,36 @@
                         </div>
                     </li>
                 `;
-            }
+    }
 
-        function renderCategories(categories) {
-            if (!categories || categories.length === 0) {
-                renderNoCategories();
-                return;
-            }
+    function renderCategories(categories) {
+        if (!categories || categories.length === 0) {
+            renderNoCategories();
+            return;
+        }
 
-            let html = '';
+        let html = '';
 
-            if (categories.length > 5) {
-                html += `
+        if (categories.length > 5) {
+            html += `
                     <li class="dropdown-search">
                         <input type="text" class="form-control form-control-sm"
                                placeholder="Search categories..."
                                id="categorySearchInput">
                     </li>
                 `;
-            }
+        }
 
-            // Add categories container
-            html += '<div class="dropdown-menu-scroll">';
+        // Add categories container
+        html += '<div class="dropdown-menu-scroll">';
 
-            // Add individual categories with icons
-            const icons = ['fas fa-laptop', 'fas fa-tshirt', 'fas fa-home', 'fas fa-book',
-                           'fas fa-gamepad', 'fas fa-camera', 'fas fa-music', 'fas fa-utensils'];
+        // Add individual categories with icons
+        const icons = ['fas fa-laptop', 'fas fa-tshirt', 'fas fa-home', 'fas fa-book',
+            'fas fa-gamepad', 'fas fa-camera', 'fas fa-music', 'fas fa-utensils'];
 
-            categories.forEach((category, index) => {
-                const icon = icons[index % icons.length];
-                html += `
+        categories.forEach((category, index) => {
+            const icon = icons[index % icons.length];
+            html += `
                     <li>
                         <a class="dropdown-item d-flex align-items-center"
                            href="/products/category/${category.id}"
@@ -370,50 +503,50 @@
                             </span>
                             <span class="flex-grow-1">${category.name}</span>
                             ${category.productCount ?
-                                `<span class="category-badge">${category.productCount}</span>` :
-                                ''}
+                `<span class="category-badge">${category.productCount}</span>` :
+                ''}
                         </a>
                     </li>
                 `;
+        });
+
+        html += '</div>';
+
+        dropdownMenu.innerHTML = html;
+
+
+        const searchInput = document.getElementById('categorySearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function (e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const items = dropdownMenu.querySelectorAll('.dropdown-item[data-category-name]');
+
+                items.forEach(item => {
+                    const categoryName = item.getAttribute('data-category-name');
+                    if (categoryName.includes(searchTerm)) {
+                        item.parentElement.style.display = '';
+                    } else {
+                        item.parentElement.style.display = 'none';
+                    }
+                });
             });
 
-            html += '</div>';
-
-            dropdownMenu.innerHTML = html;
-
-
-            const searchInput = document.getElementById('categorySearchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', function(e) {
-                    const searchTerm = e.target.value.toLowerCase();
-                    const items = dropdownMenu.querySelectorAll('.dropdown-item[data-category-name]');
-
-                    items.forEach(item => {
-                        const categoryName = item.getAttribute('data-category-name');
-                        if (categoryName.includes(searchTerm)) {
-                            item.parentElement.style.display = '';
-                        } else {
-                            item.parentElement.style.display = 'none';
-                        }
-                    });
-                });
-
-                // Prevent dropdown from closing when clicking search
-                searchInput.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                });
-            }
-
-            const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
-            dropdownItems.forEach((item, index) => {
-                item.style.animationDelay = `${index * 0.05}s`;
-                item.classList.add('fade-in');
+            // Prevent dropdown from closing when clicking search
+            searchInput.addEventListener('click', function (e) {
+                e.stopPropagation();
             });
         }
 
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-    @await Component.InvokeAsync("NToastNotify")
+        const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.05}s`;
+            item.classList.add('fade-in');
+        });
+    }
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@await RenderSectionAsync("Scripts", required: false)
+@await Component.InvokeAsync("NToastNotify")
 </body>
 </html>

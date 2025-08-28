@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+
 @section style {
     <style>
         /* Hero Section */
@@ -13,16 +14,16 @@
             overflow: hidden;
         }
 
-            .hero-section::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                right: -50%;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-                animation: float 20s infinite linear;
-            }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: float 20s infinite linear;
+        }
 
         @@keyframes float {
             0% {
@@ -65,14 +66,14 @@
             transition: all 0.3s ease;
             animation: fadeInUp 0.8s ease-out 0.4s;
             animation-fill-mode: both;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-            .hero-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-                color: #764ba2;
-            }
+        .hero-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            color: #764ba2;
+        }
 
         /* Featured Products Section */
         .featured-section {
@@ -103,7 +104,7 @@
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
             height: 100%;
             display: flex;
@@ -111,14 +112,14 @@
             position: relative;
         }
 
-            .product-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-            }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
 
         .product-image-wrapper {
             position: relative;
-            padding-top: 75%; 
+            padding-top: 75%;
             overflow: hidden;
             background: #f3f4f6;
         }
@@ -242,10 +243,10 @@
             cursor: pointer;
         }
 
-            .btn-add-cart:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            }
+        .btn-add-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
 
         /* No Products State */
         .no-products {
@@ -309,17 +310,17 @@
             margin-top: 0.5rem;
         }
 
-            .stock-indicator.in-stock {
-                color: #10b981;
-            }
+        .stock-indicator.in-stock {
+            color: #10b981;
+        }
 
-            .stock-indicator.low-stock {
-                color: #f59e0b;
-            }
+        .stock-indicator.low-stock {
+            color: #f59e0b;
+        }
 
-            .stock-indicator.out-of-stock {
-                color: #ef4444;
-            }
+        .stock-indicator.out-of-stock {
+            color: #ef4444;
+        }
 
         .stock-dot {
             width: 6px;
@@ -328,17 +329,17 @@
             margin-right: 0.5rem;
         }
 
-            .stock-dot.in-stock {
-                background: #10b981;
-            }
+        .stock-dot.in-stock {
+            background: #10b981;
+        }
 
-            .stock-dot.low-stock {
-                background: #f59e0b;
-            }
+        .stock-dot.low-stock {
+            background: #f59e0b;
+        }
 
-            .stock-dot.out-of-stock {
-                background: #ef4444;
-            }
+        .stock-dot.out-of-stock {
+            background: #ef4444;
+        }
     </style>
 }
 
@@ -361,28 +362,23 @@
         <h2 class="section-title">Featured Products</h2>
         <p class="section-subtitle">Check out our handpicked selection just for you</p>
 
-        @if (Model != null && Model.Any())
-        {
+        @if (Model != null && Model.Any()){
             <div class="row g-4">
-                @foreach (var product in Model)
-                {
+                @foreach (var product in Model){
                     <div class="col-lg-4 col-md-6 fade-in-up">
                         <div class="product-card">
-                            @if (product.PrevPrice.HasValue && product.PrevPrice > product.CurrentPrice)
-                            {
+                            @if (product.PrevPrice.HasValue && product.PrevPrice > product.CurrentPrice){
                                 var discount = Math.Round((decimal)((product.PrevPrice.Value - product.CurrentPrice) / product.PrevPrice.Value * 100));
                                 <span class="product-badge">-@discount%</span>
                             }
 
                             <div class="product-image-wrapper">
-                                @if (product.Images != null && product.Images.Any())
-                                {
+                                @if (product.Images != null && product.Images.Any()){
                                     <img src="data:image/jpeg;base64,@Convert.ToBase64String(product.Images.First())"
                                          alt="@product.Name"
                                          class=" w-100 h-100 object-fit-scale rounded product-image">
                                 }
-                                else
-                                {
+                                else{
                                     <img src="/assets/placeholder-product.jpg"
                                          alt="@product.Name"
                                          class="w-100 h-100 object-fit-scale rounded product-image">
@@ -394,63 +390,46 @@
                                 <h3 class="product-title">@product.Name</h3>
                                 <p class="product-description">@product.Description</p>
 
-                                @if (product.Rate > 0)
-                                {
+                                @if (product.Rate > 0){
                                     <div class="product-rating">
                                         <div class="stars">
-                                            @for (int i = 1; i <= 5; i++)
-                                            {
-                                                if (i <= Math.Floor(product.Rate))
-                                                {
-                                                    <i class="fas fa-star"></i>
-                                                }
-                                                else if (i - 0.5 <= product.Rate)
-                                                {
-                                                    <i class="fas fa-star-half-alt"></i>
-                                                }
-                                                else
-                                                {
-                                                    <i class="far fa-star"></i>
-                                                }
+                                            @for (int i = 1; i <= 5; i++){
+                                                if (i <= Math.Floor(product.Rate)){ <i class="fas fa-star"></i> }
+                                                else if (i - 0.5 <= product.Rate){ <i
+                                                    class="fas fa-star-half-alt"></i> }
+                                                else{ <i class="far fa-star"></i> }
                                             }
                                         </div>
                                         <span class="rating-value">@product.Rate.ToString("0.0")</span>
                                     </div>
                                 }
 
-                                <div class="stock-indicator @(product.Quantity > 10 ? "in-stock" : product.Quantity > 0 ? "low-stock" : "out-of-stock")">
-                                    <span class="stock-dot @(product.Quantity > 10 ? "in-stock" : product.Quantity > 0 ? "low-stock" : "out-of-stock")"></span>
-                                    @if (product.Quantity > 10)
-                                    {
-                                        <span>In Stock</span>
-                                    }
-                                    else if (product.Quantity > 0)
-                                    {
+                                <div
+                                    class="stock-indicator @(product.Quantity > 10 ? "in-stock" : product.Quantity > 0 ? "low-stock" : "out-of-stock")">
+                                    <span
+                                        class="stock-dot @(product.Quantity > 10 ? "in-stock" : product.Quantity > 0 ? "low-stock" : "out-of-stock")"></span>
+                                    @if (product.Quantity > 10){ <span>In Stock</span> }
+                                    else if (product.Quantity > 0){
                                         <span>Only @product.Quantity left</span>
                                     }
-                                    else
-                                    {
-                                        <span>Out of Stock</span>
-                                    }
+                                    else{ <span>Out of Stock</span> }
                                 </div>
 
                                 <div class="product-footer">
                                     <div class="product-price">
                                         <span class="current-price">$@product.CurrentPrice.ToString("0.00")</span>
-                                        @if (product.PrevPrice.HasValue)
-                                        {
+                                        @if (product.PrevPrice.HasValue){
                                             <span class="prev-price">$@product.PrevPrice.Value.ToString("0.00")</span>
                                         }
                                     </div>
-                                    @if (product.Quantity > 0)
-                                    {
+                                    @if (product.Quantity > 0){
                                         <button class="btn-add-cart" onclick="addToCart('@product.Id')">
                                             <i class="bi bi-cart-plus"></i>
                                         </button>
                                     }
-                                    else
-                                    {
-                                        <button class="btn-add-cart" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                    else{
+                                        <button class="btn-add-cart" disabled
+                                                style="opacity: 0.5; cursor: not-allowed;">
                                             <i class="bi bi-x-circle"></i>
                                         </button>
                                     }
@@ -467,8 +446,7 @@
                 </a>
             </div>
         }
-        else
-        {
+        else{
             <div class="no-products">
                 <i class="bi bi-bag-x no-products-icon"></i>
                 <h3 class="no-products-title">No Products Available</h3>
@@ -480,41 +458,14 @@
 
 @section Scripts {
     <script>
-        function addToCart(productId) {
-            // Show loading on button
-            event.target.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
-            event.target.disabled = true;
-
-            // Simulate adding to cart (replace with actual API call)
-            setTimeout(() => {
-                // Update cart count
-                window.eShopNav.updateCartCount((parseInt(document.getElementById('cartCount').textContent) || 0) + 1);
-
-                // Show success message
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Added to Cart!',
-                    text: 'Product has been added to your cart',
-                                        showConfirmButton: false,
-                    timer: 1500,
-                    position: 'top-end',
-                    toast: true
-                });
-
-                // Reset button
-                event.target.innerHTML = '<i class="bi bi-cart-plus"></i>';
-                event.target.disabled = false;
-            }, 500);
-        }
-
         // Initialize animations on scroll
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const observerOptions = {
                 threshold: 0.1,
                 rootMargin: '0px 0px -50px 0px'
             };
 
-            const observer = new IntersectionObserver(function(entries) {
+            const observer = new IntersectionObserver(function (entries) {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('fade-in-up');

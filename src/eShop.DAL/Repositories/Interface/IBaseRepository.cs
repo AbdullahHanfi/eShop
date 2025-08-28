@@ -49,6 +49,6 @@ namespace eShop.DAL.Repositories.Interface
 
         IEnumerable<TEntity> Skip(int count);
         IEnumerable<TEntity> Take(int count);
-        IQueryable<TEntity> Include(string navigationPropert);
+        IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includes);
     }
 }

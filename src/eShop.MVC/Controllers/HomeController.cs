@@ -5,11 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShop.MVC.Controllers
 {
+    using Core.Utilities;
+    using Microsoft.AspNetCore.Authorization;
+
+    [Route("")]
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
         public HomeController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
@@ -18,6 +22,10 @@ namespace eShop.MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole(Roles.Admin)||User.IsInRole(Roles.SuperAdmin))
+            {
+                return RedirectToAction("Index","AdminDashboard");
+            }
             int productCount = _unitOfWork.Products.Count();
             var products = _unitOfWork.Products.Take(Math.Min(5, productCount));
             if (products.Count() != 0)
@@ -28,17 +36,13 @@ namespace eShop.MVC.Controllers
                 }
                 foreach (var product in products)
                 {
-                    ViewData[product.Name] = _unitOfWork.Products.Find(e => e.Id == product.Id, e => e.Category).Category.Name;
+                    ViewData[product.Name] = _unitOfWork.Products.Find(e => e.Id == product.Id, e => e.Category)?.Category?.Name;
                 }
 
                 return View(_mapper.Map<List<ProductViewModel>>(products));
             }
             return View(new List<ProductViewModel>());
         }
-
-        public IActionResult About() => View();
-
-        public IActionResult Privacy() => View();
 
         [Route("Error/{statusCode}")]
         public IActionResult Error(int statusCode)

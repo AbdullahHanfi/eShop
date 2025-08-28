@@ -14,7 +14,7 @@ namespace eShop.DAL.Repositories.Interface
         Task<IList<ApplicationUser>> GetAllAsync(Expression<Func<ApplicationUser, bool>> criteria, params Expression<Func<ApplicationUser, object>>[] includes);
         Task<IList<ApplicationUser>> GetAllByRoleAsync(string role, params Expression<Func<ApplicationUser, object>>[] includes);
         Task<IList<ApplicationUser>> GetAllByRoleAsync(Guid role, params Expression<Func<ApplicationUser, object>>[] includes);
-
+        
         Task<ApplicationUser?> FindByIdAsync(string userId);
         Task<ApplicationUser?> FindByEmailAsync(string Email);
         Task<ApplicationUser?> FindByNameAsync(string userName);
@@ -28,7 +28,7 @@ namespace eShop.DAL.Repositories.Interface
         Task<IList<string>> GetRolesAsync(ApplicationUser user);
         Task<IList<ApplicationRole>> GetRolesAsync(Guid userId);
         Task<bool> IsInRoleAsync(ApplicationUser user, string Role);
-
+        
         Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(ApplicationUser user, string Role);
         Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, string Role);
         Task<IdentityOperationResult<ApplicationUser>> AddToRoleAsync(Guid userId, Guid Role);
@@ -46,5 +46,8 @@ namespace eShop.DAL.Repositories.Interface
 
         Task<IdentityOperationResult<ApplicationUser>> UpdateAsync(ApplicationUser user);
         Task<IdentityOperationResult<ApplicationUser>> DeleteAsync(ApplicationUser user);
+        
+        Task<int> CountAsync();
+        
     }
 }

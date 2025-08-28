@@ -17,6 +17,7 @@ namespace eShop.DAL.ModelConfiguration
 
             builder.HasOne(e => e.Order)
                 .WithMany(e => e.Items)
+                .HasForeignKey(e => e.OrderId)
                 .IsRequired(false);
 
             builder.Property(p => p.Price)
@@ -24,7 +25,9 @@ namespace eShop.DAL.ModelConfiguration
 
             builder.HasOne(e => e.Product)
                 .WithMany(e => e.ItemsInOrder)
+                .HasForeignKey(e => e.ProductId)
                 .IsRequired(true);
+            
             builder.HasQueryFilter(p => !p.IsDeleted);
 
         }

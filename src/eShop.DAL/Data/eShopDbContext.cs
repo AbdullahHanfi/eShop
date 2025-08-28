@@ -1,21 +1,15 @@
 ﻿using eShop.Core.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Reflection;
 
 
-
-namespace eShop.DAL.Data
-{
-    public class eShopDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
-    {
+namespace eShop.DAL.Data {
+    public class eShopDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string> {
         public eShopDbContext(DbContextOptions<eShopDbContext> Options)
-            : base(Options)
-        {
+            : base(Options) {
         }
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
+        protected override void OnModelCreating(ModelBuilder builder) {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             base.OnModelCreating(builder);
@@ -25,21 +19,31 @@ namespace eShop.DAL.Data
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Image> Images { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
-
-        public override int SaveChanges()
-        {
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<PromoCode> PromoCodes { get; set; }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new()) {
             var entries = ChangeTracker.Entries().Where(e => e.Entity is BaseEntity && (
-                    e.State == EntityState.Added ||
-                    e.State == EntityState.Modified));
+                e.State == EntityState.Added ||
+                e.State == EntityState.Modified));
 
-            foreach (var entry in entries)
-            {
+            foreach (var entry in entries){
+
                 ((BaseEntity)entry.Entity).ModifiedDate = DateTime.Now;
 
-                if (entry.State == EntityState.Added)
-                {
-                    ((BaseEntity)entry.Entity).CreatedDate = DateTime.Now;
-                }
+                if (entry.State == EntityState.Added){ ((BaseEntity)entry.Entity).CreatedDate = DateTime.Now; }
+            }
+            return base.SaveChangesAsync(cancellationToken);
+        }
+        public override int SaveChanges() {
+            var entries = ChangeTracker.Entries().Where(e => e.Entity is BaseEntity && (
+                e.State == EntityState.Added ||
+                e.State == EntityState.Modified));
+
+            foreach (var entry in entries){
+
+                ((BaseEntity)entry.Entity).ModifiedDate = DateTime.Now;
+
+                if (entry.State == EntityState.Added){ ((BaseEntity)entry.Entity).CreatedDate = DateTime.Now; }
             }
             return base.SaveChanges();
         }
