@@ -22,6 +22,12 @@ A simple and modular eCommerce web application built using **ASP.NET Core MVC**.
 -   📱 Get products by category
 
 -   ⚠️ Error Pages (401 , 403 , 404 , 500 & general error page)
+
+-   🚀 Optimized log data retrieval in admin view (350+ records) by adding a composite index on ``timestamp`` and ``id``, reducing query time from ~26,907 ms to ~28 ms (≈ 970x faster)
+
+-   Dashboard for admin 
+  
+-   Order history and checkout process 
 ----------
 
 ## 🧱 Tech Stack
@@ -47,6 +53,8 @@ A simple and modular eCommerce web application built using **ASP.NET Core MVC**.
 -   Hangfire (Background job)
 
 -   Docker (Dokcer-Compose)
+
+-   Serilog
 
 ----------
 
@@ -257,15 +265,15 @@ public class Program
 
 -   Payment integration
     
--   Order history and checkout process
+-   Order history and checkout process (Done)
     
 -   Email notifications for new products
 
 -   Ability for super admin to manage admins 
 
--   Unit testing for other component 
+-   Unit testing for other component
 
--   Add Logging
+-   Adding logging (Done)
 
 ----------
 
