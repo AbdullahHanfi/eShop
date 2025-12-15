@@ -23,6 +23,7 @@ namespace eShop.BLL
             services.AddScoped<ICheckoutService, CheckoutService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IDashboardServices, DashboardServices>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddAutoMapper(typeof(AccountProfile));
             services.AddAutoMapper(typeof(ProductProfile));
             services.AddAutoMapper(typeof(CartProfile));

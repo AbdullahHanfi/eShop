@@ -131,6 +131,7 @@ namespace eShop.MVC {
             //app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseMiddleware<VisitorLoggingMiddleware>();
             app.UseRouting();
 
             app.UseSession();

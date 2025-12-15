@@ -28,6 +28,8 @@ namespace eShop.DAL.Data {
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<PromoCode> PromoCodes { get; set; }
+        public virtual DbSet<Visitor>  Visitors { get; set; }
+        
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new()) {
             var entries = ChangeTracker.Entries().Where(e => e.Entity is BaseEntity && (
                 e.State == EntityState.Added ||
