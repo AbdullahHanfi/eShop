@@ -1,0 +1,14 @@
+global using AutoMapper;
+global using eShop.BLL.Services.Abstraction;
+global using eShop.BLL.ViewModels.Account;
+global using eShop.Core.Entities;
+global using eShop.Core.Utilities;
+global using eShop.DAL.Interface;
+global using eShop.MVC.Filters;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Extensions.Options;
+global using NToastNotify;
+global using System.Linq;
+global using System.Threading.Tasks;
