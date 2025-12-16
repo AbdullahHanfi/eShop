@@ -646,7 +646,7 @@ namespace eShop.DAL.Migrations
 
             modelBuilder.Entity("eShop.Core.Entities.Visitor", b =>
                 {
-                    b.OwnsMany("eShop.Core.Entities.VisitorHistory", "Histories", b1 =>
+                    b.OwnsMany("eShop.Core.Entities.Visitor.Histories#eShop.Core.Entities.VisitorHistory", "Histories", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .ValueGeneratedOnAdd()

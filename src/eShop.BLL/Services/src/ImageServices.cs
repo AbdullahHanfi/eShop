@@ -49,7 +49,7 @@ namespace eShop.BLL.Services.src
                 throw new NotImageException(file.Name);
             }
 
-            _fileStorageService.CreateDirectory(_photoSettings.DestinationFolder);
+            _fileStorageService.CreateDirectory(Path.Combine("wwwroot",_photoSettings.DestinationFolder));
 
             string fileName = _guidProvider.NewGuid().ToString() + extension;
             string filePath = Path.Combine(_photoSettings.DestinationFolder, fileName);

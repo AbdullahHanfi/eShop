@@ -14,12 +14,13 @@ public class OrderService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<Ap
     public async Task<IEnumerable<OrderListViewModel>> GetAllOrdersAsync() {
         var orders = await unitOfWork.Orders
             .Include(o => o.Items)
+            .Include(e=>e.User)
             .OrderByDescending(o => o.CreatedDate)
             .Select(o => new OrderListViewModel
             {
                 Id = o.Id,
                 OrderNumber = $"ORD-{o.CreatedDate:yyyyMMdd}-{o.Id.ToString().Substring(0, 8).ToUpper()}",
-                UserEmail = unitOfWork.Users.FindByIdAsync(o.UserId).Result.Email,
+                UserEmail =   o.User.Email,
                 CreatedDate = o.CreatedDate,
                 TotalAmount = o.Items.Sum(i => i.Price * i.Quantity),
                 ItemsCount = o.Items.Count,

@@ -13,17 +13,16 @@ namespace eShop.DAL.ModelConfiguration
             builder.Property(e => e.Id)
                 .HasDefaultValueSql("NEWID()");
 
-            builder.HasOne<ApplicationUser>()
+            builder.HasOne(e => e.User)
                 .WithMany(e => e.Orders)
                 .HasForeignKey(e => e.UserId)
-                .IsRequired(false);
+                .IsRequired(true);
 
             builder.HasMany(e => e.Items)
                 .WithOne(e => e.Order)
                 .IsRequired(false);
 
             builder.HasQueryFilter(p => !p.IsDeleted);
-
         }
     }
 }

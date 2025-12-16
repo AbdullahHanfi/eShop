@@ -7,8 +7,7 @@
 *.userosscache
 *.sln.docstates
 appsettings.json
-PublishProfiles
-publish
+
 
 # Build results
 [Dd]ebug/
@@ -105,6 +104,8 @@ TestResult.xml
 # Publish profiles
 *.pubxml
 *.publishproj
+PublishProfiles
+publish
 
 # Azure Web App publish settings
 PublishScripts/
