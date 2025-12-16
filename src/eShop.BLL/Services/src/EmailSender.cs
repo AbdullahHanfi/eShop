@@ -1,12 +1,11 @@
-﻿using eShop.DAL.Utilities;
-using eShop.BLL.Services.Abstraction;
+﻿using eShop.BLL.Services.Abstraction;
+using eShop.DAL.Utilities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace eShop.BLL.Services.src {
-    using Microsoft.Extensions.Logging;
-
+namespace eShop.BLL.Services {
     public class EmailSender : IEmailSender {
         private readonly EmailSettings _settings;
         private readonly IMailTransport _mailTransport;
